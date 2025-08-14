@@ -11,7 +11,7 @@ export default function AIChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hi! I\'m your Boerne AI assistant. Ask me anything about our beautiful town - parks, restaurants, trails, events, or local services!'
+      content: 'Howdy! I\'m Bernie, your friendly Boerne AI mascot! 👋\n\nI know everything about our beautiful Hill Country town (and yes, it\'s "BURN-ee" like Bernie Sanders, not "BURN" like a fire! 😄). Ask me about our parks, restaurants, trails, events, local businesses, or anything else Boerne-related!'
     }
   ]);
   const [input, setInput] = useState('');
@@ -45,7 +45,7 @@ export default function AIChat() {
           content: 'Sorry, I encountered an error. Please try again!' 
         }]);
       }
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, { 
         role: 'assistant', 
         content: 'Sorry, I couldn\'t connect to my brain right now. Please try again!' 
@@ -65,8 +65,8 @@ export default function AIChat() {
   return (
     <div className="bg-white rounded-lg shadow-lg border-2 border-boerne-gold max-w-2xl mx-auto">
       <div className="p-4 border-b border-boerne-gold bg-gradient-to-r from-boerne-navy to-boerne-light-blue">
-        <h3 className="text-lg font-semibold text-boerne-white">Chat with Boerne AI</h3>
-        <p className="text-sm text-boerne-light-gray">Ask me anything about Boerne, Texas!</p>
+        <h3 className="text-lg font-semibold text-boerne-white">Chat with Bernie 🤠</h3>
+        <p className="text-sm text-boerne-light-gray">Your friendly Boerne AI mascot!</p>
       </div>
       
       <div className="h-96 overflow-y-auto p-4 space-y-4">
@@ -107,7 +107,7 @@ export default function AIChat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask about Boerne..."
+            placeholder="Ask Bernie about Boerne..."
             className="flex-1 px-3 py-2 border border-boerne-light-blue rounded-md focus:outline-none focus:ring-2 focus:ring-boerne-gold focus:border-boerne-gold"
             disabled={isLoading}
           />
@@ -120,7 +120,7 @@ export default function AIChat() {
           </button>
         </div>
         <p className="text-xs text-boerne-dark-gray mt-2">
-          I only know about Boerne, Texas. Ask me about local parks, restaurants, events, and more!
+          Bernie only knows about Boerne, Texas. Ask about local parks, restaurants, events, and more!
         </p>
       </div>
     </div>

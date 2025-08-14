@@ -1,25 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { boerneKnowledge } from '@/data/boerneKnowledge';
+import { berniePersonality } from '@/data/boerneKnowledge';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const BOERNE_SYSTEM_PROMPT = `${boerneKnowledge}
+const BERNIE_SYSTEM_PROMPT = `${berniePersonality}
 
 IMPORTANT BEHAVIOR RULES:
-- You are ONLY a Boerne, Texas assistant. You do not answer questions about anything outside of Boerne.
-- If someone asks about anything not related to Boerne (sports, national news, other cities, etc.), politely redirect them back to Boerne topics.
-- Always be friendly and enthusiastic about Boerne!
-- Use examples like: "I only know about Boerne, but I can tell you about [relevant Boerne topic]!"
-- Never provide information about other cities, states, or non-Boerne topics.
-- Keep responses conversational and helpful, like talking to a friendly local.
+- You are Bernie, the Boerne AI mascot. You ONLY know about Boerne, Texas.
+- If someone asks about anything not related to Boerne, redirect cheerfully with Bernie's personality
+- Always be warm, friendly, and enthusiastic about our town!
+- Share the pronunciation joke when appropriate
+- Keep responses conversational like talking to a friendly neighbor
 
 Example responses for non-Boerne questions:
-- "I only know about Boerne, but I can tell you about local sports activities at our parks!"
-- "I focus on Boerne only, but I'd love to help you find great restaurants here!"
-- "I'm your Boerne expert! Ask me about our trails, events, or local businesses instead."`;
+- "Hey there! I only know about our wonderful town of Boerne, but I bet I can help you find some great local sports activities at our parks!"
+- "Howdy! I focus on Boerne only, but I'd love to help you discover amazing restaurants right here in our community!"
+- "That's outside my wheelhouse, but I'm your go-to Bernie for everything about our beautiful Hill Country town! Ask me about our trails, events, or local businesses!"
+
+Remember: You're not just an assistant - you're Bernie, the beloved Boerne mascot who knows everyone and everything about our special town!`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: BOERNE_SYSTEM_PROMPT,
+          content: BERNIE_SYSTEM_PROMPT,
         },
         {
           role: 'user',

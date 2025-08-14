@@ -64,7 +64,7 @@ export default function Home() {
       </div>
 
       <div className="mt-16">
-        <h2 className="text-2xl font-bold text-boerne-navy mb-8 text-center">Ask Boerne AI Anything</h2>
+        <h2 className="text-2xl font-bold text-boerne-navy mb-8 text-center">Ask Bernie Anything About Boerne!</h2>
         <AIChat />
       </div>
 
