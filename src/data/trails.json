@@ -1,0 +1,36 @@
+[
+  {
+    "id": "cibolo-creek-trail",
+    "name": "Cibolo Creek Trail",
+    "difficulty": "Easy",
+    "length": "1.2 miles",
+    "surface": "Paved",
+    "features": [
+      "Creek views",
+      "Wheelchair accessible",
+      "Dog friendly",
+      "Connects to Boerne City Park",
+      "Benches along route"
+    ],
+    "trailhead": "Boerne City Park",
+    "coordinates": [29.7946, -98.7319],
+    "description": "Peaceful paved trail following Cibolo Creek through downtown Boerne"
+  },
+  {
+    "id": "hill-country-trail",
+    "name": "Hill Country Trail",
+    "difficulty": "Moderate",
+    "length": "Varies",
+    "surface": "Natural Surface",
+    "features": [
+      "Rolling hills and limestone terrain",
+      "Native Texas vegetation",
+      "Wildlife viewing opportunities",
+      "Multiple difficulty levels",
+      "Scenic overlooks"
+    ],
+    "trailhead": "Various locations around Boerne",
+    "coordinates": [29.7946, -98.7319],
+    "description": "Experience the beautiful Texas Hill Country with various trail options around Boerne"
+  }
+]

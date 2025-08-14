@@ -1,0 +1,24 @@
+[
+  {
+    "id": "boerne-dog-park",
+    "name": "Boerne Dog Park",
+    "address": "402 S School St, Boerne, TX 78006",
+    "features": [
+      "Fenced area",
+      "Separate small dog area",
+      "Water fountains",
+      "Waste stations",
+      "Shade trees",
+      "Benches"
+    ],
+    "hours": "Dawn to Dusk",
+    "rules": [
+      "Dogs must be on leash until inside fenced area",
+      "Pick up after your pet",
+      "Supervise your dog at all times",
+      "Dogs must be current on vaccinations"
+    ],
+    "coordinates": [29.7946, -98.7319],
+    "photos": ["/images/boerne-dog-park-1.jpg"]
+  }
+]
