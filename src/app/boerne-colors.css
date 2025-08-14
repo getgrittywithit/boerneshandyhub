@@ -1,0 +1,72 @@
+/* Boerne Brand Colors - CSS Fallback */
+
+:root {
+  --boerne-navy: #1B365D;
+  --boerne-gold: #F5A623;
+  --boerne-gold-alt: #FF8C00;
+  --boerne-green: #7BA05B;
+  --boerne-light-blue: #4A90B8;
+  --boerne-white: #FFFFFF;
+  --boerne-light-gray: #F8F9FA;
+  --boerne-dark-gray: #2C3E50;
+}
+
+/* Utility classes for Boerne colors */
+.bg-boerne-navy { background-color: var(--boerne-navy) !important; }
+.bg-boerne-gold { background-color: var(--boerne-gold) !important; }
+.bg-boerne-gold-alt { background-color: var(--boerne-gold-alt) !important; }
+.bg-boerne-green { background-color: var(--boerne-green) !important; }
+.bg-boerne-light-blue { background-color: var(--boerne-light-blue) !important; }
+.bg-boerne-white { background-color: var(--boerne-white) !important; }
+.bg-boerne-light-gray { background-color: var(--boerne-light-gray) !important; }
+.bg-boerne-dark-gray { background-color: var(--boerne-dark-gray) !important; }
+
+.text-boerne-navy { color: var(--boerne-navy) !important; }
+.text-boerne-gold { color: var(--boerne-gold) !important; }
+.text-boerne-gold-alt { color: var(--boerne-gold-alt) !important; }
+.text-boerne-green { color: var(--boerne-green) !important; }
+.text-boerne-light-blue { color: var(--boerne-light-blue) !important; }
+.text-boerne-white { color: var(--boerne-white) !important; }
+.text-boerne-light-gray { color: var(--boerne-light-gray) !important; }
+.text-boerne-dark-gray { color: var(--boerne-dark-gray) !important; }
+
+.border-boerne-navy { border-color: var(--boerne-navy) !important; }
+.border-boerne-gold { border-color: var(--boerne-gold) !important; }
+.border-boerne-gold-alt { border-color: var(--boerne-gold-alt) !important; }
+.border-boerne-green { border-color: var(--boerne-green) !important; }
+.border-boerne-light-blue { border-color: var(--boerne-light-blue) !important; }
+.border-boerne-white { border-color: var(--boerne-white) !important; }
+.border-boerne-light-gray { border-color: var(--boerne-light-gray) !important; }
+.border-boerne-dark-gray { border-color: var(--boerne-dark-gray) !important; }
+
+/* Specific border utilities */
+.border-l-4.border-boerne-gold { 
+  border-left: 4px solid var(--boerne-gold) !important; 
+}
+.border-l-4.border-boerne-green { 
+  border-left: 4px solid var(--boerne-green) !important; 
+}
+.border-l-4.border-boerne-light-blue { 
+  border-left: 4px solid var(--boerne-light-blue) !important; 
+}
+
+/* Hover states */
+.hover\:text-boerne-gold:hover { color: var(--boerne-gold) !important; }
+.hover\:text-boerne-gold-alt:hover { color: var(--boerne-gold-alt) !important; }
+.hover\:bg-boerne-gold-alt:hover { background-color: var(--boerne-gold-alt) !important; }
+
+/* Gradient backgrounds */
+.bg-gradient-to-r.from-boerne-navy.to-boerne-light-blue {
+  background: linear-gradient(to right, var(--boerne-navy), var(--boerne-light-blue)) !important;
+}
+
+/* Border widths */
+.border-2.border-boerne-gold {
+  border: 2px solid var(--boerne-gold) !important;
+}
+
+/* Ensure the body uses our light gray background */
+body {
+  background-color: var(--boerne-light-gray) !important;
+  color: var(--boerne-dark-gray) !important;
+}
