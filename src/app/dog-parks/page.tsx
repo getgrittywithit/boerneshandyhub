@@ -1,11 +1,12 @@
 export default function DogParks() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Dog Parks in Boerne</h1>
+    <div className="bg-boerne-light-gray min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-3xl font-bold text-boerne-navy mb-6">Dog Parks in Boerne</h1>
       
       <div className="grid gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">Boerne Dog Park</h2>
+        <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-boerne-gold">
+          <h2 className="text-xl font-semibold text-boerne-navy mb-3">Boerne Dog Park</h2>
           <p className="text-gray-600 mb-2"><strong>Address:</strong> 402 S School St, Boerne, TX 78006</p>
           <p className="text-gray-600 mb-2"><strong>Hours:</strong> Dawn to Dusk</p>
           
@@ -32,11 +33,12 @@ export default function DogParks() {
         </div>
       </div>
       
-      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-        <p className="text-blue-800">
+      <div className="mt-8 p-4 bg-boerne-gold bg-opacity-10 rounded-lg border border-boerne-gold">
+        <p className="text-boerne-navy">
           <strong>Tip:</strong> The dog park is located within Boerne City Park, so you can enjoy 
           the playground and walking trails while your furry friend plays!
         </p>
+      </div>
       </div>
     </div>
   );

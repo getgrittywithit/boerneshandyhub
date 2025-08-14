@@ -63,10 +63,10 @@ export default function AIChat() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg border border-gray-200 max-w-2xl mx-auto">
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Chat with Boerne AI</h3>
-        <p className="text-sm text-gray-600">Ask me anything about Boerne, Texas!</p>
+    <div className="bg-white rounded-lg shadow-lg border-2 border-boerne-gold max-w-2xl mx-auto">
+      <div className="p-4 border-b border-boerne-gold bg-gradient-to-r from-boerne-navy to-boerne-light-blue">
+        <h3 className="text-lg font-semibold text-boerne-white">Chat with Boerne AI</h3>
+        <p className="text-sm text-boerne-light-gray">Ask me anything about Boerne, Texas!</p>
       </div>
       
       <div className="h-96 overflow-y-auto p-4 space-y-4">
@@ -78,8 +78,8 @@ export default function AIChat() {
             <div
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                 message.role === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  ? 'bg-boerne-navy text-boerne-white'
+                  : 'bg-boerne-light-gray text-boerne-dark-gray'
               }`}
             >
               <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -89,18 +89,18 @@ export default function AIChat() {
         
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 text-gray-900 max-w-xs lg:max-w-md px-4 py-2 rounded-lg">
+            <div className="bg-boerne-light-gray text-boerne-dark-gray max-w-xs lg:max-w-md px-4 py-2 rounded-lg">
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-boerne-gold rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-boerne-gold rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-boerne-gold rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
         )}
       </div>
       
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-boerne-gold">
         <div className="flex space-x-2">
           <input
             type="text"
@@ -108,18 +108,18 @@ export default function AIChat() {
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask about Boerne..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 border border-boerne-light-blue rounded-md focus:outline-none focus:ring-2 focus:ring-boerne-gold focus:border-boerne-gold"
             disabled={isLoading}
           />
           <button
             onClick={sendMessage}
             disabled={isLoading || !input.trim()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-md hover:bg-boerne-gold-alt focus:outline-none focus:ring-2 focus:ring-boerne-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Send
           </button>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs text-boerne-dark-gray mt-2">
           I only know about Boerne, Texas. Ask me about local parks, restaurants, events, and more!
         </p>
       </div>

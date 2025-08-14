@@ -12,12 +12,12 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav className="bg-boerne-navy shadow-lg border-b border-boerne-gold">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-xl font-bold text-gray-900">
+              <Link href="/" className="text-xl font-bold text-boerne-gold hover:text-boerne-gold-alt transition-colors">
                 Boerne Handy Hub
               </Link>
             </div>
@@ -26,7 +26,7 @@ export default function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-gray-500 hover:text-gray-900 inline-flex items-center px-1 pt-1 text-sm font-medium"
+                  className="text-boerne-white hover:text-boerne-gold inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors"
                 >
                   {item.label}
                 </Link>
