@@ -4,7 +4,7 @@ export default function Navigation() {
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/dog-parks', label: 'Dog Parks' },
-    { href: '/nature-parks', label: 'Nature Parks' },
+    { href: '/parks', label: 'Parks' },
     { href: '/trails', label: 'Trails' },
     { href: '/restaurants', label: 'Restaurants' },
     { href: '/events', label: 'Events' },
