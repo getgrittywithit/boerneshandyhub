@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export type MembershipTier = 'unverified' | 'verified' | 'bronze' | 'silver' | 'gold';
+export type MembershipTier = 'basic' | 'verified' | 'silver' | 'gold';
 
 export interface LocationData {
   id: string;
@@ -16,6 +16,7 @@ export interface LocationData {
   website?: string;
   description: string;
   membershipTier: MembershipTier;
+  keywords: string[]; // SEO/search keywords
   photos: string[];
   specialOffers?: string[];
   events?: string[];
@@ -32,19 +33,25 @@ const membershipConfig: Record<MembershipTier, {
   color: string;
   bgColor: string;
   maxPhotos: number;
+  maxKeywords: number;
+  maxDescriptionChars: number;
   showAnalytics: boolean;
   priority: number;
   featured?: boolean;
   premium?: boolean;
+  price: number;
 }> = {
-  unverified: {
+  basic: {
     icon: '📍',
     badge: null,
     color: 'border-gray-300',
     bgColor: 'bg-white',
     maxPhotos: 1,
+    maxKeywords: 0,
+    maxDescriptionChars: 100,
     showAnalytics: false,
-    priority: 0
+    priority: 0,
+    price: 0
   },
   verified: {
     icon: '📍',
@@ -52,38 +59,38 @@ const membershipConfig: Record<MembershipTier, {
     color: 'border-boerne-gold',
     bgColor: 'bg-white',
     maxPhotos: 3,
+    maxKeywords: 2,
+    maxDescriptionChars: 300,
     showAnalytics: false,
-    priority: 1
-  },
-  bronze: {
-    icon: '🟤',
-    badge: { text: 'BRONZE', color: 'bg-amber-600 text-white', icon: '🥉' },
-    color: 'border-amber-600',
-    bgColor: 'bg-white',
-    maxPhotos: 5,
-    showAnalytics: true,
-    priority: 2
+    priority: 1,
+    price: 0
   },
   silver: {
-    icon: '🔷',
+    icon: '🥈',
     badge: { text: 'SILVER', color: 'bg-gray-500 text-white', icon: '🥈' },
     color: 'border-gray-500',
     bgColor: 'bg-gradient-to-r from-gray-50 to-blue-50',
-    maxPhotos: 12,
+    maxPhotos: 10,
+    maxKeywords: 5,
+    maxDescriptionChars: 500,
     showAnalytics: true,
-    priority: 3,
-    featured: true
+    priority: 2,
+    featured: true,
+    price: 19
   },
   gold: {
-    icon: '⭐',
+    icon: '🥇',
     badge: { text: 'GOLD', color: 'bg-yellow-500 text-yellow-900', icon: '🥇' },
     color: 'border-yellow-500',
     bgColor: 'bg-gradient-to-r from-yellow-50 to-amber-50',
     maxPhotos: 999,
+    maxKeywords: 10,
+    maxDescriptionChars: 999,
     showAnalytics: true,
-    priority: 4,
+    priority: 3,
     featured: true,
-    premium: true
+    premium: true,
+    price: 39
   }
 };
 
@@ -149,10 +156,31 @@ export default function LocationCard({ location, compact = false }: {
         <span>{location.category}</span>
       </div>
 
+      {/* Keywords */}
+      {location.keywords && location.keywords.length > 0 && (
+        <div className="mb-3">
+          <div className="flex flex-wrap gap-1">
+            {location.keywords.slice(0, config.maxKeywords).map((keyword, index) => (
+              <span 
+                key={index}
+                className="px-2 py-1 bg-boerne-light-blue bg-opacity-20 text-boerne-navy text-xs rounded-full border border-boerne-light-blue"
+              >
+                {keyword}
+              </span>
+            ))}
+            {config.maxKeywords > 0 && (
+              <span className="text-xs text-boerne-dark-gray self-center">
+                ({location.keywords.length}/{config.maxKeywords} keywords)
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Hours and Status */}
       <div className="flex items-center justify-between mb-3 text-sm">
         <span className="text-boerne-dark-gray">{location.hours}</span>
-        {location.membershipTier !== 'unverified' && (
+        {location.membershipTier !== 'basic' && (
           <span className="text-xs text-boerne-light-blue">
             {location.responseTime || 'Verified Owner'}
           </span>
@@ -230,6 +258,26 @@ export default function LocationCard({ location, compact = false }: {
         </div>
       )}
 
+      {/* Features List for Public Spots */}
+      {location.features && location.features.length > 0 && (
+        <div className="mb-3">
+          <p className="text-xs font-semibold text-boerne-navy mb-2">Park Features:</p>
+          <div className="grid grid-cols-1 gap-1">
+            {location.features.slice(0, 4).map((feature, index) => (
+              <div key={index} className="text-xs text-boerne-dark-gray flex items-start">
+                <span className="text-boerne-gold mr-1">•</span>
+                <span>{feature}</span>
+              </div>
+            ))}
+            {location.features.length > 4 && (
+              <div className="text-xs text-boerne-light-blue">
+                +{location.features.length - 4} more features
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-2 text-sm">
         {location.phone && (
@@ -240,13 +288,13 @@ export default function LocationCard({ location, compact = false }: {
         )}
         
         {location.website && (
-          <button className="flex items-center space-x-1 px-3 py-1 bg-boerne-green text-white rounded hover:bg-opacity-80 transition-colors">
-            <span>🌐</span>
-            <span>Website</span>
+          <button className="flex items-center space-x-1 px-3 py-1 bg-boerne-navy text-white rounded hover:bg-opacity-80 transition-colors">
+            <span>🏛️</span>
+            <span>Official Info</span>
           </button>
         )}
 
-        {location.membershipTier !== 'unverified' && (
+        {location.membershipTier !== 'basic' && (
           <button className="flex items-center space-x-1 px-3 py-1 bg-boerne-gold text-boerne-navy rounded hover:bg-boerne-gold-alt transition-colors">
             <span>💬</span>
             <span>{config.premium ? 'Live Chat' : 'Message'}</span>
@@ -273,7 +321,7 @@ export default function LocationCard({ location, compact = false }: {
       </div>
 
       {/* Last Updated */}
-      {location.verifiedDate && location.membershipTier !== 'unverified' && (
+      {location.verifiedDate && location.membershipTier !== 'basic' && (
         <div className="mt-3 pt-2 border-t border-boerne-light-gray">
           <p className="text-xs text-boerne-dark-gray">
             {location.membershipTier === 'verified' 
