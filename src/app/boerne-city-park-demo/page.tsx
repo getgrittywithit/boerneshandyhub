@@ -41,7 +41,7 @@ export default function BoerneCityParkDemo() {
             Boerne City Park Pin Preview 🌲
           </h1>
           <p className="text-lg text-boerne-dark-gray">
-            How our public spots will look with official city data + Bernie's local insights
+            How our public spots will look with official city data + Bernie&apos;s local insights
           </p>
         </div>
 
@@ -52,7 +52,7 @@ export default function BoerneCityParkDemo() {
         {/* Bernie's Enhanced Info Section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <h2 className="text-xl font-bold text-boerne-navy mb-4">
-            🤠 Bernie's Local Intelligence
+            🤠 Bernie&apos;s Local Intelligence
           </h2>
           
           <div className="grid md:grid-cols-2 gap-6">
