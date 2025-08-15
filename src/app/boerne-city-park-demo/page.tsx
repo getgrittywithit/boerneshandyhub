@@ -12,11 +12,11 @@ const boerneCityPark: LocationData = {
   hours: "5am - Midnight",
   phone: "(830) 248-1635",
   website: "https://www.ci.boerne.tx.us/167/Boerne-City-Park",
-  description: "Boerne's largest park featuring 125 acres of natural beauty along Cibolo Creek. Home to the scenic 1.75-mile Cibolo Trail connecting to downtown Main Plaza, plus sports fields, tennis courts, playground, and ADA-accessible trails. Connected to Cibolo Center for Conservation with 6 miles of additional trails.",
+  description: "Boerne&apos;s largest park featuring 125 acres of natural beauty along Cibolo Creek. Home to the scenic 1.75-mile Cibolo Trail connecting to downtown Main Plaza, plus sports fields, tennis courts, playground, and ADA-accessible trails. Connected to Cibolo Center for Conservation with 6 miles of additional trails.",
   membershipTier: "verified",
   keywords: ["trails", "playground"], // 2 keywords for verified public spot
   photos: ["city-park-1.jpg", "city-park-2.jpg", "city-park-3.jpg"],
-  bernieRecommendation: "This is THE crown jewel of Boerne parks, y'all! Those cypress trees along Cibolo Creek are older than most Texas towns. Pro tip: Start early morning for the best wildlife viewing - I've seen deer, herons, and even the occasional fox. The trail to Main Plaza is perfect for showing visitors the real Boerne experience!",
+  bernieRecommendation: "This is THE crown jewel of Boerne parks, y&apos;all! Those cypress trees along Cibolo Creek are older than most Texas towns. Pro tip: Start early morning for the best wildlife viewing - I&apos;ve seen deer, herons, and even the occasional fox. The trail to Main Plaza is perfect for showing visitors the real Boerne experience!",
   verifiedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
   features: [
     "1.75-mile Cibolo Trail to downtown",
@@ -87,17 +87,17 @@ export default function BoerneCityParkDemo() {
           <div className="space-y-4">
             <div className="border-l-4 border-boerne-light-blue pl-4">
               <p className="text-sm font-semibold text-boerne-navy">Official Hours: 5am - Midnight</p>
-              <p className="text-sm text-boerne-dark-gray italic">Bernie says: "Gates stay open, but lighting is limited after 10pm. Bring a flashlight for evening creek walks!"</p>
+              <p className="text-sm text-boerne-dark-gray italic">Bernie says: &quot;Gates stay open, but lighting is limited after 10pm. Bring a flashlight for evening creek walks!&quot;</p>
             </div>
             
             <div className="border-l-4 border-boerne-gold pl-4">
               <p className="text-sm font-semibold text-boerne-navy">Official: Connects to Cibolo Center</p>
-              <p className="text-sm text-boerne-dark-gray italic">Bernie says: "The connection trail is unmarked but starts behind the playground - look for the wooden post with the lizard carving!"</p>
+              <p className="text-sm text-boerne-dark-gray italic">Bernie says: &quot;The connection trail is unmarked but starts behind the playground - look for the wooden post with the lizard carving!&quot;</p>
             </div>
             
             <div className="border-l-4 border-boerne-green pl-4">
               <p className="text-sm font-semibold text-boerne-navy">Official: WiFi (limited)</p>
-              <p className="text-sm text-boerne-dark-gray italic">Bernie says: "WiFi works great near the pavilions, perfect for remote work picnics. Password is usually 'BoerneParks' - ask the groundskeeper if it's changed!"</p>
+              <p className="text-sm text-boerne-dark-gray italic">Bernie says: &quot;WiFi works great near the pavilions, perfect for remote work picnics. Password is usually &apos;BoerneParks&apos; - ask the groundskeeper if it&apos;s changed!&quot;</p>
             </div>
           </div>
 
