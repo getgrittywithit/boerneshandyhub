@@ -254,22 +254,26 @@ export default function ParksPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {boerneParks.map((park) => {
               const isClickable = park.id === 'boerne-city-park';
-              const CardWrapper = isClickable ? Link : 'div';
-              const wrapperProps = isClickable ? { href: '/boerne-city-park-demo' } : {};
+              
+              if (isClickable) {
+                return (
+                  <Link key={park.id} href="/boerne-city-park-demo">
+                    <div className="cursor-pointer relative">
+                      <LocationCard location={park} compact={true} />
+                    </div>
+                  </Link>
+                );
+              }
               
               return (
-                <CardWrapper key={park.id} {...wrapperProps}>
-                  <div className={`${isClickable ? 'cursor-pointer' : 'opacity-60 cursor-not-allowed'} relative`}>
-                    <LocationCard location={park} compact={true} />
-                    {!isClickable && (
-                      <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center rounded-lg">
-                        <div className="bg-boerne-navy text-white px-3 py-1 rounded text-sm">
-                          Coming Soon
-                        </div>
-                      </div>
-                    )}
+                <div key={park.id} className="opacity-60 cursor-not-allowed relative">
+                  <LocationCard location={park} compact={true} />
+                  <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center rounded-lg">
+                    <div className="bg-boerne-navy text-white px-3 py-1 rounded text-sm">
+                      Coming Soon
+                    </div>
                   </div>
-                </CardWrapper>
+                </div>
               );
             })}
           </div>
@@ -280,71 +284,81 @@ export default function ParksPage() {
           <div className="space-y-4">
             {boerneParks.map((park) => {
               const isClickable = park.id === 'boerne-city-park';
-              const CardWrapper = isClickable ? Link : 'div';
-              const wrapperProps = isClickable ? { href: '/boerne-city-park-demo' } : {};
               
-              return (
-                <CardWrapper key={park.id} {...wrapperProps}>
-                  <div className={`bg-white rounded-lg shadow-md p-4 border-l-4 border-boerne-gold relative ${
-                    isClickable ? 'hover:shadow-lg transition-shadow cursor-pointer' : 'opacity-60 cursor-not-allowed'
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">📍</span>
-                          <div>
-                            <h3 className="font-bold text-lg text-boerne-navy">{park.name}</h3>
-                            <p className="text-sm text-boerne-dark-gray">{park.category} • {park.priceLevel}</p>
-                          </div>
+              const parkCard = (
+                <div className={`bg-white rounded-lg shadow-md p-4 border-l-4 border-boerne-gold relative ${
+                  isClickable ? 'hover:shadow-lg transition-shadow cursor-pointer' : 'opacity-60 cursor-not-allowed'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">📍</span>
+                        <div>
+                          <h3 className="font-bold text-lg text-boerne-navy">{park.name}</h3>
+                          <p className="text-sm text-boerne-dark-gray">{park.category} • {park.priceLevel}</p>
                         </div>
                       </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4">
+                      {park.rating > 0 && (
+                        <div className="text-center">
+                          <div className="flex items-center text-boerne-gold">
+                            <span>⭐</span>
+                            <span className="ml-1 font-semibold">{park.rating}</span>
+                          </div>
+                        </div>
+                      )}
                       
-                      <div className="flex items-center space-x-4">
-                        {park.rating > 0 && (
-                          <div className="text-center">
-                            <div className="flex items-center text-boerne-gold">
-                              <span>⭐</span>
-                              <span className="ml-1 font-semibold">{park.rating}</span>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {park.membershipTier === 'verified' && (
-                          <div className="px-2 py-1 bg-boerne-gold text-boerne-navy rounded-full text-xs font-bold">
-                            ✅ VERIFIED
-                          </div>
-                        )}
-                        
-                        {isClickable ? (
-                          <span className="text-boerne-light-blue text-2xl">→</span>
-                        ) : (
-                          <div className="bg-boerne-navy text-white px-2 py-1 rounded text-xs">
-                            Coming Soon
-                          </div>
-                        )}
-                      </div>
+                      {park.membershipTier === 'verified' && (
+                        <div className="px-2 py-1 bg-boerne-gold text-boerne-navy rounded-full text-xs font-bold">
+                          ✅ VERIFIED
+                        </div>
+                      )}
+                      
+                      {isClickable ? (
+                        <span className="text-boerne-light-blue text-2xl">→</span>
+                      ) : (
+                        <div className="bg-boerne-navy text-white px-2 py-1 rounded text-xs">
+                          Coming Soon
+                        </div>
+                      )}
                     </div>
-                    
-                    <div className="mt-3">
-                      <p className="text-sm text-boerne-dark-gray line-clamp-2">{park.description}</p>
-                    </div>
-                    
-                    {park.features && park.features.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {park.features.slice(0, 3).map((feature, index) => (
-                          <span key={index} className="px-2 py-1 bg-boerne-light-blue bg-opacity-20 text-boerne-navy text-xs rounded">
-                            {feature}
-                          </span>
-                        ))}
-                        {park.features.length > 3 && (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                            +{park.features.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    )}
                   </div>
-                </CardWrapper>
+                  
+                  <div className="mt-3">
+                    <p className="text-sm text-boerne-dark-gray line-clamp-2">{park.description}</p>
+                  </div>
+                  
+                  {park.features && park.features.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {park.features.slice(0, 3).map((feature, index) => (
+                        <span key={index} className="px-2 py-1 bg-boerne-light-blue bg-opacity-20 text-boerne-navy text-xs rounded">
+                          {feature}
+                        </span>
+                      ))}
+                      {park.features.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                          +{park.features.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+
+              if (isClickable) {
+                return (
+                  <Link key={park.id} href="/boerne-city-park-demo">
+                    {parkCard}
+                  </Link>
+                );
+              }
+              
+              return (
+                <div key={park.id}>
+                  {parkCard}
+                </div>
               );
             })}
           </div>
