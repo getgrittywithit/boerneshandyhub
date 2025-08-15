@@ -266,10 +266,10 @@ export default function ParksPage() {
               }
               
               return (
-                <div key={park.id} className="opacity-60 cursor-not-allowed relative">
+                <div key={park.id} className="cursor-not-allowed relative">
                   <LocationCard location={park} compact={true} />
-                  <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center rounded-lg">
-                    <div className="bg-boerne-navy text-white px-3 py-1 rounded text-sm">
+                  <div className="absolute top-2 right-2 z-10">
+                    <div className="bg-boerne-navy text-white px-2 py-1 rounded text-xs font-semibold shadow-lg">
                       Coming Soon
                     </div>
                   </div>
