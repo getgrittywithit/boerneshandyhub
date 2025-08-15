@@ -1,0 +1,113 @@
+{
+  "venues": [
+    {
+      "id": "paniolo-ranch",
+      "name": "Paniolo Ranch",
+      "category": "venues",
+      "subcategory": "Ranches",
+      "address": "1670 Paniolo Ranch Rd, Boerne, TX 78006",
+      "phone": "(830) 755-4653",
+      "website": "https://panioloranch.com",
+      "rating": 4.9,
+      "priceLevel": "$$$$",
+      "description": "Stunning 200-acre ranch venue with panoramic Hill Country views, perfect for rustic elegance weddings.",
+      "capacity": {
+        "ceremony": 300,
+        "reception": 250
+      },
+      "amenities": ["Bridal Suite", "Groom's Quarters", "On-site Catering Kitchen", "Sound System", "Parking"],
+      "weddingStyles": ["Rustic Hill Country", "Elegant Garden", "Bohemian Chic"],
+      "photos": ["paniolo1.jpg", "paniolo2.jpg", "paniolo3.jpg"],
+      "membershipTier": "gold",
+      "keywords": ["ranch", "outdoor", "hill country", "rustic", "elegant", "large capacity", "panoramic views", "bridal suite", "parking", "catering"],
+      "specialOffers": ["Book by March 2024 - 10% off weekend rates"],
+      "bernieRecommendation": "Paniolo Ranch is hands down the most breathtaking venue in the Hill Country! The sunset views are absolutely magical, and the staff goes above and beyond for every couple."
+    },
+    {
+      "id": "tapatio-springs",
+      "name": "Tapatio Springs Hill Country Resort",
+      "category": "venues",
+      "subcategory": "Resorts",
+      "address": "1 Resort Way, Boerne, TX 78006",
+      "phone": "(830) 537-4611",
+      "website": "https://tapatiosprings.com",
+      "rating": 4.7,
+      "priceLevel": "$$$$",
+      "description": "Luxury resort venue with multiple ceremony and reception spaces, accommodations for guests, and full-service amenities.",
+      "capacity": {
+        "ceremony": 200,
+        "reception": 180
+      },
+      "amenities": ["Guest Accommodations", "Golf Course", "Spa", "Pool", "Restaurant", "Event Coordinator"],
+      "weddingStyles": ["Elegant Garden", "Modern Minimalist", "Vintage Romance"],
+      "photos": ["tapatio1.jpg", "tapatio2.jpg", "tapatio3.jpg"],
+      "membershipTier": "gold",
+      "keywords": ["resort", "luxury", "accommodations", "golf", "spa", "full service", "coordinator", "indoor outdoor", "restaurant", "pool"],
+      "specialOffers": ["Wedding package includes complimentary spa credits"],
+      "bernieRecommendation": "Perfect for couples who want luxury and convenience all in one place. Your guests will love staying on-site and the spa services are world-class!"
+    }
+  ],
+  "photography": [
+    {
+      "id": "hill-country-photography",
+      "name": "Hill Country Photography Co.",
+      "category": "photography",
+      "subcategory": "Wedding Photography",
+      "address": "Downtown Boerne, TX",
+      "phone": "(830) 555-0199",
+      "website": "https://hillcountryphotoco.com",
+      "rating": 4.8,
+      "priceLevel": "$$$",
+      "description": "Award-winning wedding photography capturing the natural beauty of Hill Country weddings with an artistic, timeless approach.",
+      "services": ["Wedding Photography", "Engagement Sessions", "Bridal Portraits", "Rehearsal Dinner Coverage"],
+      "weddingStyles": ["Rustic Hill Country", "Elegant Garden", "Bohemian Chic", "Vintage Romance"],
+      "photos": ["portfolio1.jpg", "portfolio2.jpg", "portfolio3.jpg"],
+      "membershipTier": "silver",
+      "keywords": ["award winning", "artistic", "timeless", "natural", "hill country"],
+      "bernieRecommendation": "Sarah and her team have such a gift for capturing those perfect candid moments that tell your love story."
+    }
+  ],
+  "catering": [
+    {
+      "id": "smokin-js-bbq",
+      "name": "Smokin' J's BBQ Catering",
+      "category": "catering",
+      "subcategory": "BBQ Catering",
+      "address": "234 Main Street, Boerne, TX 78006",
+      "phone": "(830) 555-0166",
+      "website": "https://smokinjsbbq.com",
+      "rating": 4.6,
+      "priceLevel": "$$",
+      "description": "Authentic Texas BBQ catering perfect for rustic Hill Country weddings. From brisket to sides, we bring the true Texas experience.",
+      "services": ["Full BBQ Buffet", "Taco Bar", "Family Style Service", "Staff Service"],
+      "dietaryOptions": ["Vegetarian Options", "Gluten-Free Sides"],
+      "weddingStyles": ["Rustic Hill Country", "Bohemian Chic"],
+      "photos": ["bbq1.jpg", "bbq2.jpg", "bbq3.jpg"],
+      "membershipTier": "verified",
+      "keywords": ["bbq", "texas", "authentic", "rustic", "family style"],
+      "bernieRecommendation": "J's brisket is legendary in Boerne! Perfect for couples who want that authentic Texas wedding experience."
+    }
+  ],
+  "planning": [
+    {
+      "id": "hill-country-weddings",
+      "name": "Hill Country Weddings & Events",
+      "category": "planning",
+      "subcategory": "Full Service Planning",
+      "address": "Downtown Boerne, TX",
+      "phone": "(830) 555-0155",
+      "website": "https://hillcountryweddings.com",
+      "rating": 4.9,
+      "priceLevel": "$$$",
+      "description": "Premier wedding planning service specializing in Hill Country venues and vendors. From intimate ceremonies to grand celebrations.",
+      "services": ["Full Wedding Planning", "Partial Planning", "Day-of Coordination", "Destination Weddings"],
+      "experience": "15+ years in Hill Country",
+      "weddingStyles": ["All Styles"],
+      "photos": ["planning1.jpg", "planning2.jpg", "planning3.jpg"],
+      "membershipTier": "gold",
+      "keywords": ["premier", "experienced", "full service", "coordination", "hill country specialist"],
+      "specialOffers": ["Free consultation for Boerne Hub users"],
+      "bernieRecommendation": "Maria and her team are absolute professionals! They know every vendor and venue in the area and will make your wedding planning stress-free."
+    }
+  ]
+}

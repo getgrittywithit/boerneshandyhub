@@ -3,12 +3,13 @@ import Link from 'next/link';
 export default function Navigation() {
   const navItems = [
     { href: '/', label: 'Home' },
-    { href: '/dog-parks', label: 'Dog Parks' },
-    { href: '/parks', label: 'Parks' },
-    { href: '/trails', label: 'Trails' },
-    { href: '/restaurants', label: 'Restaurants' },
-    { href: '/events', label: 'Events' },
-    { href: '/services', label: 'Services' },
+    { href: '/weddings', label: 'Weddings & Events', highlight: true },
+    { href: '/dining', label: 'Dining' },
+    { href: '/stay-play', label: 'Stay & Play' },
+    { href: '/shopping', label: 'Shopping' },
+    { href: '/outdoor', label: 'Outdoor Adventures' },
+    { href: '/services', label: 'Professional Services' },
+    { href: '/about', label: 'About Boerne' },
   ];
 
   return (
@@ -26,9 +27,14 @@ export default function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-boerne-white hover:text-boerne-gold inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors"
+                  className={`inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors ${
+                    item.highlight 
+                      ? 'text-boerne-gold hover:text-boerne-gold-alt border-b-2 border-boerne-gold' 
+                      : 'text-boerne-white hover:text-boerne-gold'
+                  }`}
                 >
                   {item.label}
+                  {item.highlight && <span className="ml-1">💍</span>}
                 </Link>
               ))}
             </div>
