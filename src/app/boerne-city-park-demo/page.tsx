@@ -16,7 +16,7 @@ const boerneCityPark: LocationData = {
   membershipTier: "verified",
   keywords: ["trails", "playground"], // 2 keywords for verified public spot
   photos: ["city-park-1.jpg", "city-park-2.jpg", "city-park-3.jpg"],
-  bernieRecommendation: "This is THE crown jewel of Boerne parks, y'all! Those cypress trees along Cibolo Creek are older than most Texas towns. Pro tip: Start early morning for the best wildlife viewing - I've seen deer, herons, and even the occasional fox. The trail to Main Plaza is perfect for showing visitors the real Boerne experience!",
+  bernieRecommendation: "This is Boerne's largest park at 125 acres! The Cibolo Trail connects all the way to Main Plaza downtown - perfect for showing visitors the real Boerne experience.",
   verifiedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
   features: [
     "1.75-mile Cibolo Trail to downtown",
@@ -49,55 +49,93 @@ export default function BoerneCityParkDemo() {
           <LocationCard location={boerneCityPark} />
         </div>
 
-        {/* Bernie's Enhanced Info Section */}
+        {/* Community Scavenger Hunt Game */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <h2 className="text-xl font-bold text-boerne-navy mb-4">
-            🤠 Bernie's Local Intelligence
+            🎯 Boerne Parks Explorer Challenge
           </h2>
+          <p className="text-boerne-dark-gray mb-4">
+            Complete the scavenger hunt to unlock Bernie's insider tips! Find and photograph these items at City Park:
+          </p>
           
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-semibold text-boerne-navy mb-2">Best Times to Visit:</h3>
-              <ul className="text-sm text-boerne-dark-gray space-y-1">
-                <li>• <strong>Early morning (6-8am):</strong> Wildlife viewing, cooler temps</li>
-                <li>• <strong>Tuesday-Thursday:</strong> Least crowded weekdays</li>
-                <li>• <strong>Spring/Fall:</strong> Perfect weather, creek flowing</li>
-                <li>• <strong>Avoid:</strong> Soccer tournament weekends (parking)</li>
+              <h3 className="font-semibold text-boerne-navy mb-2">📍 Required Finds:</h3>
+              <ul className="text-sm text-boerne-dark-gray space-y-2">
+                <li className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  <span>Cibolo Trail stone marker</span>
+                </li>
+                <li className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  <span>Covered playground structure</span>
+                </li>
+                <li className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  <span>Soccer field goal posts</span>
+                </li>
+                <li className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  <span>Creek access point</span>
+                </li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold text-boerne-navy mb-2">Hidden Gems:</h3>
-              <ul className="text-sm text-boerne-dark-gray space-y-1">
-                <li>• Creek access point behind tennis courts</li>
-                <li>• Ancient cypress grove (200+ years old)</li>
-                <li>• Best sunset views from soccer field hill</li>
-                <li>• Secret wildflower meadow in spring</li>
+              <h3 className="font-semibold text-boerne-navy mb-2">🏆 Bonus Challenges:</h3>
+              <ul className="text-sm text-boerne-dark-gray space-y-2">
+                <li className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  <span>Spot local wildlife (photo proof)</span>
+                </li>
+                <li className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  <span>Find tennis court entrance</span>
+                </li>
+                <li className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  <span>Locate park restrooms</span>
+                </li>
+                <li className="flex items-center">
+                  <input type="checkbox" className="mr-2" />
+                  <span>Cypress trees along creek bank</span>
+                </li>
               </ul>
             </div>
           </div>
+          
+          <div className="mt-4 p-3 bg-boerne-gold bg-opacity-20 rounded">
+            <p className="text-sm text-boerne-navy">
+              <strong>🎁 Complete 6/8 items to unlock:</strong> Bernie's secret tips, best photo spots, and seasonal insights!
+            </p>
+          </div>
         </div>
 
-        {/* Official vs Bernie's Info */}
+        {/* Official Information */}
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-bold text-boerne-navy mb-4">
-            🏛️ Official Info + 🤠 Local Wisdom
+            🏛️ Official Park Information
           </h2>
           
           <div className="space-y-4">
             <div className="border-l-4 border-boerne-light-blue pl-4">
-              <p className="text-sm font-semibold text-boerne-navy">Official Hours: 5am - Midnight</p>
-              <p className="text-sm text-boerne-dark-gray italic">Bernie says: "Gates stay open, but lighting is limited after 10pm. Bring a flashlight for evening creek walks!"</p>
+              <p className="text-sm font-semibold text-boerne-navy">Hours: 5am - Midnight</p>
+              <p className="text-sm text-boerne-dark-gray">Park gates and main facilities accessible during these hours</p>
             </div>
             
             <div className="border-l-4 border-boerne-gold pl-4">
-              <p className="text-sm font-semibold text-boerne-navy">Official: Connects to Cibolo Center</p>
-              <p className="text-sm text-boerne-dark-gray italic">Bernie says: "The connection trail is unmarked but starts behind the playground - look for the wooden post with the lizard carving!"</p>
+              <p className="text-sm font-semibold text-boerne-navy">Connects to Cibolo Center for Conservation</p>
+              <p className="text-sm text-boerne-dark-gray">Trail connection provides access to 6 additional miles of nature trails</p>
             </div>
             
             <div className="border-l-4 border-boerne-green pl-4">
-              <p className="text-sm font-semibold text-boerne-navy">Official: WiFi (limited)</p>
-              <p className="text-sm text-boerne-dark-gray italic">Bernie says: "WiFi works great near the pavilions, perfect for remote work picnics. Password is usually 'BoerneParks' - ask the groundskeeper if it's changed!"</p>
+              <p className="text-sm font-semibold text-boerne-navy">WiFi Available (Limited Coverage)</p>
+              <p className="text-sm text-boerne-dark-gray">WiFi service available in select areas of the park</p>
+            </div>
+            
+            <div className="border-l-4 border-boerne-navy pl-4">
+              <p className="text-sm font-semibold text-boerne-navy">Contact for Issues: (830) 248-1635</p>
+              <p className="text-sm text-boerne-dark-gray">Report unsafe conditions or maintenance needs</p>
             </div>
           </div>
 
