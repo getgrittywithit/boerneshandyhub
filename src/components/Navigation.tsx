@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Navigation() {
+  const pathname = usePathname();
+  
   const navItems = [
     { href: '/', label: 'Home' },
-    { href: '/weddings', label: 'Weddings & Events', highlight: true },
+    { href: '/weddings', label: 'Weddings & Events', featured: true },
     { href: '/dining', label: 'Dining' },
     { href: '/stay-play', label: 'Stay & Play' },
     { href: '/shopping', label: 'Shopping' },
@@ -23,20 +28,27 @@ export default function Navigation() {
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors ${
-                    item.highlight 
-                      ? 'text-boerne-gold hover:text-boerne-gold-alt border-b-2 border-boerne-gold' 
-                      : 'text-boerne-white hover:text-boerne-gold'
-                  }`}
-                >
-                  {item.label}
-                  {item.highlight && <span className="ml-1">💍</span>}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                const isFeatured = item.featured;
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'text-boerne-gold border-b-2 border-boerne-gold'
+                        : isFeatured
+                        ? 'text-boerne-gold hover:text-boerne-gold-alt'
+                        : 'text-boerne-white hover:text-boerne-gold'
+                    }`}
+                  >
+                    {item.label}
+                    {isFeatured && <span className="ml-1">💍</span>}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
