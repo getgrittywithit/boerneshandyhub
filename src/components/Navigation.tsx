@@ -2,9 +2,33 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase';
 
 export default function Navigation() {
   const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const supabase = createClient();
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, []);
+
+  const checkAdminStatus = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        setIsAdmin(profile?.role === 'admin');
+      }
+    } catch (error) {
+      // Silently fail - just don't show admin link
+    }
+  };
   
   const navItems = [
     { href: '/', label: 'Home' },
@@ -52,6 +76,19 @@ export default function Navigation() {
                   </Link>
                 );
               })}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className={`inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors ${
+                    pathname.startsWith('/admin')
+                      ? 'text-boerne-gold border-b-2 border-boerne-gold'
+                      : 'text-gray-400 hover:text-boerne-gold'
+                  }`}
+                  title="Admin Dashboard"
+                >
+                  ⚙️
+                </Link>
+              )}
             </div>
           </div>
         </div>
