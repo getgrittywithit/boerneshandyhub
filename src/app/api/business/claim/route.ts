@@ -31,7 +31,7 @@ interface BusinessClaim {
 }
 
 // In a real app, this would be a database
-let businessClaims: BusinessClaim[] = []
+const businessClaims: BusinessClaim[] = []
 
 export async function POST(request: NextRequest) {
   try {

@@ -2,13 +2,13 @@
 
 import { useState, useMemo } from 'react';
 import Navigation from '@/components/Navigation';
-import Image from 'next/image';
+// import Image from 'next/image';
 import Link from 'next/link';
 import sellers from '@/data/marketplaceSellers.json';
 import products from '@/data/marketplaceProducts.json';
 
-type Product = typeof products[0];
-type Seller = typeof sellers[0];
+// type Product = typeof products[0];
+// type Seller = typeof sellers[0];
 
 const categories = [
   { id: 'all', name: 'All Products', icon: '🌾' },
@@ -70,7 +70,7 @@ export default function MarketplacePage() {
     });
   }, [searchTerm, selectedCategory, selectedMethods, showInStockOnly]);
 
-  const featuredProducts = products.filter(p => p.featured);
+  // const featuredProducts = products.filter(p => p.featured);
   const featuredSellers = sellers.filter(s => s.verified);
 
   const toggleMethod = (methodId: string) => {

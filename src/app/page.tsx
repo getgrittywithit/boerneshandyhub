@@ -1,4 +1,5 @@
 import AIChat from "@/components/AIChat";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -52,9 +53,9 @@ export default function Home() {
                 Weddings & Events <span className="ml-2">💍</span>
               </h3>
               <p className="text-boerne-dark-gray mb-4">Plan your perfect Hill Country celebration</p>
-              <a href="/weddings" className="text-boerne-gold hover:text-boerne-gold-alt font-medium transition-colors">
+              <Link href="/weddings" className="text-boerne-gold hover:text-boerne-gold-alt font-medium transition-colors">
                 Explore Weddings →
-              </a>
+              </Link>
             </div>
 
             {/* Dining */}
