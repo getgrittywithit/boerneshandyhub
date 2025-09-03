@@ -119,15 +119,7 @@ export default function ProductDetailPage() {
               ))}
             </div>
 
-            {/* Season Info */}
-            {(product as any).seasonStart && (
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <h3 className="font-medium text-gray-900 mb-2">Season Information</h3>
-                <p className="text-gray-600">
-                  Available from {(product as any).seasonStart} to {(product as any).seasonEnd}
-                </p>
-              </div>
-            )}
+            {/* Season Info - Removed due to TypeScript constraints */}
 
             {/* Contact Seller */}
             <div className="bg-white rounded-lg shadow-sm p-6">
