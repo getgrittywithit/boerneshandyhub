@@ -91,7 +91,6 @@ const weddingStyles = [
 
 export default function WeddingsPage() {
   const [selectedStyle, setSelectedStyle] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
 
   return (
     <div className="bg-boerne-light-gray min-h-screen">

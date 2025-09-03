@@ -81,7 +81,7 @@ export default function ImportBusinesses() {
             const data = await response.json();
 
             if (data.status === 'OK') {
-              const businesses = data.results.slice(0, settings.maxResults).map((place: any) => ({
+              const businesses = data.results.slice(0, settings.maxResults).map((place: { name: string; vicinity: string; formatted_phone_number?: string; website?: string; rating?: number; place_id: string; types: string[] }) => ({
                 name: place.name,
                 address: place.vicinity,
                 phone: place.formatted_phone_number,

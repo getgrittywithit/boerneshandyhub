@@ -18,7 +18,16 @@
       "amenities": ["Bridal Suite", "Groom's Quarters", "On-site Catering Kitchen", "Sound System", "Parking"],
       "weddingStyles": ["Rustic Hill Country", "Elegant Garden", "Bohemian Chic"],
       "photos": ["paniolo1.jpg", "paniolo2.jpg", "paniolo3.jpg"],
-      "membershipTier": "gold",
+      "membershipTier": "basic",
+      "claimStatus": "unclaimed",
+      "ownerId": null,
+      "subscriptionId": null,
+      "verificationStatus": "none",
+      "lastUpdated": "2024-01-15T00:00:00Z",
+      "coordinates": {
+        "lat": 29.7946,
+        "lng": -98.7323
+      },
       "keywords": ["ranch", "outdoor", "hill country", "rustic", "elegant", "large capacity", "panoramic views", "bridal suite", "parking", "catering"],
       "specialOffers": ["Book by March 2024 - 10% off weekend rates"],
       "bernieRecommendation": "Paniolo Ranch is hands down the most breathtaking venue in the Hill Country! The sunset views are absolutely magical, and the staff goes above and beyond for every couple."
@@ -41,7 +50,16 @@
       "amenities": ["Guest Accommodations", "Golf Course", "Spa", "Pool", "Restaurant", "Event Coordinator"],
       "weddingStyles": ["Elegant Garden", "Modern Minimalist", "Vintage Romance"],
       "photos": ["tapatio1.jpg", "tapatio2.jpg", "tapatio3.jpg"],
-      "membershipTier": "gold",
+      "membershipTier": "basic",
+      "claimStatus": "unclaimed",
+      "ownerId": null,
+      "subscriptionId": null,
+      "verificationStatus": "none",
+      "lastUpdated": "2024-01-15T00:00:00Z",
+      "coordinates": {
+        "lat": 29.7895,
+        "lng": -98.7298
+      },
       "keywords": ["resort", "luxury", "accommodations", "golf", "spa", "full service", "coordinator", "indoor outdoor", "restaurant", "pool"],
       "specialOffers": ["Wedding package includes complimentary spa credits"],
       "bernieRecommendation": "Perfect for couples who want luxury and convenience all in one place. Your guests will love staying on-site and the spa services are world-class!"
@@ -62,7 +80,16 @@
       "services": ["Wedding Photography", "Engagement Sessions", "Bridal Portraits", "Rehearsal Dinner Coverage"],
       "weddingStyles": ["Rustic Hill Country", "Elegant Garden", "Bohemian Chic", "Vintage Romance"],
       "photos": ["portfolio1.jpg", "portfolio2.jpg", "portfolio3.jpg"],
-      "membershipTier": "silver",
+      "membershipTier": "basic",
+      "claimStatus": "unclaimed",
+      "ownerId": null,
+      "subscriptionId": null,
+      "verificationStatus": "none",
+      "lastUpdated": "2024-01-15T00:00:00Z",
+      "coordinates": {
+        "lat": 29.7944,
+        "lng": -98.7320
+      },
       "keywords": ["award winning", "artistic", "timeless", "natural", "hill country"],
       "bernieRecommendation": "Sarah and her team have such a gift for capturing those perfect candid moments that tell your love story."
     }
@@ -83,7 +110,16 @@
       "dietaryOptions": ["Vegetarian Options", "Gluten-Free Sides"],
       "weddingStyles": ["Rustic Hill Country", "Bohemian Chic"],
       "photos": ["bbq1.jpg", "bbq2.jpg", "bbq3.jpg"],
-      "membershipTier": "verified",
+      "membershipTier": "basic",
+      "claimStatus": "unclaimed",
+      "ownerId": null,
+      "subscriptionId": null,
+      "verificationStatus": "none",
+      "lastUpdated": "2024-01-15T00:00:00Z",
+      "coordinates": {
+        "lat": 29.7955,
+        "lng": -98.7305
+      },
       "keywords": ["bbq", "texas", "authentic", "rustic", "family style"],
       "bernieRecommendation": "J's brisket is legendary in Boerne! Perfect for couples who want that authentic Texas wedding experience."
     }
@@ -104,7 +140,16 @@
       "experience": "15+ years in Hill Country",
       "weddingStyles": ["All Styles"],
       "photos": ["planning1.jpg", "planning2.jpg", "planning3.jpg"],
-      "membershipTier": "gold",
+      "membershipTier": "basic",
+      "claimStatus": "unclaimed",
+      "ownerId": null,
+      "subscriptionId": null,
+      "verificationStatus": "none",
+      "lastUpdated": "2024-01-15T00:00:00Z",
+      "coordinates": {
+        "lat": 29.7940,
+        "lng": -98.7315
+      },
       "keywords": ["premier", "experienced", "full service", "coordination", "hill country specialist"],
       "specialOffers": ["Free consultation for Boerne Hub users"],
       "bernieRecommendation": "Maria and her team are absolute professionals! They know every vendor and venue in the area and will make your wedding planning stress-free."

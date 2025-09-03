@@ -7,6 +7,9 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 // Client for browser usage (auth, RLS-protected queries)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Export createClient function for component usage
+export { createClient }
+
 // Admin client for server-side operations (bypasses RLS)
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {

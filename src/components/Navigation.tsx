@@ -11,6 +11,7 @@ export default function Navigation() {
     { href: '/weddings', label: 'Weddings & Events', featured: true },
     { href: '/dining', label: 'Dining' },
     { href: '/stay-play', label: 'Stay & Play' },
+    { href: '/marketplace', label: 'Marketplace', new: true },
     { href: '/shopping', label: 'Shopping' },
     { href: '/outdoor', label: 'Outdoor Adventures' },
     { href: '/services', label: 'Professional Services' },
@@ -31,6 +32,7 @@ export default function Navigation() {
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 const isFeatured = item.featured;
+                const isNew = item.new;
                 
                 return (
                   <Link
@@ -39,13 +41,14 @@ export default function Navigation() {
                     className={`inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors ${
                       isActive
                         ? 'text-boerne-gold border-b-2 border-boerne-gold'
-                        : isFeatured
+                        : isFeatured || isNew
                         ? 'text-boerne-gold hover:text-boerne-gold-alt'
                         : 'text-boerne-white hover:text-boerne-gold'
                     }`}
                   >
                     {item.label}
                     {isFeatured && <span className="ml-1">💍</span>}
+                    {isNew && <span className="ml-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded">NEW</span>}
                   </Link>
                 );
               })}
