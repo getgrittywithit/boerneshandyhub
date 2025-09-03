@@ -12,7 +12,7 @@ export default function Navigation() {
 
   useEffect(() => {
     checkAdminStatus();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkAdminStatus = async () => {
     try {
@@ -25,7 +25,7 @@ export default function Navigation() {
           .single();
         setIsAdmin(profile?.role === 'admin');
       }
-    } catch (error) {
+    } catch {
       // Silently fail - just don't show admin link
     }
   };

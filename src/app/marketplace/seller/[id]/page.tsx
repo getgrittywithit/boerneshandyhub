@@ -7,12 +7,13 @@ import sellers from '@/data/marketplaceSellers.json';
 import products from '@/data/marketplaceProducts.json';
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export default function SellerProfilePage({ params }: PageProps) {
-  const seller = sellers.find(s => s.id === params.id);
-  const sellerProducts = products.filter(p => p.sellerId === params.id);
+export default async function SellerProfilePage({ params }: PageProps) {
+  const { id } = await params;
+  const seller = sellers.find(s => s.id === id);
+  const sellerProducts = products.filter(p => p.sellerId === id);
 
   if (!seller) {
     notFound();

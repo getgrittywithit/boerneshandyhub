@@ -8,10 +8,11 @@ import products from '@/data/marketplaceProducts.json';
 import sellers from '@/data/marketplaceSellers.json';
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export default function ProductDetailPage({ params }: PageProps) {
+export default async function ProductDetailPage({ params }: PageProps) {
+  const { id } = await params;
   const [showContactForm, setShowContactForm] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState('');
@@ -21,7 +22,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     phone: '',
   });
 
-  const product = products.find(p => p.id === params.id);
+  const product = products.find(p => p.id === id);
   const seller = product ? sellers.find(s => s.id === product.sellerId) : null;
 
   if (!product || !seller) {
