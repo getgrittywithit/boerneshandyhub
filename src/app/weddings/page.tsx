@@ -158,7 +158,7 @@ export default function WeddingsPage() {
               className={`bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer ${
                 category.featured ? 'ring-2 ring-boerne-gold ring-opacity-50' : ''
               }`}
-              onClick={() => setSelectedCategory(category.id)}
+              onClick={() => window.location.href = `/weddings/${category.id}`}
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
