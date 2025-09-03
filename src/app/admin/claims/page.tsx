@@ -38,7 +38,7 @@ export default function ClaimsManagement() {
 
   useEffect(() => {
     loadClaims();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadClaims = async () => {
     try {

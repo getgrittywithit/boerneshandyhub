@@ -11,7 +11,7 @@ export default function Navigation() {
 
   useEffect(() => {
     checkAdminStatus();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const checkAdminStatus = async () => {
     try {

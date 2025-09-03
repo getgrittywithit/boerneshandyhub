@@ -30,7 +30,7 @@ export default function BusinessesManagement() {
 
   useEffect(() => {
     loadBusinesses();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadBusinesses = async () => {
     try {

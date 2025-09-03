@@ -25,13 +25,13 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     checkAuth();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isAdmin) {
       loadStats();
     }
-  }, [isAdmin]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   const checkAuth = async () => {
     try {
