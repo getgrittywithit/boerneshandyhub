@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface BusinessClaim {
   id: string;
@@ -35,7 +35,6 @@ export default function ClaimsManagement() {
   const [adminNotes, setAdminNotes] = useState('');
   const [updating, setUpdating] = useState(false);
 
-  const supabase = createClient();
 
   useEffect(() => {
     loadClaims();

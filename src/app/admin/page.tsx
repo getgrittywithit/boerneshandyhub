@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 
 interface DashboardStats {
@@ -22,7 +22,6 @@ export default function AdminDashboard() {
     premiumBusinesses: 0
   });
 
-  const supabase = createClient();
 
   useEffect(() => {
     checkAuth();

@@ -3,12 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export default function Navigation() {
   const pathname = usePathname();
   const [isAdmin, setIsAdmin] = useState(false);
-  const supabase = createClient();
 
   useEffect(() => {
     checkAdminStatus();

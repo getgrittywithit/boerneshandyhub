@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface Business {
   id: string;
@@ -27,7 +27,6 @@ export default function BusinessesManagement() {
   });
   const [searchTerm, setSearchTerm] = useState('');
 
-  const supabase = createClient();
 
   useEffect(() => {
     loadBusinesses();

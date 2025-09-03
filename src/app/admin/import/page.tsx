@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface ImportSettings {
   location: string;
@@ -18,6 +18,7 @@ interface ImportPreview {
   rating: number;
   place_id: string;
   types: string[];
+  category: string;
 }
 
 const WEDDING_CATEGORIES = [
@@ -44,7 +45,6 @@ export default function ImportBusinesses() {
   const [apiKey, setApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
 
-  const supabase = createClient();
 
   const handlePreview = async () => {
     if (!apiKey || settings.categories.length === 0) {
