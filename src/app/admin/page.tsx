@@ -35,6 +35,10 @@ export default function AdminDashboard() {
 
   const checkAuth = async () => {
     try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
@@ -56,6 +60,7 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
+      if (!supabase) return;
       const [businessesRes, claimsRes] = await Promise.all([
         supabase.from('businesses').select('membership_tier, claim_status'),
         supabase.from('business_claims').select('status')

@@ -15,6 +15,7 @@ export default function Navigation() {
 
   const checkAdminStatus = async () => {
     try {
+      if (!supabase) return; // No Supabase configured
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await supabase
