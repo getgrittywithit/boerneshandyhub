@@ -1,17 +1,14 @@
 'use client';
 
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Link from 'next/link';
 import sellers from '@/data/marketplaceSellers.json';
 import products from '@/data/marketplaceProducts.json';
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
-
-export default async function SellerProfilePage({ params }: PageProps) {
-  const { id } = await params;
+export default function SellerProfilePage() {
+  const params = useParams();
+  const id = params.id as string;
   const seller = sellers.find(s => s.id === id);
   const sellerProducts = products.filter(p => p.sellerId === id);
 

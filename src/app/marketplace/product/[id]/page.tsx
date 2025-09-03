@@ -1,18 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Link from 'next/link';
 import products from '@/data/marketplaceProducts.json';
 import sellers from '@/data/marketplaceSellers.json';
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
-
-export default async function ProductDetailPage({ params }: PageProps) {
-  const { id } = await params;
+export default function ProductDetailPage() {
+  const params = useParams();
+  const id = params.id as string;
   const [showContactForm, setShowContactForm] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState('');
