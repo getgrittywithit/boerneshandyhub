@@ -15,7 +15,7 @@ export async function searchBusinessesForBernie(userQuery: string, limit: number
   }
 }
 
-function formatResultsForBernie(businesses: any[], query: string): string {
+function formatResultsForBernie(businesses: Array<{[key: string]: any}>, query: string): string {
   if (!businesses || businesses.length === 0) {
     return `I couldn't find any businesses matching "${query}". You might want to try different keywords or browse our categories directly.`;
   }
@@ -61,7 +61,7 @@ export function extractSearchKeywords(userQuery: string): string[] {
 }
 
 // Suggest keywords for businesses based on their category
-export function suggestKeywords(category: string, subcategory?: string): string[] {
+export function suggestKeywords(category: string): string[] {
   const keywordSuggestions: { [key: string]: string[] } = {
     'venues': ['wedding venue', 'reception', 'ceremony', 'outdoor', 'indoor', 'rustic', 'elegant', 'garden', 'barn', 'historic'],
     'photography': ['wedding photographer', 'engagement photos', 'bridal portraits', 'candid', 'romantic', 'outdoor', 'studio'],

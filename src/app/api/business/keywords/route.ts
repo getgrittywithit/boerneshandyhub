@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       membershipTier: business.membership_tier,
       maxKeywords: getKeywordLimit(business.membership_tier)
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch keywords' }, { status: 500 });
   }
 }
@@ -65,7 +65,7 @@ export async function PUT(request: NextRequest) {
     if (updateError) throw updateError;
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to update keywords' }, { status: 500 });
   }
 }

@@ -46,7 +46,6 @@ export async function GET(request: NextRequest) {
     const scoredResults = businesses?.map(business => {
       let score = 0;
       const businessKeywords = business.keywords || [];
-      const businessText = `${business.name} ${business.description}`.toLowerCase();
 
       // Score based on keyword matches
       searchKeywords.forEach(keyword => {
