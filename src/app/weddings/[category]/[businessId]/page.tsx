@@ -45,7 +45,7 @@ export default function BusinessDetailPage() {
     // Find the vendor in the appropriate category
     const categoryKey = category as keyof typeof weddingVendorsData;
     const vendors = weddingVendorsData[categoryKey] || [];
-    const foundVendor = vendors.find((v: any) => v.id === businessId);
+    const foundVendor = vendors.find((v: { id: string }) => v.id === businessId);
     
     if (foundVendor) {
       setVendor(foundVendor as WeddingVendor);
