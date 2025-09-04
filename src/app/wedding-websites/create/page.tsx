@@ -137,11 +137,12 @@ function CreateWeddingWebsiteContent() {
         // Redirect to payment, then to website
         window.location.href = paymentUrl;
       } else {
-        throw new Error('Failed to create website');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create website');
       }
     } catch (error) {
       console.error('Error creating website:', error);
-      alert('There was an error creating your website. Please try again.');
+      alert(error instanceof Error ? error.message : 'There was an error creating your website. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -74,8 +74,24 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating wedding website:', error);
+      
+      // Provide more specific error messages
+      if (error.code === '42P01' || error.code === 'PGRST205') {
+        return NextResponse.json(
+          { error: 'Wedding website service is not yet set up. Please contact support.' },
+          { status: 503 }
+        );
+      }
+      
+      if (error.code === '23505') {
+        return NextResponse.json(
+          { error: 'This website address is already taken. Please choose another.' },
+          { status: 400 }
+        );
+      }
+      
       return NextResponse.json(
-        { error: 'Failed to create website' },
+        { error: `Database error: ${error.message}` },
         { status: 500 }
       );
     }
