@@ -94,6 +94,23 @@ export default function AdminDashboard() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
           <p className="text-gray-600">You need admin privileges to access this area.</p>
+          
+          {/* Temporary Development Admin Access */}
+          <div className="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h2 className="text-lg font-semibold text-yellow-800 mb-2">Development Access</h2>
+            <p className="text-sm text-yellow-700 mb-4">
+              Temporary admin bypass for setup and testing
+            </p>
+            <button
+              onClick={() => {
+                setIsAdmin(true);
+                setUser({ id: 'temp-admin', email: 'admin@boerneshub.com' } as User);
+              }}
+              className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+            >
+              Enable Admin Access (Dev Mode)
+            </button>
+          </div>
         </div>
       </div>
     );
