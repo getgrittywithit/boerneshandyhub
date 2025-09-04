@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 interface WeddingForm {
@@ -36,7 +36,7 @@ interface WeddingForm {
   hotelBlocks: Array<{name: string; address: string; phone: string; groupCode?: string}>;
 }
 
-export default function CreateWeddingWebsite() {
+function CreateWeddingWebsiteContent() {
   const searchParams = useSearchParams();
   const template = searchParams.get('template') || 'rustic';
   
@@ -70,15 +70,15 @@ export default function CreateWeddingWebsite() {
     return `${clean1}-${clean2}`;
   };
 
-  const handleInputChange = (field: keyof WeddingForm, value: any) => {
+  const handleInputChange = (field: keyof WeddingForm, value: string | number) => {
     setFormData(prev => {
       const updated = { ...prev, [field]: value };
       
       // Auto-generate subdomain when names change
       if (field === 'coupleName1' || field === 'coupleName2') {
         updated.subdomain = generateSubdomain(
-          field === 'coupleName1' ? value : updated.coupleName1,
-          field === 'coupleName2' ? value : updated.coupleName2
+          field === 'coupleName1' ? String(value) : updated.coupleName1,
+          field === 'coupleName2' ? String(value) : updated.coupleName2
         );
       }
       
@@ -133,7 +133,7 @@ export default function CreateWeddingWebsite() {
       });
 
       if (response.ok) {
-        const { websiteUrl, paymentUrl } = await response.json();
+        const { paymentUrl } = await response.json();
         // Redirect to payment, then to website
         window.location.href = paymentUrl;
       } else {
@@ -517,5 +517,20 @@ export default function CreateWeddingWebsite() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CreateWeddingWebsite() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <CreateWeddingWebsiteContent />
+    </Suspense>
   );
 }

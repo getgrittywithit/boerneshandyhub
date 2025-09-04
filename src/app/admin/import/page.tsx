@@ -123,6 +123,11 @@ export default function ImportBusinesses() {
     setImporting(true);
 
     try {
+      if (!supabase) {
+        console.error('Supabase not initialized');
+        return;
+      }
+      
       // Transform preview data for database insertion
       const businessData = preview.map(business => ({
         name: business.name,

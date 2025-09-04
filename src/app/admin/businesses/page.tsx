@@ -34,6 +34,11 @@ export default function BusinessesManagement() {
 
   const loadBusinesses = async () => {
     try {
+      if (!supabase) {
+        console.error('Supabase not initialized');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('businesses')
         .select('*')
@@ -60,6 +65,11 @@ export default function BusinessesManagement() {
 
   const updateBusinessTier = async (businessId: string, tier: string) => {
     try {
+      if (!supabase) {
+        console.error('Supabase not initialized');
+        return;
+      }
+
       const { error } = await supabase
         .from('businesses')
         .update({ membership_tier: tier })

@@ -11,6 +11,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+    }
+    
     const { data: business, error } = await supabase
       .from('businesses')
       .select('keywords, membership_tier')
@@ -38,6 +42,10 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+    }
+    
     // Get business membership tier to check limits
     const { data: business, error: fetchError } = await supabase
       .from('businesses')

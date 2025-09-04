@@ -15,7 +15,16 @@ export async function searchBusinessesForBernie(userQuery: string, limit: number
   }
 }
 
-function formatResultsForBernie(businesses: Array<{[key: string]: any}>, query: string): string {
+interface BusinessResult {
+  name: string;
+  description?: string;
+  phone: string;
+  rating?: number;
+  website?: string;
+  membership_tier: string;
+}
+
+function formatResultsForBernie(businesses: BusinessResult[], query: string): string {
   if (!businesses || businesses.length === 0) {
     return `I couldn't find any businesses matching "${query}". You might want to try different keywords or browse our categories directly.`;
   }
@@ -24,7 +33,7 @@ function formatResultsForBernie(businesses: Array<{[key: string]: any}>, query: 
   let response = `I found ${businesses.length} businesses for "${query}". Here are the top matches:\n\n`;
 
   topResults.forEach((business, index) => {
-    const tierEmoji = {
+    const tierEmoji: Record<string, string> = {
       'elite': '⭐️',
       'premium': '💎',
       'verified': '✅',

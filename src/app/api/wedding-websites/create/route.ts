@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
         color_secondary: data.colorSecondary,
         rsvp_deadline: data.rsvpDeadline,
         max_guests: data.maxGuestsPerRsvp,
-        registry_links: data.registryLinks.filter((link: any) => link.name && link.url),
-        hotel_blocks: data.hotelBlocks.filter((hotel: any) => hotel.name),
+        registry_links: data.registryLinks.filter((link: {name: string; url: string}) => link.name && link.url),
+        hotel_blocks: data.hotelBlocks.filter((hotel: {name: string; address: string; phone: string; groupCode?: string}) => hotel.name),
         status: 'draft', // Will be activated after payment
         expires_at: new Date(new Date(data.weddingDate).getTime() + (30 * 24 * 60 * 60 * 1000)), // 30 days after wedding
       })

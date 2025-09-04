@@ -55,7 +55,7 @@ export default function WeddingWebsite() {
 
   useEffect(() => {
     fetchWebsite();
-  }, [subdomain]);
+  }, [subdomain]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchWebsite = async () => {
     try {

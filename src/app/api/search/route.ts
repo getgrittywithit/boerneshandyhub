@@ -12,6 +12,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    if (!supabase) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+    }
+    
     // Split query into keywords
     const searchKeywords = query.toLowerCase().split(' ').filter(k => k.length > 2);
     
@@ -61,7 +65,7 @@ export async function GET(request: NextRequest) {
         'verified': 10,
         'basic': 0
       };
-      score += tierBoost[business.membership_tier] || 0;
+      score += tierBoost[business.membership_tier as keyof typeof tierBoost] || 0;
 
       return { ...business, searchScore: score };
     }).sort((a, b) => b.searchScore - a.searchScore);

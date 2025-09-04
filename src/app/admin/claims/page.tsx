@@ -42,6 +42,11 @@ export default function ClaimsManagement() {
 
   const loadClaims = async () => {
     try {
+      if (!supabase) {
+        console.error('Supabase not initialized');
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('business_claims')
         .select(`
@@ -62,6 +67,11 @@ export default function ClaimsManagement() {
   const updateClaimStatus = async (claimId: string, status: string, notes: string) => {
     setUpdating(true);
     try {
+      if (!supabase) {
+        console.error('Supabase not initialized');
+        return;
+      }
+      
       const { error } = await supabase
         .from('business_claims')
         .update({
@@ -77,6 +87,11 @@ export default function ClaimsManagement() {
       if (status === 'verified') {
         const claim = claims.find(c => c.id === claimId);
         if (claim) {
+          if (!supabase) {
+            console.error('Supabase not initialized');
+            return;
+          }
+          
           await supabase
             .from('businesses')
             .update({ claim_status: 'verified', membership_tier: 'verified' })
