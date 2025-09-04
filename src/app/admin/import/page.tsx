@@ -42,13 +42,11 @@ export default function ImportBusinesses() {
   const [preview, setPreview] = useState<ImportPreview[]>([]);
   const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
 
 
   const handlePreview = async () => {
-    if (!apiKey || settings.categories.length === 0) {
-      alert('Please enter API key and select at least one category');
+    if (settings.categories.length === 0) {
+      alert('Please select at least one category');
       return;
     }
 
@@ -56,56 +54,26 @@ export default function ImportBusinesses() {
     setPreview([]);
 
     try {
-      // First get coordinates for the location
-      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(settings.location)}&key=${apiKey}`;
-      const geocodeResponse = await fetch(geocodeUrl);
-      const geocodeData = await geocodeResponse.json();
+      const response = await fetch('/api/google-places', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          location: settings.location,
+          radius: settings.radius,
+          categories: settings.categories,
+          maxResults: settings.maxResults
+        })
+      });
 
-      if (geocodeData.status !== 'OK') {
-        throw new Error('Failed to geocode location');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch places data');
       }
 
-      const { lat, lng } = geocodeData.results[0].geometry.location;
-      const results: ImportPreview[] = [];
-
-      // Search for each category
-      for (const categoryId of settings.categories) {
-        const category = WEDDING_CATEGORIES.find(c => c.id === categoryId);
-        if (!category) continue;
-
-        for (const type of category.types) {
-          const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${settings.radius}&type=${type}&key=${apiKey}`;
-          
-          try {
-            const response = await fetch(placesUrl);
-            const data = await response.json();
-
-            if (data.status === 'OK') {
-              const businesses = data.results.slice(0, settings.maxResults).map((place: { name: string; vicinity: string; formatted_phone_number?: string; website?: string; rating?: number; place_id: string; types: string[] }) => ({
-                name: place.name,
-                address: place.vicinity,
-                phone: place.formatted_phone_number,
-                website: place.website,
-                rating: place.rating || 0,
-                place_id: place.place_id,
-                types: place.types,
-                category: categoryId
-              }));
-
-              results.push(...businesses);
-            }
-          } catch (error) {
-            console.error(`Error searching for ${type}:`, error);
-          }
-        }
-      }
-
-      // Remove duplicates based on place_id
-      const uniqueResults = results.filter((business, index, array) => 
-        array.findIndex(b => b.place_id === business.place_id) === index
-      );
-
-      setPreview(uniqueResults);
+      setPreview(data.results);
     } catch (error) {
       console.error('Preview failed:', error);
       alert('Failed to preview businesses. Check your API key and try again.');
@@ -202,27 +170,11 @@ export default function ImportBusinesses() {
             <h3 className="text-lg font-medium text-gray-900 mb-4">Import Settings</h3>
             
             <div className="space-y-4">
-              {/* API Key */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Google Places API Key
-                </label>
-                <div className="mt-1 relative">
-                  <input
-                    type={showApiKey ? "text" : "password"}
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter your API key..."
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowApiKey(!showApiKey)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-gray-500"
-                  >
-                    {showApiKey ? 'Hide' : 'Show'}
-                  </button>
-                </div>
+              {/* API Status */}
+              <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                <p className="text-sm text-blue-700">
+                  <span className="font-medium">Google Places API:</span> Configured via environment variables
+                </p>
               </div>
 
               {/* Location */}
