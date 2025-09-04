@@ -99,6 +99,76 @@ CREATE INDEX idx_business_claims_business_id ON business_claims(business_id);
 CREATE INDEX idx_business_claims_status ON business_claims(status);
 CREATE INDEX idx_subscriptions_business_id ON subscriptions(business_id);
 
+-- Wedding websites table
+CREATE TABLE wedding_websites (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    subdomain TEXT UNIQUE NOT NULL,
+    couple_name_1 TEXT NOT NULL,
+    couple_name_2 TEXT NOT NULL,
+    wedding_date DATE NOT NULL,
+    template_id TEXT NOT NULL DEFAULT 'rustic',
+    status TEXT DEFAULT 'draft', -- 'draft', 'active', 'expired'
+    
+    -- Wedding Details
+    venue_name TEXT,
+    venue_address TEXT,
+    ceremony_time TIME,
+    reception_time TIME,
+    wedding_story TEXT,
+    color_primary TEXT DEFAULT '#8B4513',
+    color_secondary TEXT DEFAULT '#F4E4C1',
+    
+    -- Photos (URLs to uploaded images)
+    hero_image TEXT,
+    couple_photos JSONB DEFAULT '[]',
+    engagement_photos JSONB DEFAULT '[]',
+    
+    -- Wedding Party
+    wedding_party JSONB DEFAULT '[]',
+    
+    -- Registry & Links
+    registry_links JSONB DEFAULT '[]',
+    
+    -- RSVP Settings
+    rsvp_enabled BOOLEAN DEFAULT true,
+    rsvp_deadline DATE,
+    max_guests INTEGER DEFAULT 2,
+    
+    -- Accommodations
+    hotel_blocks JSONB DEFAULT '[]',
+    
+    -- Payment & Subscription
+    stripe_customer_id TEXT,
+    stripe_subscription_id TEXT,
+    plan_type TEXT DEFAULT 'basic',
+    expires_at TIMESTAMP WITH TIME ZONE,
+    
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RSVP responses table
+CREATE TABLE wedding_rsvps (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    website_id uuid REFERENCES wedding_websites(id) ON DELETE CASCADE,
+    guest_name TEXT NOT NULL,
+    email TEXT,
+    phone TEXT,
+    attending BOOLEAN NOT NULL,
+    guest_count INTEGER DEFAULT 1,
+    meal_preferences JSONB,
+    dietary_restrictions TEXT,
+    message TEXT,
+    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for wedding websites
+CREATE INDEX idx_wedding_websites_subdomain ON wedding_websites(subdomain);
+CREATE INDEX idx_wedding_websites_status ON wedding_websites(status);
+CREATE INDEX idx_wedding_websites_expires_at ON wedding_websites(expires_at);
+CREATE INDEX idx_wedding_rsvps_website_id ON wedding_rsvps(website_id);
+CREATE INDEX idx_wedding_rsvps_email ON wedding_rsvps(email);
+
 -- Row Level Security (RLS) Policies
 
 -- Enable RLS
