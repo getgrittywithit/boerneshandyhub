@@ -14,7 +14,7 @@ PGPASSWORD='your-password' psql "postgresql://postgres.projectid:your-password@a
 
 **Example for this project:**
 ```bash
-PGPASSWORD='3SqYrsh2e!PA.pD' psql "postgresql://postgres.vaoeflfloctjoqnmtsuw:3SqYrsh2e!PA.pD@aws-1-us-east-1.pooler.supabase.com:5432/postgres"
+PGPASSWORD='o78KArCqK4rvrQcX' psql "postgresql://postgres.vaoeflfloctjoqnmtsuw:o78KArCqK4rvrQcX@aws-1-us-east-1.pooler.supabase.com:5432/postgres"
 ```
 
 ### Connection String Components
@@ -68,7 +68,7 @@ EOF
 **Project ID**: `vaoeflfloctjoqnmtsuw`  
 **Connection String**: 
 ```
-postgresql://postgres.vaoeflfloctjoqnmtsuw:3SqYrsh2e!PA.pD@aws-1-us-east-1.pooler.supabase.com:5432/postgres
+postgresql://postgres.vaoeflfloctjoqnmtsuw:o78KArCqK4rvrQcX@aws-1-us-east-1.pooler.supabase.com:5432/postgres
 ```
 
 ## Troubleshooting
@@ -97,5 +97,5 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 # Optional: Direct database URL for migrations
-DATABASE_URL=postgresql://postgres.vaoeflfloctjoqnmtsuw:3SqYrsh2e!PA.pD@aws-1-us-east-1.pooler.supabase.com:5432/postgres
+DATABASE_URL=postgresql://postgres.vaoeflfloctjoqnmtsuw:o78KArCqK4rvrQcX@aws-1-us-east-1.pooler.supabase.com:5432/postgres
 ```
