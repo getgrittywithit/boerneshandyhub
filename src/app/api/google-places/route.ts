@@ -43,7 +43,19 @@ export async function POST(request: NextRequest) {
     }
 
     const { lat, lng } = geocodeData.results[0].geometry.location;
-    const results: any[] = [];
+    const results: Array<{
+      name: string;
+      address: string;
+      phone: string | null;
+      website: string | null;
+      rating: number;
+      place_id: string;
+      types: string[];
+      category: string;
+      coordinates: { lat: number; lng: number };
+      price_level: number;
+      photos: string[];
+    }> = [];
 
     // Search for each category
     for (const categoryId of categories) {
@@ -58,7 +70,18 @@ export async function POST(request: NextRequest) {
           const data = await response.json();
 
           if (data.status === 'OK') {
-            const businesses = data.results.slice(0, maxResults).map((place: any) => ({
+            const businesses = data.results.slice(0, maxResults).map((place: {
+              name: string;
+              vicinity?: string;
+              formatted_address?: string;
+              formatted_phone_number?: string;
+              rating?: number;
+              place_id: string;
+              types: string[];
+              geometry: { location: { lat: number; lng: number } };
+              price_level?: number;
+              photos?: Array<{ photo_reference: string }>;
+            }) => ({
               name: place.name,
               address: place.vicinity || place.formatted_address || 'No address available',
               phone: place.formatted_phone_number || null,
@@ -73,7 +96,7 @@ export async function POST(request: NextRequest) {
                 lng: place.geometry.location.lng
               },
               price_level: place.price_level || 2,
-              photos: place.photos?.slice(0, 3).map((photo: any) => 
+              photos: place.photos?.slice(0, 3).map((photo: { photo_reference: string }) => 
                 `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${apiKey}`
               ) || []
             }));
