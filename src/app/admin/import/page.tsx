@@ -76,7 +76,20 @@ export default function ImportBusinesses() {
       setPreview(data.results);
     } catch (error) {
       console.error('Preview failed:', error);
-      alert('Failed to preview businesses. Check your API key and try again.');
+      
+      let errorMessage = 'Failed to preview businesses. Check your settings and try again.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Provide specific help for common issues
+        if (error.message.includes('API key not configured')) {
+          errorMessage += '\n\n💡 Solution: Add GOOGLE_PLACES_API_KEY to your Vercel environment variables and redeploy.';
+        } else if (error.message.includes('Failed to geocode location')) {
+          errorMessage += '\n\n💡 Check that:\n• Google Places API key has Geocoding API enabled\n• Billing is enabled for your Google Cloud project\n• The location "' + settings.location + '" is valid';
+        }
+      }
+      
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

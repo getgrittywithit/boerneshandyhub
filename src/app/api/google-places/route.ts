@@ -6,8 +6,15 @@ export async function POST(request: NextRequest) {
 
     const apiKey = process.env.GOOGLE_PLACES_API_KEY;
     if (!apiKey) {
+      console.error('Google Places API key missing from environment variables');
       return NextResponse.json(
-        { error: 'Google Places API key not configured' },
+        { 
+          error: 'Google Places API key not configured in server environment',
+          debug: {
+            message: 'GOOGLE_PLACES_API_KEY environment variable is missing',
+            suggestion: 'Add GOOGLE_PLACES_API_KEY to your Vercel environment variables'
+          }
+        },
         { status: 500 }
       );
     }
@@ -36,8 +43,22 @@ export async function POST(request: NextRequest) {
     const geocodeData = await geocodeResponse.json();
 
     if (geocodeData.status !== 'OK') {
+      console.error('Geocoding failed:', {
+        status: geocodeData.status,
+        error_message: geocodeData.error_message,
+        location: location,
+        hasApiKey: !!apiKey
+      });
+      
       return NextResponse.json(
-        { error: 'Failed to geocode location' },
+        { 
+          error: `Failed to geocode location: ${geocodeData.error_message || geocodeData.status}`,
+          debug: {
+            status: geocodeData.status,
+            location: location,
+            hasApiKey: !!apiKey
+          }
+        },
         { status: 400 }
       );
     }
