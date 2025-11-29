@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { berniePersonality } from '@/data/boerneKnowledge';
+import { generateEventContextForAI } from '@/data/currentEvents';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -33,12 +34,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Generate current events context
+    const eventsContext = generateEventContextForAI();
+    const enhancedPrompt = BERNIE_SYSTEM_PROMPT + eventsContext;
+
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
-          content: BERNIE_SYSTEM_PROMPT,
+          content: enhancedPrompt,
         },
         {
           role: 'user',
