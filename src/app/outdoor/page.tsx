@@ -870,6 +870,30 @@ export default function OutdoorAdventuresPage() {
                     )}
                   </div>
                   
+                  {/* Contact Information */}
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <div className="flex flex-col gap-2">
+                      {activity.phone && (
+                        <a 
+                          href={`tel:${activity.phone}`}
+                          className="flex items-center gap-2 text-sm text-boerne-navy hover:text-boerne-light-blue transition-colors"
+                        >
+                          📞 {activity.phone}
+                        </a>
+                      )}
+                      {activity.website && (
+                        <a 
+                          href={activity.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-sm text-boerne-navy hover:text-boerne-light-blue transition-colors"
+                        >
+                          🌐 Visit Website →
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Bernie's Tip */}
                   {activity.bernieRecommendation && (
                     <div className="mt-4 p-3 bg-boerne-light-blue bg-opacity-10 rounded-lg">
@@ -902,12 +926,33 @@ export default function OutdoorAdventuresPage() {
                     
                     <p className="text-boerne-dark-gray text-sm mb-2">{activity.description}</p>
                     
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-2">
                       {activity.distance && <span>📏 {activity.distance}</span>}
                       {activity.duration && <span>⏱️ {activity.duration}</span>}
                       {activity.elevation && <span>📈 {activity.elevation}</span>}
                       {activity.dogFriendly && <span>🐕 Dog Friendly</span>}
                       {activity.permitRequired && <span>📝 Permit Required</span>}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      {activity.phone && (
+                        <a 
+                          href={`tel:${activity.phone}`}
+                          className="text-boerne-navy hover:text-boerne-light-blue transition-colors"
+                        >
+                          📞 {activity.phone}
+                        </a>
+                      )}
+                      {activity.website && (
+                        <a 
+                          href={activity.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-boerne-navy hover:text-boerne-light-blue transition-colors"
+                        >
+                          🌐 Visit Website →
+                        </a>
+                      )}
                     </div>
                   </div>
                   
