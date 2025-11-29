@@ -3,10 +3,16 @@
 import { useState, useEffect } from 'react';
 import { LocationData } from '@/components/LocationCard';
 import Link from 'next/link';
+import GoogleMap, { MapMarker } from '@/components/maps/GoogleMap';
 
 type ActivityType = 'all' | 'hiking' | 'biking' | 'water' | 'wildlife' | 'camping' | 'climbing';
 type DifficultyLevel = 'all' | 'beginner' | 'intermediate' | 'advanced';
 type TimeOfDay = 'all' | 'sunrise' | 'morning' | 'afternoon' | 'sunset';
+
+interface LatLngLiteral {
+  lat: number;
+  lng: number;
+}
 
 interface WeatherData {
   temperature: number;
@@ -294,6 +300,54 @@ const gearRentals = [
   }
 ];
 
+// Convert activities to map markers
+function convertToMapMarkers(activities: OutdoorActivity[]): MapMarker[] {
+  return activities.map(activity => {
+    // Extract coordinates from address (you'd normally geocode these)
+    const coordinates = getCoordinatesFromAddress(activity.address);
+    
+    return {
+      id: activity.id,
+      position: coordinates,
+      title: activity.name,
+      description: activity.description,
+      category: activity.category,
+      difficulty: activity.difficulty,
+      distance: activity.distance,
+      duration: activity.duration,
+      features: activity.features,
+      website: activity.website,
+      phone: activity.phone
+    };
+  });
+}
+
+// Approximate coordinates for our locations (in production, you'd geocode these)
+function getCoordinatesFromAddress(address: string): LatLngLiteral {
+  // Basic mapping of addresses to coordinates
+  if (address.includes('City Park Road, Boerne')) {
+    return { lat: 29.7946, lng: -98.7319 }; // Boerne City Park area
+  }
+  if (address.includes('140 City Park Rd, Boerne')) {
+    return { lat: 29.7941, lng: -98.7325 }; // Cibolo Nature Center
+  }
+  if (address.includes('16710 Ranch Rd 965, Fredericksburg')) {
+    return { lat: 30.4755, lng: -98.8253 }; // Enchanted Rock
+  }
+  if (address.includes('37221 FM 187, Vanderpool')) {
+    return { lat: 29.8297, lng: -99.6109 }; // Lost Maples
+  }
+  if (address.includes('10600 Bandera Creek Rd, Bandera')) {
+    return { lat: 29.6875, lng: -99.0753 }; // Hill Country State Natural Area
+  }
+  if (address.includes('3350 Park Road 31, Spring Branch')) {
+    return { lat: 29.8647, lng: -98.1289 }; // Guadalupe River State Park
+  }
+  
+  // Default to Boerne center
+  return { lat: 29.7946, lng: -98.7319 };
+}
+
 export default function OutdoorAdventuresPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedActivity, setSelectedActivity] = useState<ActivityType>('all');
@@ -503,15 +557,59 @@ export default function OutdoorAdventuresPage() {
           </div>
         )}
 
-        {/* Map Section (Placeholder) */}
+        {/* Interactive Map Section */}
         {showMap && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div className="h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-6xl mb-4">🗺️</div>
-                <p className="text-xl text-boerne-dark-gray">Interactive Adventure Map</p>
-                <p className="text-sm text-gray-500 mt-2">Click on locations to explore activities</p>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-boerne-navy">🗺️ Interactive Adventure Map</h2>
+              <p className="text-sm text-gray-600">Click markers to explore activities</p>
+            </div>
+            
+            <div className="h-96 rounded-lg overflow-hidden border border-gray-200">
+              {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+                <GoogleMap
+                  apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+                  center={{ lat: 29.7946, lng: -98.7319 }} // Boerne center
+                  zoom={10}
+                  markers={convertToMapMarkers(filteredActivities)}
+                />
+              ) : (
+                <div className="h-full bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-4xl mb-4">⚠️</div>
+                    <p className="text-yellow-800 font-semibold">Google Maps API Key Required</p>
+                    <p className="text-yellow-700 text-sm mt-2">
+                      Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to environment variables
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div className="mt-4 text-xs text-gray-500 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span>Beginner</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                  <span>Intermediate</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span>Advanced</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <span>State Parks</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span>Water Activities</span>
+                </div>
               </div>
+              <span>Showing {filteredActivities.length} locations</span>
             </div>
           </div>
         )}
