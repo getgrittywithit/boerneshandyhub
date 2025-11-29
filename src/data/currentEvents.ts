@@ -118,6 +118,84 @@ export const currentEvents: Event[] = [
     },
     featured: false,
     tags: ['nature', 'hiking', 'educational', 'free', 'outdoor']
+  },
+  {
+    id: 'dickens-christmas-2024',
+    title: 'Dickens Christmas on Main',
+    description: 'Transform downtown Boerne into Victorian England with period costumes, horse-drawn carriages, carolers, and special holiday shopping. Experience the magic of a Charles Dickens Christmas celebration!',
+    startDate: '2024-12-07T10:00:00-06:00',
+    endDate: '2024-12-08T21:00:00-06:00',
+    location: 'Main Plaza & Historic Downtown Boerne',
+    category: 'festival',
+    isRecurring: true,
+    recurringPattern: 'seasonal',
+    ticketInfo: {
+      price: 'Free admission, some activities may have fees'
+    },
+    organizer: {
+      name: 'Boerne Main Street',
+      contact: '(830) 249-8000',
+      website: 'https://www.mainstreetboerne.org'
+    },
+    featured: true,
+    tags: ['Christmas', 'Victorian', 'family', 'downtown', 'shopping', 'caroling', 'holiday']
+  },
+  {
+    id: 'dickens-carriage-rides',
+    title: 'Victorian Horse-Drawn Carriage Rides',
+    description: 'Step back in time with authentic horse-drawn carriage rides through historic downtown Boerne during Dickens Christmas weekend. Experience the charm of a Victorian Christmas!',
+    startDate: '2024-12-07T11:00:00-06:00',
+    endDate: '2024-12-08T20:00:00-06:00',
+    location: 'Main Plaza, Downtown Boerne',
+    category: 'family',
+    isRecurring: false,
+    ticketInfo: {
+      price: '$5-10 per person (varies by ride length)'
+    },
+    organizer: {
+      name: 'Boerne Main Street',
+      contact: '(830) 249-8000'
+    },
+    featured: true,
+    tags: ['Christmas', 'Victorian', 'carriage rides', 'family', 'holiday', 'historic']
+  },
+  {
+    id: 'dickens-carolers',
+    title: 'Victorian Christmas Carolers',
+    description: 'Enjoy traditional Christmas carols performed by costumed carolers strolling through downtown Boerne during Dickens Christmas. Join in or just listen to the beautiful holiday music!',
+    startDate: '2024-12-07T12:00:00-06:00',
+    endDate: '2024-12-08T19:00:00-06:00',
+    location: 'Various locations throughout Historic Downtown',
+    category: 'community',
+    isRecurring: false,
+    ticketInfo: {
+      price: 'Free'
+    },
+    organizer: {
+      name: 'Boerne Community Choirs',
+      contact: '(830) 249-8000'
+    },
+    featured: false,
+    tags: ['Christmas', 'caroling', 'music', 'Victorian', 'free', 'community']
+  },
+  {
+    id: 'dickens-shopping',
+    title: 'Victorian Christmas Shopping Experience',
+    description: 'Browse unique holiday gifts and treasures at local boutiques and vendors during Dickens Christmas. Many shops feature special Victorian-themed displays and holiday specials!',
+    startDate: '2024-12-07T10:00:00-06:00',
+    endDate: '2024-12-08T21:00:00-06:00',
+    location: 'Historic Downtown Boerne Shops & Main Plaza',
+    category: 'community',
+    isRecurring: false,
+    ticketInfo: {
+      price: 'Free to browse, individual shop pricing'
+    },
+    organizer: {
+      name: 'Downtown Boerne Merchants',
+      contact: '(830) 249-8000'
+    },
+    featured: false,
+    tags: ['Christmas', 'shopping', 'Victorian', 'gifts', 'local business', 'holiday']
   }
 ];
 
