@@ -1,12 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LocationData } from '@/components/LocationCard';
 import Link from 'next/link';
 
 type ActivityType = 'all' | 'hiking' | 'biking' | 'water' | 'wildlife' | 'camping' | 'climbing';
 type DifficultyLevel = 'all' | 'beginner' | 'intermediate' | 'advanced';
 type TimeOfDay = 'all' | 'sunrise' | 'morning' | 'afternoon' | 'sunset';
+
+interface WeatherData {
+  temperature: number;
+  condition: string;
+  description: string;
+  humidity: number;
+  windSpeed: number;
+  visibility: number;
+  sunrise: string;
+  sunset: string;
+  icon: string;
+}
 
 interface OutdoorActivity extends LocationData {
   activityTypes: ActivityType[];
@@ -173,40 +185,6 @@ const outdoorActivities: OutdoorActivity[] = [
   }
 ];
 
-const adventureChallenges = [
-  {
-    id: 'peak-bagger',
-    name: '🏔️ Peak Bagger Challenge',
-    description: 'Summit the 5 highest points in the Boerne area',
-    progress: 2,
-    total: 5,
-    reward: 'Exclusive "Summit Seeker" badge'
-  },
-  {
-    id: 'water-warrior',
-    name: '💧 Water Warrior Challenge',
-    description: 'Complete all water activities: kayaking, tubing, and fishing',
-    progress: 1,
-    total: 3,
-    reward: 'Free kayak rental voucher'
-  },
-  {
-    id: 'trail-master',
-    name: '🥾 Trail Master Challenge',
-    description: 'Hike every marked trail in Boerne (15 total)',
-    progress: 4,
-    total: 15,
-    reward: 'Custom trail map and hiking stick medallion'
-  },
-  {
-    id: 'sunrise-chaser',
-    name: '🌅 Sunrise Chaser Challenge',
-    description: 'Photograph sunrise from 7 scenic viewpoints',
-    progress: 3,
-    total: 7,
-    reward: 'Feature in Boerne Outdoor Magazine'
-  }
-];
 
 const gearRentals = [
   {
@@ -231,7 +209,29 @@ export default function OutdoorAdventuresPage() {
   const [selectedActivity, setSelectedActivity] = useState<ActivityType>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>('all');
   const [showMap, setShowMap] = useState(false);
-  const [showChallenges, setShowChallenges] = useState(true);
+  const [showChallenges, setShowChallenges] = useState(false);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const response = await fetch('/api/weather');
+        if (response.ok) {
+          const data = await response.json();
+          setWeather(data);
+        } else {
+          console.warn('Weather API not available:', await response.text());
+        }
+      } catch (error) {
+        console.warn('Failed to fetch weather:', error);
+      } finally {
+        setWeatherLoading(false);
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   const filteredActivities = outdoorActivities.filter(activity => {
     if (selectedActivity !== 'all' && !activity.activityTypes.includes(selectedActivity)) {
@@ -281,15 +281,44 @@ export default function OutdoorAdventuresPage() {
           {/* Weather Banner */}
           <div className="bg-gradient-to-r from-boerne-light-blue to-blue-400 text-white rounded-lg p-4 mb-6">
             <div className="flex items-center justify-center space-x-4">
-              <div className="text-3xl">☀️</div>
-              <div>
-                <div className="text-2xl font-bold">78°F</div>
-                <div className="text-sm">Perfect day for outdoor adventures!</div>
-              </div>
-              <div className="text-sm">
-                <div>Sunrise: 6:45 AM</div>
-                <div>Sunset: 7:32 PM</div>
-              </div>
+              {weatherLoading ? (
+                <>
+                  <div className="text-3xl">🌤️</div>
+                  <div>
+                    <div className="text-xl font-bold">Loading weather...</div>
+                    <div className="text-sm">Check conditions before your adventure</div>
+                  </div>
+                </>
+              ) : weather ? (
+                <>
+                  <div className="text-3xl">
+                    {weather.condition === 'Clear' ? '☀️' : 
+                     weather.condition === 'Clouds' ? '☁️' :
+                     weather.condition === 'Rain' ? '🌧️' :
+                     weather.condition === 'Snow' ? '❄️' : '🌤️'}
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{weather.temperature}°F</div>
+                    <div className="text-sm capitalize">{weather.description}</div>
+                  </div>
+                  <div className="text-sm">
+                    <div>Sunrise: {weather.sunrise}</div>
+                    <div>Sunset: {weather.sunset}</div>
+                  </div>
+                  <div className="text-sm">
+                    <div>Wind: {weather.windSpeed} mph</div>
+                    <div>Visibility: {weather.visibility} mi</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl">🌤️</div>
+                  <div>
+                    <div className="text-xl font-bold">Weather unavailable</div>
+                    <div className="text-sm">Check local conditions before heading out</div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -374,27 +403,12 @@ export default function OutdoorAdventuresPage() {
         {showChallenges && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-boerne-navy mb-4">🏆 Adventure Challenges</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {adventureChallenges.map(challenge => (
-                <div key={challenge.id} className="bg-white rounded-lg shadow-md p-4 border-l-4 border-boerne-gold">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold text-boerne-navy">{challenge.name}</h3>
-                      <p className="text-sm text-boerne-dark-gray">{challenge.description}</p>
-                      <p className="text-xs text-gray-500 mt-1">Reward: {challenge.reward}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-boerne-gold">{challenge.progress}/{challenge.total}</div>
-                      <div className="w-20 bg-gray-200 rounded-full h-2 mt-1">
-                        <div 
-                          className="bg-boerne-gold h-2 rounded-full"
-                          style={{ width: `${(challenge.progress / challenge.total) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="bg-white rounded-lg shadow-md p-8 text-center">
+              <div className="text-6xl mb-4">🏆</div>
+              <h3 className="text-xl font-semibold text-boerne-navy mb-2">Coming Soon!</h3>
+              <p className="text-boerne-dark-gray">
+                Adventure challenges will be available when user accounts are implemented.
+              </p>
             </div>
           </div>
         )}
