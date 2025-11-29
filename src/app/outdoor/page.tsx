@@ -46,7 +46,7 @@ const outdoorActivities: OutdoorActivity[] = [
     description: "Scenic paved trail following the beautiful Cibolo Creek through the heart of Boerne. Perfect for walking, jogging, and cycling.",
     membershipTier: "verified",
     keywords: ["trail", "hiking", "biking", "creek", "nature", "paved"],
-    photos: ["/cibolo-creek-trail.jpg"],
+    photos: [],
     bernieRecommendation: "Start early morning to spot deer and enjoy cooler temperatures. The section near River Road Park has the best creek views!",
     verifiedDate: new Date(),
     features: ["Paved Trail", "Creek Access", "Wildlife Viewing", "Picnic Areas", "Restrooms"],
@@ -55,6 +55,87 @@ const outdoorActivities: OutdoorActivity[] = [
     bestTime: ['morning', 'sunset'],
     distance: "1.5 miles",
     duration: "30-45 minutes",
+    dogFriendly: true
+  },
+  {
+    id: 'enchanted-rock-summit',
+    name: "Enchanted Rock State Natural Area - Summit Trail",
+    address: "16710 Ranch Rd 965, Fredericksburg, TX 78624",
+    category: "State Park",
+    rating: 4.9,
+    priceLevel: "$$",
+    hours: "8:00 AM - 6:00 PM (varies by season)",
+    phone: "(830) 685-3636",
+    website: "https://tpwd.texas.gov/state-parks/enchanted-rock",
+    description: "Summit Trail is a challenging 0.8-mile hike to the top of the massive pink granite dome. The trail features a 425-foot elevation gain, equivalent to climbing a 30-40 story building. Offers stunning panoramic views of the Texas Hill Country.",
+    membershipTier: "gold",
+    keywords: ["summit", "granite", "dome", "challenging", "panoramic views", "Fredericksburg"],
+    photos: [],
+    bernieRecommendation: "Arrive early and make reservations! The summit gets crowded by mid-morning. Wear grip-soled shoes for the granite surface. Bring water - there's no shade on the climb.",
+    verifiedDate: new Date(),
+    features: ["Summit Views", "Pink Granite Formations", "Interpretive Trail", "Star Gazing", "Photography"],
+    activityTypes: ['hiking', 'climbing'],
+    difficulty: 'intermediate',
+    bestTime: ['sunrise', 'morning'],
+    distance: "0.8 miles (one way)",
+    duration: "1-2 hours round trip",
+    elevation: "425 feet gain",
+    trailheadLocation: "18 miles north of Fredericksburg",
+    permitRequired: true,
+    dogFriendly: false
+  },
+  {
+    id: 'enchanted-rock-loop',
+    name: "Enchanted Rock - Loop Trail", 
+    address: "16710 Ranch Rd 965, Fredericksburg, TX 78624",
+    category: "State Park",
+    rating: 4.7,
+    priceLevel: "$$",
+    hours: "8:00 AM - 6:00 PM (varies by season)",
+    phone: "(830) 685-3636",
+    website: "https://tpwd.texas.gov/state-parks/enchanted-rock",
+    description: "A 4.6-mile trail that circles around the base of Enchanted Rock and Little Rock. Features diverse ecosystems, boulder fields, and seasonal wildflowers. Much easier than the summit trail.",
+    membershipTier: "gold",
+    keywords: ["loop", "wildflowers", "boulders", "ecosystems", "easy hiking"],
+    photos: [],
+    bernieRecommendation: "Perfect for families and those who want to experience Enchanted Rock without the steep climb. Spring wildflower season (March-May) is spectacular!",
+    verifiedDate: new Date(),
+    features: ["Wildflower Viewing", "Rock Formations", "Cave Exploration", "Wildlife Watching", "Photography"],
+    activityTypes: ['hiking', 'wildlife'],
+    difficulty: 'beginner',
+    bestTime: ['morning', 'afternoon'],
+    distance: "4.6 miles",
+    duration: "2-3 hours",
+    elevation: "Minimal",
+    trailheadLocation: "18 miles north of Fredericksburg",
+    permitRequired: true,
+    dogFriendly: true
+  },
+  {
+    id: 'lost-maples-east-trail',
+    name: "Lost Maples State Natural Area - East Trail",
+    address: "37221 FM 187, Vanderpool, TX 78885",
+    category: "State Park", 
+    rating: 4.8,
+    priceLevel: "$$",
+    hours: "8:00 AM - 5:00 PM",
+    phone: "(830) 966-3413",
+    website: "https://tpwd.texas.gov/state-parks/lost-maples",
+    description: "The East Trail offers a 6.2-mile loop through the Sabinal River Valley with stunning fall foliage, limestone canyons, and clear spring-fed pools. Famous for its bigtooth maple trees.",
+    membershipTier: "gold",
+    keywords: ["fall colors", "maples", "limestone", "canyon", "swimming holes"],
+    photos: [],
+    bernieRecommendation: "Visit in late October/early November for peak fall colors. The limestone bluffs provide great photo opportunities. Swimming holes are perfect for cooling off in summer.",
+    verifiedDate: new Date(),
+    features: ["Fall Foliage", "Swimming Holes", "Limestone Bluffs", "Bird Watching", "Photography"],
+    activityTypes: ['hiking', 'wildlife'],
+    difficulty: 'intermediate',
+    bestTime: ['morning', 'afternoon'],
+    distance: "6.2 miles (loop)",
+    duration: "3-4 hours",
+    elevation: "Moderate",
+    trailheadLocation: "1.5 hours from Boerne",
+    permitRequired: true,
     dogFriendly: true
   },
   {
@@ -188,19 +269,28 @@ const outdoorActivities: OutdoorActivity[] = [
 
 const gearRentals = [
   {
-    name: "Boerne Bicycle Shop",
-    equipment: ["Mountain Bikes", "Road Bikes", "Helmets"],
-    contact: "(830) 816-2046"
+    name: "Living 360 Bike Shop",
+    equipment: ["Bicycle Sales", "Bike Repairs", "Accessories"],
+    location: "720 N. Main, Boerne, TX",
+    contact: "(830) 331-8877"
   },
   {
-    name: "Hill Country Adventures",
-    equipment: ["Kayaks", "Canoes", "SUPs", "Life Jackets"],
-    contact: "(830) 249-1234"
+    name: "Gotta Ride Bikes",
+    equipment: ["Bicycle Sales", "Mountain Bikes", "Road Bikes"],
+    location: "28604 IH 10 W #5, Boerne, TX",
+    contact: "Contact for availability"
   },
   {
-    name: "Outdoor Trails Store",
-    equipment: ["Camping Gear", "Backpacks", "Trekking Poles"],
-    contact: "(830) 331-9876"
+    name: "Walmart Bike Shop",
+    equipment: ["Mountain Bikes", "E-Bikes", "Basic Accessories"],
+    location: "1381 S Main St, Boerne, TX",
+    contact: "(830) 249-8466"
+  },
+  {
+    name: "REI San Antonio",
+    equipment: ["Camping Gear", "Backpacks", "Kayaks", "Outdoor Rentals"],
+    location: "San Antonio (30 min drive)",
+    contact: "Check REI website for rental availability"
   }
 ];
 
@@ -540,10 +630,11 @@ export default function OutdoorAdventuresPage() {
         {/* Gear Rentals Section */}
         <div className="mt-12 bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-2xl font-bold text-boerne-navy mb-6">🎒 Gear Rentals & Equipment</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {gearRentals.map((shop, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4">
                 <h3 className="font-semibold text-boerne-navy mb-2">{shop.name}</h3>
+                <p className="text-xs text-gray-500 mb-3">{shop.location}</p>
                 <div className="space-y-1">
                   {shop.equipment.map((item, i) => (
                     <p key={i} className="text-sm text-gray-600">• {item}</p>
@@ -572,9 +663,97 @@ export default function OutdoorAdventuresPage() {
               <p className="font-semibold mb-1">Emergency Contacts:</p>
               <ul className="space-y-1">
                 <li>• Emergency: 911</li>
-                <li>• Park Rangers: (830) 249-9511</li>
-                <li>• Weather Alerts: (830) 249-8000</li>
+                <li>• Boerne Emergency Management: (830) 249-8645</li>
+                <li>• Kendall County Emergency: (830) 249-3721</li>
+                <li>• Texas Parks & Wildlife: 1-800-792-1112</li>
               </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Trail Conditions & Tips */}
+        <div className="mt-8 bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-boerne-navy mb-6">🌿 Trail Conditions & Local Tips</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="p-4 bg-green-50 rounded-lg">
+              <h3 className="font-semibold text-green-800 mb-2">🌸 Best Times to Visit</h3>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• <strong>Spring (Mar-May):</strong> Wildflowers, mild temps</li>
+                <li>• <strong>Fall (Oct-Nov):</strong> Fall colors, cool weather</li>
+                <li>• <strong>Winter (Dec-Feb):</strong> Clear views, fewer crowds</li>
+                <li>• <strong>Early Morning:</strong> Wildlife spotting, cooler temps</li>
+              </ul>
+            </div>
+            
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-semibold text-blue-800 mb-2">💧 What to Bring</h3>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Water (1 liter per 2 hours hiking)</li>
+                <li>• Sun protection (hat, sunscreen)</li>
+                <li>• Sturdy hiking shoes with grip</li>
+                <li>• First aid kit and whistle</li>
+                <li>• Camera for stunning views</li>
+              </ul>
+            </div>
+            
+            <div className="p-4 bg-yellow-50 rounded-lg">
+              <h3 className="font-semibold text-yellow-800 mb-2">📱 Helpful Apps</h3>
+              <ul className="text-sm text-yellow-700 space-y-1">
+                <li>• <strong>AllTrails:</strong> Trail maps & conditions</li>
+                <li>• <strong>iNaturalist:</strong> Identify plants & wildlife</li>
+                <li>• <strong>Weather Underground:</strong> Detailed forecasts</li>
+                <li>• <strong>Texas State Parks App:</strong> Reservations</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <h3 className="font-semibold text-amber-800 mb-2">📸 Photo Opportunities</h3>
+            <p className="text-sm text-amber-700 mb-2">
+              Don't miss these Instagram-worthy spots! Tag <span className="font-semibold">#BoerneOutdoors</span> and <span className="font-semibold">#TexasHillCountry</span>
+            </p>
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="font-medium text-amber-800">Sunrise Spots:</p>
+                <ul className="text-amber-700">
+                  <li>• Enchanted Rock Summit</li>
+                  <li>• Lost Maples Overlook</li>
+                  <li>• Boerne Lake Dock</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-medium text-amber-800">Waterfall & Swimming Holes:</p>
+                <ul className="text-amber-700">
+                  <li>• Guadalupe River (seasonal)</li>
+                  <li>• Lost Maples pools</li>
+                  <li>• Hill Country spring-fed areas</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Community Features */}
+        <div className="mt-8 bg-gradient-to-r from-boerne-light-blue to-blue-200 rounded-lg p-6">
+          <h2 className="text-2xl font-bold text-boerne-navy mb-4">🤝 Join the Community</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white bg-opacity-80 rounded-lg p-4">
+              <h3 className="font-semibold text-boerne-navy mb-2">📸 Photo Contests</h3>
+              <p className="text-sm text-boerne-dark-gray mb-3">
+                Monthly photo contests featuring the best Hill Country outdoor shots. Winners get featured on our homepage!
+              </p>
+              <button className="text-sm bg-boerne-navy text-white px-4 py-2 rounded hover:bg-opacity-90 transition-colors">
+                Submit Photos
+              </button>
+            </div>
+            <div className="bg-white bg-opacity-80 rounded-lg p-4">
+              <h3 className="font-semibold text-boerne-navy mb-2">🥾 Group Hikes</h3>
+              <p className="text-sm text-boerne-dark-gray mb-3">
+                Join organized group hikes every Saturday morning. All skill levels welcome. Meet new outdoor enthusiasts!
+              </p>
+              <button className="text-sm bg-boerne-navy text-white px-4 py-2 rounded hover:bg-opacity-90 transition-colors">
+                Join Next Hike
+              </button>
             </div>
           </div>
         </div>
