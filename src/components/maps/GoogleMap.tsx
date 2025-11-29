@@ -17,6 +17,10 @@ declare global {
       maps: {
         Map: new (element: HTMLElement, options: any) => any;
         Marker: new (options: any) => any;
+        marker: {
+          AdvancedMarkerElement: new (options: any) => any;
+          PinElement: new (options: any) => any;
+        };
         InfoWindow: new () => any;
         LatLngBounds: new () => any;
         Size: new (width: number, height: number) => any;
@@ -110,17 +114,37 @@ function MapComponent({ center, zoom, markers, className = '' }: MapProps) {
       markersRef.current.forEach(marker => marker.setMap(null));
       markersRef.current = [];
 
-      // Add new markers
+      // Add new markers using AdvancedMarkerElement (new) or fallback to Marker (deprecated)
       markers.forEach(markerData => {
-        const marker = new window.google.maps.Marker({
-          position: markerData.position,
-          map: mapRef.current,
-          title: markerData.title,
-          icon: {
-            url: getMarkerIcon(markerData.category, markerData.difficulty),
-            scaledSize: new window.google.maps.Size(32, 32),
-          },
-        });
+        let marker;
+        
+        // Try to use new AdvancedMarkerElement if available
+        if (window.google.maps.marker?.AdvancedMarkerElement) {
+          // Create pin element with custom color
+          const pinElement = new window.google.maps.marker.PinElement({
+            background: getMarkerColor(markerData.category, markerData.difficulty),
+            borderColor: '#ffffff',
+            glyphColor: '#ffffff',
+          });
+          
+          marker = new window.google.maps.marker.AdvancedMarkerElement({
+            position: markerData.position,
+            map: mapRef.current,
+            title: markerData.title,
+            content: pinElement.element,
+          });
+        } else {
+          // Fallback to deprecated Marker for compatibility
+          marker = new window.google.maps.Marker({
+            position: markerData.position,
+            map: mapRef.current,
+            title: markerData.title,
+            icon: {
+              url: getMarkerIcon(markerData.category, markerData.difficulty),
+              scaledSize: new window.google.maps.Size(32, 32),
+            },
+          });
+        }
 
         // Add click listener for info window
         marker.addListener('click', () => {
@@ -170,6 +194,23 @@ function getMarkerIcon(category: string, difficulty?: string): string {
       return `${baseUrl}blue-dot.png`;
     default:
       return `${baseUrl}red-dot.png`;
+  }
+}
+
+function getMarkerColor(category: string, difficulty?: string): string {
+  // Color coding for AdvancedMarkerElement pins
+  switch (category.toLowerCase()) {
+    case 'trails':
+    case 'nature center':
+      return difficulty === 'advanced' ? '#dc2626' : // red
+             difficulty === 'intermediate' ? '#ea580c' : // orange
+             '#16a34a'; // green
+    case 'state park':
+      return '#9333ea'; // purple
+    case 'lake':
+      return '#2563eb'; // blue
+    default:
+      return '#dc2626'; // red
   }
 }
 
@@ -265,7 +306,7 @@ interface GoogleMapProps extends MapProps {
 
 export default function GoogleMap({ apiKey, ...mapProps }: GoogleMapProps) {
   return (
-    <Wrapper apiKey={apiKey} render={render} libraries={['places']}>
+    <Wrapper apiKey={apiKey} render={render} libraries={['places', 'marker']}>
       <MapComponent {...mapProps} />
     </Wrapper>
   );

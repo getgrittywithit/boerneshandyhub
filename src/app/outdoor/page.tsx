@@ -5,7 +5,7 @@ import { LocationData } from '@/components/LocationCard';
 import Link from 'next/link';
 import GoogleMap, { MapMarker } from '@/components/maps/GoogleMap';
 
-type ActivityType = 'all' | 'hiking' | 'biking' | 'water' | 'wildlife' | 'camping' | 'climbing';
+type ActivityType = 'all' | 'hiking' | 'biking' | 'water' | 'wildlife' | 'camping' | 'climbing' | 'tours';
 type DifficultyLevel = 'all' | 'beginner' | 'intermediate' | 'advanced';
 type TimeOfDay = 'all' | 'sunrise' | 'morning' | 'afternoon' | 'sunset';
 
@@ -151,9 +151,9 @@ const outdoorActivities: OutdoorActivity[] = [
     category: "Nature Center",
     rating: 4.9,
     priceLevel: "$",
-    hours: "8:00 AM - 5:00 PM",
+    hours: "Dawn to Dusk (Visitor Center: Mon-Fri 9 AM - 4:30 PM)",
     phone: "(830) 249-4616",
-    website: "https://www.cibolo.org",
+    website: "https://cibolo.org",
     description: "100 acres of hill country habitat with miles of walking trails through four distinct ecosystems. Features dinosaur tracks and prairie restoration areas.",
     membershipTier: "gold",
     keywords: ["nature", "trails", "education", "wildlife", "dinosaur tracks"],
@@ -178,7 +178,7 @@ const outdoorActivities: OutdoorActivity[] = [
     priceLevel: "$",
     hours: "6:00 AM - 10:00 PM",
     phone: "(830) 249-9511",
-    website: "https://www.ci.boerne.tx.us",
+    website: "https://www.ci.boerne.tx.us/1126/Cibolo-Creek-Trail",
     description: "17-acre lake perfect for kayaking, canoeing, and fishing. Non-motorized boats only. Catch and release fishing with valid Texas license.",
     membershipTier: "verified",
     keywords: ["lake", "kayaking", "fishing", "water sports", "paddling"],
@@ -269,6 +269,136 @@ const outdoorActivities: OutdoorActivity[] = [
     trailheadLocation: "20 minutes from Boerne",
     permitRequired: true,
     dogFriendly: true
+  },
+  {
+    id: 'garner-state-park',
+    name: "Garner State Park",
+    address: "234 RR 1050, Concan, TX 78838",
+    category: "State Park",
+    rating: 4.9,
+    priceLevel: "$$",
+    hours: "8:00 AM - 10:00 PM",
+    phone: "(830) 232-6132",
+    website: "https://tpwd.texas.gov/state-parks/garner",
+    description: "One of Texas' most popular parks along the crystal-clear Frio River. Famous for tubing, dancing, and family-friendly camping. Features limestone bluffs and old-growth cypress trees.",
+    membershipTier: "gold",
+    keywords: ["frio river", "tubing", "swimming", "dancing", "family", "camping"],
+    photos: [],
+    bernieRecommendation: "Summer evenings feature live music and dancing at the pavilion! Book cabins well in advance. The Frio River is perfect for tubing and swimming.",
+    verifiedDate: new Date(),
+    features: ["River Tubing", "Swimming", "Dancing Pavilion", "Camping", "Hiking Trails", "Mini Golf"],
+    activityTypes: ['water', 'hiking', 'camping'],
+    difficulty: 'beginner',
+    bestTime: ['morning', 'afternoon', 'sunset'],
+    distance: "16 miles of trails",
+    duration: "Full day to multi-day",
+    trailheadLocation: "45 minutes from Boerne",
+    permitRequired: true,
+    dogFriendly: true
+  },
+  {
+    id: 'blanco-state-park',
+    name: "Blanco State Park",
+    address: "101 Park Road 23, Blanco, TX 78606",
+    category: "State Park",
+    rating: 4.6,
+    priceLevel: "$$",
+    hours: "8:00 AM - 10:00 PM",
+    phone: "(830) 833-4333",
+    website: "https://tpwd.texas.gov/state-parks/blanco",
+    description: "Small but beautiful park on the Blanco River with crystal-clear swimming holes, limestone formations, and shaded camping areas. Perfect for families and day trips.",
+    membershipTier: "gold",
+    keywords: ["blanco river", "swimming", "limestone", "family", "day trip"],
+    photos: [],
+    bernieRecommendation: "The natural limestone pools are perfect for kids! Visit on weekdays to avoid crowds. Great for a quick cool-off during summer.",
+    verifiedDate: new Date(),
+    features: ["River Swimming", "Limestone Pools", "Picnic Areas", "Fishing", "Camping"],
+    activityTypes: ['water', 'hiking'],
+    difficulty: 'beginner',
+    bestTime: ['morning', 'afternoon'],
+    distance: "Short nature walks",
+    duration: "Half day",
+    trailheadLocation: "25 minutes from Boerne",
+    permitRequired: true,
+    dogFriendly: true
+  },
+  {
+    id: 'krause-springs',
+    name: "Krause Springs",
+    address: "404 Krause Springs Rd, Spicewood, TX 78669",
+    category: "Natural Springs",
+    rating: 4.7,
+    priceLevel: "$$",
+    hours: "9:00 AM - 8:00 PM (seasonal)",
+    phone: "(830) 693-4181",
+    website: "https://krausesprings.net",
+    description: "Natural spring-fed swimming holes with a 30-foot waterfall, rope swing, and crystal-clear pools. 32 springs feed this beautiful oasis with year-round 70-75°F water.",
+    membershipTier: "silver",
+    keywords: ["springs", "waterfall", "swimming", "rope swing", "camping"],
+    photos: [],
+    bernieRecommendation: "The rope swing is a blast! Water stays cool year-round - perfect for hot Texas summers. Camping available if you want to stay overnight.",
+    verifiedDate: new Date(),
+    features: ["Natural Springs", "Waterfall", "Rope Swing", "Camping", "Picnic Areas"],
+    activityTypes: ['water', 'camping'],
+    difficulty: 'beginner',
+    bestTime: ['morning', 'afternoon'],
+    distance: "Walking trails around springs",
+    duration: "Half to full day",
+    trailheadLocation: "50 minutes from Boerne",
+    permitRequired: true,
+    dogFriendly: false
+  },
+  {
+    id: 'canyon-lake',
+    name: "Canyon Lake",
+    address: "Canyon Lake, TX 78133",
+    category: "Lake",
+    rating: 4.5,
+    priceLevel: "$-$$",
+    hours: "24/7 (park areas vary)",
+    phone: "(830) 964-3341",
+    website: "https://www.swf-wc.usace.army.mil/canyon",
+    description: "8,230-acre reservoir perfect for boating, fishing, swimming, and water sports. Multiple parks around the lake offer different recreation opportunities.",
+    membershipTier: "verified",
+    keywords: ["lake", "boating", "fishing", "swimming", "water sports"],
+    photos: [],
+    bernieRecommendation: "Comal Park has the best swimming areas. North Park is great for fishing. Potter's Creek is perfect for paddling and quieter activities.",
+    verifiedDate: new Date(),
+    features: ["Boat Ramps", "Swimming Areas", "Fishing", "Camping", "Hiking Trails"],
+    activityTypes: ['water', 'hiking', 'camping'],
+    difficulty: 'beginner',
+    bestTime: ['morning', 'afternoon'],
+    distance: "Various trail lengths",
+    duration: "Half to full day",
+    trailheadLocation: "25 minutes from Boerne",
+    permitRequired: false,
+    dogFriendly: true
+  },
+  {
+    id: 'cascade-caverns',
+    name: "Cascade Caverns",
+    address: "226 Cascade Caverns Rd, Boerne, TX 78015",
+    category: "Cave Tours",
+    rating: 4.4,
+    priceLevel: "$$",
+    hours: "Mon-Fri 10 AM-4 PM, Sat-Sun 10 AM-5 PM",
+    phone: "(830) 755-8080",
+    website: "https://cascadecaverns.com",
+    description: "100-foot deep cave featuring a 60-foot underground waterfall. Guided tours showcase stunning limestone formations and the only underground waterfall in Texas open to the public.",
+    membershipTier: "verified",
+    keywords: ["cave", "underground", "waterfall", "limestone", "tours"],
+    photos: [],
+    bernieRecommendation: "The underground waterfall is truly spectacular! Tours are climate-controlled year-round. Perfect activity for hot summer days or rainy weather.",
+    verifiedDate: new Date(),
+    features: ["Underground Waterfall", "Guided Tours", "Limestone Formations", "Climate Controlled", "Educational"],
+    activityTypes: ['tours'],
+    difficulty: 'beginner',
+    bestTime: ['morning', 'afternoon'],
+    distance: "0.5 mile underground walk",
+    duration: "45 minutes",
+    trailheadLocation: "10 minutes from Boerne",
+    permitRequired: true,
+    dogFriendly: false
   }
 ];
 
@@ -343,6 +473,24 @@ function getCoordinatesFromAddress(address: string): LatLngLiteral {
   if (address.includes('3350 Park Road 31, Spring Branch')) {
     return { lat: 29.8647, lng: -98.1289 }; // Guadalupe River State Park
   }
+  if (address.includes('Herff Rd, Boerne')) {
+    return { lat: 29.7831, lng: -98.7242 }; // Joshua Springs Preserve
+  }
+  if (address.includes('234 RR 1050, Concan')) {
+    return { lat: 29.4969, lng: -99.7031 }; // Garner State Park
+  }
+  if (address.includes('101 Park Road 23, Blanco')) {
+    return { lat: 30.0958, lng: -98.4192 }; // Blanco State Park
+  }
+  if (address.includes('404 Krause Springs Rd, Spicewood')) {
+    return { lat: 30.4333, lng: -98.1500 }; // Krause Springs
+  }
+  if (address.includes('Canyon Lake, TX')) {
+    return { lat: 29.8719, lng: -98.2614 }; // Canyon Lake
+  }
+  if (address.includes('226 Cascade Caverns Rd, Boerne')) {
+    return { lat: 29.8083, lng: -98.7000 }; // Cascade Caverns
+  }
   
   // Default to Boerne center
   return { lat: 29.7946, lng: -98.7319 };
@@ -395,7 +543,8 @@ export default function OutdoorAdventuresPage() {
       water: '💧',
       wildlife: '🦌',
       camping: '🏕️',
-      climbing: '🧗'
+      climbing: '🧗',
+      tours: '🗺️'
     };
     return icons[type];
   };
@@ -473,7 +622,7 @@ export default function OutdoorAdventuresPage() {
             <div>
               <h3 className="text-sm font-semibold text-boerne-dark-gray mb-2">Activity Type</h3>
               <div className="flex flex-wrap gap-2">
-                {(['all', 'hiking', 'biking', 'water', 'wildlife', 'camping', 'climbing'] as ActivityType[]).map(type => (
+                {(['all', 'hiking', 'biking', 'water', 'wildlife', 'camping', 'climbing', 'tours'] as ActivityType[]).map(type => (
                   <button
                     key={type}
                     onClick={() => setSelectedActivity(type)}
@@ -556,6 +705,56 @@ export default function OutdoorAdventuresPage() {
             </div>
           </div>
         )}
+
+        {/* Seasonal Activity Recommendations */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-bold text-boerne-navy mb-4">🌅 Best Times to Visit</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Spring */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-green-800 mb-2">🌸 Spring (Mar-May)</h3>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• Lost Maples wildflower blooms</li>
+                <li>• Perfect weather for hiking</li>
+                <li>• Enchanted Rock summit views</li>
+                <li>• Bluebonnets everywhere</li>
+              </ul>
+            </div>
+            
+            {/* Summer */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-blue-800 mb-2">☀️ Summer (Jun-Aug)</h3>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• River tubing season</li>
+                <li>• Swimming at Krause Springs</li>
+                <li>• Early morning hikes only</li>
+                <li>• Cave tours stay cool</li>
+              </ul>
+            </div>
+            
+            {/* Fall */}
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-orange-800 mb-2">🍂 Fall (Sep-Nov)</h3>
+              <ul className="text-sm text-orange-700 space-y-1">
+                <li>• Peak fall colors at Lost Maples</li>
+                <li>• Comfortable hiking weather</li>
+                <li>• Great camping conditions</li>
+                <li>• Wildlife more active</li>
+              </ul>
+            </div>
+            
+            {/* Winter */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-purple-800 mb-2">❄️ Winter (Dec-Feb)</h3>
+              <ul className="text-sm text-purple-700 space-y-1">
+                <li>• Clear skies for stargazing</li>
+                <li>• Mild hiking weather</li>
+                <li>• Fewer crowds at parks</li>
+                <li>• Hot springs feel perfect</li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
         {/* Interactive Map Section */}
         {showMap && (
