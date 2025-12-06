@@ -4,226 +4,289 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="min-h-screen">
-      {/* Modern AI-Focused Hero Section */}
-      <div className="relative bg-gradient-to-br from-blue-950 via-purple-900 to-indigo-900 overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400/20 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute top-32 right-20 w-48 h-48 bg-purple-400/20 rounded-full blur-xl animate-pulse delay-1000"></div>
-          <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-indigo-400/20 rounded-full blur-xl animate-pulse delay-500"></div>
-          <div className="absolute bottom-32 right-1/3 w-24 h-24 bg-pink-400/20 rounded-full blur-xl animate-pulse delay-700"></div>
-        </div>
-        
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 opacity-20">
+      {/* Hero Section - Hill Country Theme */}
+      <div className="relative bg-gradient-to-br from-boerne-navy via-boerne-light-blue to-emerald-600 overflow-hidden">
+        {/* Hill Country Pattern Overlay */}
+        <div className="absolute inset-0 opacity-10">
           <div className="h-full w-full" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M0 0h40v40H0V0zm20 20h20v20H20V20z'/%3E%3C/g%3E%3C/svg%3E")`
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='0' cy='0' r='2'/%3E%3Ccircle cx='0' cy='60' r='2'/%3E%3Ccircle cx='60' cy='0' r='2'/%3E%3Ccircle cx='60' cy='60' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}></div>
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 min-h-[80vh] flex flex-col justify-center">
-          {/* Hero Content */}
-          <div className="text-center mb-12">
-            {/* Bernie Mascot Placeholder */}
-            <div className="flex justify-center mb-8">
+        {/* Floating Hills Background */}
+        <div className="absolute inset-0">
+          <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-emerald-800/30 to-transparent"></div>
+          <div className="absolute bottom-10 left-10 w-32 h-16 bg-emerald-400/20 rounded-full blur-xl"></div>
+          <div className="absolute bottom-20 right-20 w-40 h-20 bg-green-400/20 rounded-full blur-xl"></div>
+          <div className="absolute top-20 left-1/4 w-24 h-12 bg-boerne-gold/30 rounded-full blur-lg"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center mb-16">
+            {/* Boerne Handy Hub Brand */}
+            <div className="flex justify-center items-center mb-8">
               <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-4xl shadow-2xl border-4 border-white/20">
-                  🐻
+                <div className="w-20 h-20 bg-gradient-to-br from-boerne-gold to-yellow-400 rounded-full flex items-center justify-center text-3xl shadow-2xl border-4 border-white/30">
+                  🤠
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-400 rounded-full flex items-center justify-center text-white text-sm font-bold animate-bounce">
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-boerne-green rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse">
                   AI
                 </div>
               </div>
             </div>
             
-            <h1 className="text-6xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mb-6 animate-pulse">
-              Meet Bernie
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
+              <span className="block text-boerne-gold">Boerne</span>
+              <span className="block text-white font-light">Handy Hub</span>
             </h1>
-            <p className="text-2xl md:text-3xl text-white/90 mb-4 font-light">
-              Your AI Guide to Boerne
+            <p className="text-xl md:text-2xl text-white/90 mb-4 font-light">
+              Your Complete Guide to the Heart of Texas Hill Country
             </p>
-            <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
-              Discover weddings, dining, adventures & more in the Heart of Texas Hill Country
+            <p className="text-lg text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Meet Bernie, your AI-powered local expert who knows everything about Boerne - 
+              from planning your perfect Hill Country wedding to finding the best BBQ in town
             </p>
+            
+            {/* Key Features */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
+                <div className="text-2xl mb-2">🌲</div>
+                <div className="text-white text-sm font-medium">Hill Country Adventures</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
+                <div className="text-2xl mb-2">💍</div>
+                <div className="text-white text-sm font-medium">Wedding Planning</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
+                <div className="text-2xl mb-2">🍖</div>
+                <div className="text-white text-sm font-medium">Local Dining</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
+                <div className="text-2xl mb-2">🏨</div>
+                <div className="text-white text-sm font-medium">Stay & Play</div>
+              </div>
+            </div>
           </div>
           
-          {/* Modern Chat Interface */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
-              <div className="flex items-center justify-center mb-6">
-                <div className="flex space-x-2">
-                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+          {/* Bernie Chat Interface */}
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-white/95 backdrop-blur-xl rounded-3xl border border-white/30 shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-boerne-navy to-boerne-light-blue p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-boerne-gold rounded-full flex items-center justify-center text-xl">
+                      🤠
+                    </div>
+                    <div>
+                      <h3 className="text-white font-bold text-lg">Ask Bernie Anything!</h3>
+                      <p className="text-white/80 text-sm">Your friendly AI guide to Boerne, Texas</p>
+                    </div>
+                  </div>
+                  <div className="flex space-x-1">
+                    <div className="w-3 h-3 bg-white/60 rounded-full"></div>
+                    <div className="w-3 h-3 bg-white/60 rounded-full"></div>
+                    <div className="w-3 h-3 bg-white/60 rounded-full"></div>
+                  </div>
                 </div>
-                <div className="ml-4 text-white/60 text-sm font-medium">Bernie AI Assistant</div>
               </div>
-              <AIChat />
+              <div className="p-6">
+                <AIChat />
+              </div>
             </div>
             
-            {/* Quick Action Bubbles */}
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105">
-                💍 Plan My Wedding
-              </button>
-              <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105">
-                🍽️ Find Dining
-              </button>
-              <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105">
-                🏞️ Explore Nature
-              </button>
-              <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105">
-                🛍️ Shop Local
-              </button>
+            {/* Suggested Questions */}
+            <div className="mt-8">
+              <p className="text-center text-white/80 text-sm mb-4">Try asking Bernie:</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm transition-all duration-300 transform hover:scale-105 border border-white/20">
+                  "What's happening this weekend?"
+                </button>
+                <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm transition-all duration-300 transform hover:scale-105 border border-white/20">
+                  "Best hiking trails near Boerne?"
+                </button>
+                <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm transition-all duration-300 transform hover:scale-105 border border-white/20">
+                  "Wedding venues in Hill Country?"
+                </button>
+                <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm transition-all duration-300 transform hover:scale-105 border border-white/20">
+                  "Where's the best BBQ?"
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-        
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-8 h-12 border-2 border-white/40 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-
-          {/* Quick Links Section */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">Explore Everything Boerne</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">From dreamy weddings to hidden gems, Bernie knows it all. Dive into our local favorites or ask Bernie for personalized recommendations.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Weddings - Featured */}
-            <div className="group bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden">
-              <div className="absolute top-0 right-0 bg-gradient-to-br from-pink-500 to-rose-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                ✨ FEATURED
+      <div className="bg-gradient-to-b from-boerne-light-gray to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          
+          {/* What's Happening Section */}
+          <div className="mb-20">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold text-boerne-navy mb-4">What's Happening in Boerne</h2>
+              <p className="text-xl text-boerne-dark-gray max-w-2xl mx-auto">
+                Your weekend guide to the best events, activities, and local happenings
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* This Weekend */}
+              <div className="bg-gradient-to-br from-boerne-gold to-yellow-400 rounded-2xl p-8 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div className="relative">
+                  <div className="text-3xl mb-4">🌟</div>
+                  <h3 className="text-xl font-bold mb-3">This Weekend</h3>
+                  <p className="text-white/90 text-sm mb-4">Dickens Christmas, Farmers Market, and more!</p>
+                  <Link href="/events" className="inline-flex items-center text-white font-semibold hover:underline">
+                    See All Events →
+                  </Link>
+                </div>
               </div>
-              <div className="text-5xl mb-6 text-center group-hover:scale-110 transition-transform duration-300">
-                💍
+
+              {/* Local Favorites */}
+              <div className="bg-gradient-to-br from-boerne-green to-emerald-500 rounded-2xl p-8 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div className="relative">
+                  <div className="text-3xl mb-4">🌲</div>
+                  <h3 className="text-xl font-bold mb-3">Hill Country Adventures</h3>
+                  <p className="text-white/90 text-sm mb-4">12 amazing outdoor locations with interactive maps</p>
+                  <Link href="/outdoor" className="inline-flex items-center text-white font-semibold hover:underline">
+                    Explore Nature →
+                  </Link>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-pink-600 transition-colors">
-                Weddings & Events
-              </h3>
-              <p className="text-gray-600 mb-6 leading-relaxed">Plan your perfect Hill Country celebration with our curated vendors</p>
-              <Link href="/weddings" className="inline-flex items-center text-pink-600 hover:text-pink-700 font-semibold group-hover:underline transition-all">
-                Explore Weddings
-                <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
 
-            {/* Dining */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-boerne-green hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-semibold text-boerne-navy mb-2 flex items-center">
-                Dining <span className="ml-2">🍽️</span>
-              </h3>
-              <p className="text-boerne-dark-gray mb-4">From German cuisine to Texas BBQ</p>
-              <a href="/dining" className="text-boerne-green hover:text-boerne-gold font-medium transition-colors">
-                Find Restaurants →
-              </a>
-            </div>
-
-            {/* Stay & Play */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-boerne-light-blue hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-semibold text-boerne-navy mb-2 flex items-center">
-                Stay & Play <span className="ml-2">🏨</span>
-              </h3>
-              <p className="text-boerne-dark-gray mb-4">Accommodations and activities</p>
-              <a href="/stay-play" className="text-boerne-light-blue hover:text-boerne-gold font-medium transition-colors">
-                Plan Your Visit →
-              </a>
-            </div>
-
-            {/* Shopping */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-boerne-gold hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-semibold text-boerne-navy mb-2 flex items-center">
-                Shopping <span className="ml-2">🛍️</span>
-              </h3>
-              <p className="text-boerne-dark-gray mb-4">Hill Country Mile and local shops</p>
-              <a href="/shopping" className="text-boerne-gold hover:text-boerne-gold-alt font-medium transition-colors">
-                Shop Local →
-              </a>
-            </div>
-
-            {/* Outdoor */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-boerne-green hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-semibold text-boerne-navy mb-2 flex items-center">
-                Outdoor Adventures <span className="ml-2">🥾</span>
-              </h3>
-              <p className="text-boerne-dark-gray mb-4">Parks, trails, and nature</p>
-              <a href="/outdoor" className="text-boerne-green hover:text-boerne-gold font-medium transition-colors">
-                Get Outside →
-              </a>
-            </div>
-
-            {/* Professional Services */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-boerne-light-blue hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-semibold text-boerne-navy mb-2 flex items-center">
-                Professional Services <span className="ml-2">💼</span>
-              </h3>
-              <p className="text-boerne-dark-gray mb-4">Local business directory</p>
-              <a href="/services" className="text-boerne-light-blue hover:text-boerne-gold font-medium transition-colors">
-                Find Services →
-              </a>
-            </div>
-
-            {/* About Boerne */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-boerne-navy hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-semibold text-boerne-navy mb-2 flex items-center">
-                About Boerne <span className="ml-2">ℹ️</span>
-              </h3>
-              <p className="text-boerne-dark-gray mb-4">History, culture, and community</p>
-              <a href="/about" className="text-boerne-navy hover:text-boerne-gold font-medium transition-colors">
-                Learn More →
-              </a>
-            </div>
-
-            {/* Business Directory */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-boerne-gold hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-semibold text-boerne-navy mb-2 flex items-center">
-                List Your Business <span className="ml-2">📍</span>
-              </h3>
-              <p className="text-boerne-dark-gray mb-4">Join Boerne's directory</p>
-              <a href="/business/onboard" className="text-boerne-gold hover:text-boerne-gold-alt font-medium transition-colors">
-                Get Listed →
-              </a>
+              {/* Wedding Planning */}
+              <div className="bg-gradient-to-br from-boerne-light-blue to-blue-500 rounded-2xl p-8 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div className="relative">
+                  <div className="text-3xl mb-4">💍</div>
+                  <h3 className="text-xl font-bold mb-3">Wedding Planning</h3>
+                  <p className="text-white/90 text-sm mb-4">Your dream Hill Country celebration starts here</p>
+                  <Link href="/weddings" className="inline-flex items-center text-white font-semibold hover:underline">
+                    Plan Wedding →
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* About Section */}
-          <div className="mt-16 text-center">
-            <h2 className="text-3xl font-bold text-boerne-navy mb-4">The Heart of Texas Hill Country</h2>
-            <p className="text-boerne-dark-gray max-w-3xl mx-auto text-lg leading-relaxed">
-              Located just 30 miles northwest of San Antonio, Boerne is a charming town known for its 
-              German heritage, outdoor recreation, and tight-knit community. With a rich history dating 
-              back to 1849, modern amenities, and stunning natural beauty, Boerne truly offers something 
-              for everyone.
-            </p>
+          {/* Explore Boerne Section */}
+          <div className="mb-20">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold text-boerne-navy mb-4">Explore Boerne</h2>
+              <p className="text-xl text-boerne-dark-gray max-w-3xl mx-auto">
+                From authentic German heritage to modern Hill Country lifestyle, discover everything that makes our town special
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Dining */}
+              <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100">
+                <div className="p-8">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center text-2xl text-white mb-6 group-hover:scale-110 transition-transform">
+                    🍖
+                  </div>
+                  <h3 className="text-xl font-bold text-boerne-navy mb-3 group-hover:text-orange-600 transition-colors">
+                    Authentic Local Dining
+                  </h3>
+                  <p className="text-boerne-dark-gray mb-6 leading-relaxed">
+                    From traditional German fare to Texas BBQ, savor the flavors that define our Hill Country heritage
+                  </p>
+                  <Link href="/dining" className="inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold group-hover:underline transition-all">
+                    Find Restaurants
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Stay & Play */}
+              <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100">
+                <div className="p-8">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl flex items-center justify-center text-2xl text-white mb-6 group-hover:scale-110 transition-transform">
+                    🏨
+                  </div>
+                  <h3 className="text-xl font-bold text-boerne-navy mb-3 group-hover:text-blue-600 transition-colors">
+                    Stay & Play
+                  </h3>
+                  <p className="text-boerne-dark-gray mb-6 leading-relaxed">
+                    Charming accommodations and endless activities in the heart of Texas Hill Country
+                  </p>
+                  <Link href="/stay-play" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold group-hover:underline transition-all">
+                    Plan Your Visit
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Local Marketplace */}
+              <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100">
+                <div className="p-8">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center text-2xl text-white mb-6 group-hover:scale-110 transition-transform">
+                    🛍️
+                  </div>
+                  <h3 className="text-xl font-bold text-boerne-navy mb-3 group-hover:text-purple-600 transition-colors">
+                    Local Marketplace
+                    <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">NEW</span>
+                  </h3>
+                  <p className="text-boerne-dark-gray mb-6 leading-relaxed">
+                    Support local artisans, farmers, and small businesses with our community marketplace
+                  </p>
+                  <Link href="/marketplace" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold group-hover:underline transition-all">
+                    Shop Local
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Key Stats */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div className="bg-white rounded-lg p-6 shadow">
-              <div className="text-3xl font-bold text-boerne-gold mb-2">24,234</div>
-              <div className="text-boerne-dark-gray">Population (2025)</div>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow">
-              <div className="text-3xl font-bold text-boerne-green mb-2">1849</div>
-              <div className="text-boerne-dark-gray">Founded</div>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow">
-              <div className="text-3xl font-bold text-boerne-light-blue mb-2">30 mi</div>
-              <div className="text-boerne-dark-gray">From San Antonio</div>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow">
-              <div className="text-3xl font-bold text-boerne-navy mb-2">78006</div>
-              <div className="text-boerne-dark-gray">ZIP Code</div>
+          {/* About Boerne Section */}
+          <div className="bg-gradient-to-br from-boerne-navy to-boerne-light-blue rounded-3xl p-12 md:p-16 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
+            <div className="relative">
+              <div className="text-center mb-12">
+                <div className="text-4xl mb-6">🤠</div>
+                <h2 className="text-4xl md:text-5xl font-bold mb-6">Welcome to Boerne, Y'all!</h2>
+                <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+                  Pronounced "BURN-ee" (like Bernie Sanders!), our charming Hill Country town has been welcoming visitors 
+                  since 1849. From German heritage to modern amenities, discover why Boerne is the perfect blend of 
+                  small-town charm and big-city convenience.
+                </p>
+              </div>
+
+              {/* Key Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                  <div className="text-3xl font-bold text-boerne-gold mb-2">24,234</div>
+                  <div className="text-white/80 text-sm">Population</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                  <div className="text-3xl font-bold text-boerne-gold mb-2">1849</div>
+                  <div className="text-white/80 text-sm">Founded</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                  <div className="text-3xl font-bold text-boerne-gold mb-2">30</div>
+                  <div className="text-white/80 text-sm">Miles to San Antonio</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                  <div className="text-3xl font-bold text-boerne-gold mb-2">100+</div>
+                  <div className="text-white/80 text-sm">Local Businesses</div>
+                </div>
+              </div>
+
+              <div className="text-center mt-8">
+                <Link href="/about" className="inline-flex items-center bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 border border-white/20">
+                  Learn About Our History →
+                </Link>
+              </div>
             </div>
           </div>
         </div>
