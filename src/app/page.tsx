@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Hill Country Theme */}
-      <div className="relative bg-gradient-to-br from-boerne-navy via-boerne-light-blue to-emerald-600 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-emerald-800 via-green-700 to-boerne-green overflow-hidden">
         {/* Hill Country Pattern Overlay */}
         <div className="absolute inset-0 opacity-10">
           <div className="h-full w-full" style={{
@@ -71,7 +71,7 @@ export default function Home() {
           {/* Bernie Chat Interface */}
           <div className="max-w-5xl mx-auto">
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl border border-white/30 shadow-2xl overflow-hidden">
-              <div className="bg-gradient-to-r from-boerne-navy to-boerne-light-blue p-6">
+              <div className="bg-gradient-to-r from-boerne-navy to-emerald-700 p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-boerne-gold rounded-full flex items-center justify-center text-xl">
@@ -157,7 +157,7 @@ export default function Home() {
               </div>
 
               {/* Wedding Planning */}
-              <div className="bg-gradient-to-br from-boerne-light-blue to-blue-500 rounded-2xl p-8 text-white relative overflow-hidden">
+              <div className="bg-gradient-to-br from-rose-600 to-pink-600 rounded-2xl p-8 text-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
                 <div className="relative">
                   <div className="text-3xl mb-4">💍</div>
@@ -205,16 +205,16 @@ export default function Home() {
               {/* Stay & Play */}
               <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100">
                 <div className="p-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl flex items-center justify-center text-2xl text-white mb-6 group-hover:scale-110 transition-transform">
+                  <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center text-2xl text-white mb-6 group-hover:scale-110 transition-transform">
                     🏨
                   </div>
-                  <h3 className="text-xl font-bold text-boerne-navy mb-3 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-xl font-bold text-boerne-navy mb-3 group-hover:text-amber-600 transition-colors">
                     Stay & Play
                   </h3>
                   <p className="text-boerne-dark-gray mb-6 leading-relaxed">
                     Charming accommodations and endless activities in the heart of Texas Hill Country
                   </p>
-                  <Link href="/stay-play" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold group-hover:underline transition-all">
+                  <Link href="/stay-play" className="inline-flex items-center text-amber-600 hover:text-amber-700 font-semibold group-hover:underline transition-all">
                     Plan Your Visit
                     <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -248,7 +248,7 @@ export default function Home() {
           </div>
 
           {/* About Boerne Section */}
-          <div className="bg-gradient-to-br from-boerne-navy to-boerne-light-blue rounded-3xl p-12 md:p-16 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-br from-boerne-navy to-stone-700 rounded-3xl p-12 md:p-16 text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
             <div className="relative">
