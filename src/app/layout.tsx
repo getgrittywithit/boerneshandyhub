@@ -15,8 +15,68 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Boerne Handy Hub",
-  description: "Your local guide to Boerne, Texas - parks, trails, restaurants, and more",
+  metadataBase: new URL('https://boerneshandyhub.com'),
+  title: {
+    default: 'Boerne Handy Hub | Find Trusted Local Service Providers in Boerne, TX',
+    template: '%s | Boerne Handy Hub',
+  },
+  description: 'Find trusted local service providers in Boerne, Texas. Connect with licensed plumbers, electricians, HVAC technicians, contractors, and more in the Hill Country.',
+  keywords: [
+    'Boerne services',
+    'Boerne contractors',
+    'Boerne plumbers',
+    'Boerne electricians',
+    'Boerne HVAC',
+    'Hill Country services',
+    'Kendall County contractors',
+    'home services Boerne TX',
+    'local service providers',
+    'Boerne Texas',
+  ],
+  authors: [{ name: 'Boerne Handy Hub' }],
+  creator: 'Boerne Handy Hub',
+  publisher: 'Boerne Handy Hub',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://boerneshandyhub.com',
+    siteName: 'Boerne Handy Hub',
+    title: 'Boerne Handy Hub | Find Trusted Local Service Providers',
+    description: 'Find trusted local service providers in Boerne, Texas. Connect with licensed plumbers, electricians, HVAC technicians, contractors, and more.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Boerne Handy Hub - Local Service Directory',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Boerne Handy Hub | Find Trusted Local Service Providers',
+    description: 'Find trusted local service providers in Boerne, Texas. Connect with licensed plumbers, electricians, HVAC technicians, contractors, and more.',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
 };
 
 export default function RootLayout({
