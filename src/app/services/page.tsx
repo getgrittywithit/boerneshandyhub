@@ -1,87 +1,265 @@
-export default function Services() {
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { serviceCategories, getFeaturedCategories } from '@/data/serviceCategories';
+import serviceProvidersData from '@/data/serviceProviders.json';
+
+const getProviderCountByCategory = (categorySlug: string) => {
+  return serviceProvidersData.providers.filter(p => p.category === categorySlug).length;
+};
+
+export default function ServicesPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredCategories = serviceCategories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    category.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    category.subcategories.some(sub => sub.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Local Services in Boerne</h1>
-      
-      <div className="grid gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">City Services</h2>
-          <p className="text-gray-600 mb-4">
-            Essential city services and contact information for Boerne residents.
-          </p>
-          
-          <div className="mt-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Key Services:</h3>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
-              <li>City Hall and administration</li>
-              <li>Public utilities (water, electric)</li>
-              <li>Waste management and recycling</li>
-              <li>Parks and recreation services</li>
-              <li>Building permits and inspections</li>
-            </ul>
-          </div>
-        </div>
+    <div className="bg-boerne-light-gray min-h-screen">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-r from-boerne-navy to-boerne-dark-gray">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <h1 className="text-5xl font-bold text-white mb-4">
+              Find Trusted Home Services in Boerne
+            </h1>
+            <p className="text-xl text-boerne-gold mb-8 max-w-3xl mx-auto">
+              Connect with licensed, insured, and highly-rated local professionals for all your home service needs.
+              From plumbers to painters, we've got the Hill Country covered.
+            </p>
 
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">Healthcare</h2>
-          <p className="text-gray-600 mb-4">
-            Medical and healthcare services available in the Boerne area.
-          </p>
-          
-          <div className="mt-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Available Services:</h3>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
-              <li>Primary care physicians</li>
-              <li>Dental offices</li>
-              <li>Veterinary services</li>
-              <li>Urgent care facilities</li>
-              <li>Specialty medical practices</li>
-            </ul>
-          </div>
-        </div>
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto mb-8">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search for a service (e.g., plumber, electrician, AC repair...)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-6 py-4 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-boerne-gold"
+                />
+                <button className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors">
+                  Search
+                </button>
+              </div>
+            </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">Shopping & Retail</h2>
-          <p className="text-gray-600 mb-4">
-            Local shopping options from boutiques to essential services.
-          </p>
-          
-          <div className="mt-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Shopping Areas:</h3>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
-              <li>Historic Main Plaza boutiques</li>
-              <li>Grocery stores and markets</li>
-              <li>Hardware and home improvement</li>
-              <li>Antique shops and galleries</li>
-              <li>Specialty local businesses</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">Professional Services</h2>
-          <p className="text-gray-600 mb-4">
-            Professional and business services for residents and visitors.
-          </p>
-          
-          <div className="mt-4">
-            <h3 className="font-semibold text-gray-800 mb-2">Services Available:</h3>
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
-              <li>Banking and financial services</li>
-              <li>Real estate agencies</li>
-              <li>Legal services</li>
-              <li>Automotive repair and services</li>
-              <li>Home maintenance and contractors</li>
-            </ul>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/business"
+                className="px-8 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
+              >
+                List Your Business
+              </Link>
+              <Link
+                href="#categories"
+                className="px-8 py-3 border border-boerne-gold text-boerne-gold font-semibold rounded-lg hover:bg-boerne-gold hover:text-boerne-navy transition-colors"
+              >
+                Browse Categories
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-      
-      <div className="mt-8 p-4 bg-indigo-50 rounded-lg">
-        <p className="text-indigo-800">
-          <strong>Support Local:</strong> Boerne has a thriving local business community. 
-          Consider supporting local shops and services when possible!
-        </p>
+
+      {/* Featured Categories Quick Links */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h2 className="text-lg font-semibold text-boerne-navy mb-4">Popular Services:</h2>
+          <div className="flex flex-wrap gap-3">
+            {getFeaturedCategories().map((category) => (
+              <Link
+                key={category.id}
+                href={`/services/${category.slug}`}
+                className="px-4 py-2 rounded-full text-sm font-medium bg-boerne-light-gray text-boerne-dark-gray hover:bg-boerne-gold hover:text-boerne-navy transition-colors"
+              >
+                {category.icon} {category.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Service Categories Grid */}
+      <div id="categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-boerne-navy mb-4">
+            Home Service Categories
+          </h2>
+          <p className="text-lg text-boerne-dark-gray">
+            Find the right professional for any job around your home
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredCategories.map((category) => {
+            const providerCount = getProviderCountByCategory(category.slug);
+            return (
+              <Link
+                key={category.id}
+                href={`/services/${category.slug}`}
+                className={`bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer block ${
+                  category.featured ? 'ring-2 ring-boerne-gold ring-opacity-50' : ''
+                }`}
+              >
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-4xl">{category.icon}</div>
+                    {category.featured && (
+                      <span className="bg-boerne-gold text-boerne-navy text-xs font-bold px-2 py-1 rounded-full">
+                        POPULAR
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold text-boerne-navy mb-2">
+                    {category.name}
+                  </h3>
+                  <p className="text-boerne-dark-gray mb-4">
+                    {category.description}
+                  </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-medium text-boerne-light-blue">
+                      {providerCount} providers available
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    {category.subcategories.slice(0, 3).map((sub, index) => (
+                      <div key={index} className="text-sm text-boerne-dark-gray">
+                        • {sub}
+                      </div>
+                    ))}
+                    {category.subcategories.length > 3 && (
+                      <div className="text-sm text-boerne-light-blue font-medium">
+                        +{category.subcategories.length - 3} more services
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-4">
+                    <span className="text-boerne-gold hover:text-boerne-gold-alt font-medium transition-colors">
+                      Find {category.name} Pros →
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {filteredCategories.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-lg text-boerne-dark-gray">
+              No services found matching "{searchQuery}". Try a different search term.
+            </p>
+            <button
+              onClick={() => setSearchQuery('')}
+              className="mt-4 text-boerne-gold hover:text-boerne-gold-alt font-medium"
+            >
+              Clear search
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Why Choose Local Providers */}
+      <div className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-boerne-navy mb-4">
+              Why Choose Boerne Handy Hub?
+            </h2>
+            <p className="text-lg text-boerne-dark-gray">
+              We connect you with trusted local professionals who know the Hill Country
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-boerne-light-gray p-6 rounded-lg text-center">
+              <div className="text-3xl mb-3">✅</div>
+              <h3 className="font-bold text-boerne-navy mb-2">Verified Professionals</h3>
+              <p className="text-sm text-boerne-dark-gray">Licensed and insured providers you can trust</p>
+            </div>
+            <div className="bg-boerne-light-gray p-6 rounded-lg text-center">
+              <div className="text-3xl mb-3">⭐</div>
+              <h3 className="font-bold text-boerne-navy mb-2">Real Reviews</h3>
+              <p className="text-sm text-boerne-dark-gray">Ratings from your Boerne neighbors</p>
+            </div>
+            <div className="bg-boerne-light-gray p-6 rounded-lg text-center">
+              <div className="text-3xl mb-3">📍</div>
+              <h3 className="font-bold text-boerne-navy mb-2">Local Service</h3>
+              <p className="text-sm text-boerne-dark-gray">Providers who know and serve our community</p>
+            </div>
+            <div className="bg-boerne-light-gray p-6 rounded-lg text-center">
+              <div className="text-3xl mb-3">💬</div>
+              <h3 className="font-bold text-boerne-navy mb-2">Easy Quotes</h3>
+              <p className="text-sm text-boerne-dark-gray">Request quotes directly from providers</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Membership Tiers for Businesses */}
+      <div className="py-16 bg-gradient-to-r from-boerne-green to-boerne-light-blue">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Are You a Home Service Provider?
+            </h2>
+            <p className="text-xl text-white/90">
+              Get listed and connect with homeowners in Boerne and the Hill Country
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+            <div className="bg-white/10 backdrop-blur p-6 rounded-lg">
+              <h3 className="text-lg font-bold text-white mb-2">Basic</h3>
+              <p className="text-2xl font-bold text-boerne-gold mb-2">Free</p>
+              <p className="text-white/80 text-sm">Listed in directory with basic profile</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur p-6 rounded-lg">
+              <h3 className="text-lg font-bold text-white mb-2">Verified</h3>
+              <p className="text-2xl font-bold text-boerne-gold mb-2">$29/mo</p>
+              <p className="text-white/80 text-sm">Verified badge, claim & edit profile</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur p-6 rounded-lg ring-2 ring-boerne-gold">
+              <h3 className="text-lg font-bold text-white mb-2">Premium</h3>
+              <p className="text-2xl font-bold text-boerne-gold mb-2">$79/mo</p>
+              <p className="text-white/80 text-sm">Featured placement, Bernie recommends</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur p-6 rounded-lg">
+              <h3 className="text-lg font-bold text-white mb-2">Elite</h3>
+              <p className="text-2xl font-bold text-boerne-gold mb-2">$149/mo</p>
+              <p className="text-white/80 text-sm">Homepage featured, top of listings</p>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <Link
+              href="/business"
+              className="inline-block px-8 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
+            >
+              Get Listed Today
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Call to Action */}
+      <div className="bg-boerne-navy py-16">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Need Help Finding the Right Service?
+          </h2>
+          <p className="text-xl text-boerne-gold mb-8">
+            Ask Bernie! Our AI assistant knows all the local providers and can help you find the perfect match.
+          </p>
+          <p className="text-white/80 mb-8">
+            Just click the chat button in the corner to get personalized recommendations.
+          </p>
+        </div>
       </div>
     </div>
   );

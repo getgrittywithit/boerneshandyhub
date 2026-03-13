@@ -1,198 +1,309 @@
+'use client';
+
+import { useState } from 'react';
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import FloatingChat from "@/components/FloatingChat";
+import { serviceCategories } from '@/data/serviceCategories';
+import serviceProvidersData from '@/data/serviceProviders.json';
 
 export default function Home() {
-  const categories = [
-    {
-      title: "Dining",
-      description: "From German fare to Texas BBQ, discover the best local restaurants.",
-      href: "/dining",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-      ),
-    },
-    {
-      title: "Weddings",
-      description: "Plan your dream Hill Country wedding with local vendors.",
-      href: "/weddings",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      ),
-    },
-    {
-      title: "Events",
-      description: "Stay updated on festivals, markets, and community happenings.",
-      href: "/events",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      ),
-    },
-    {
-      title: "Stay & Play",
-      description: "Find charming accommodations and plan your perfect getaway.",
-      href: "/stay-play",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-      ),
-    },
-    {
-      title: "Outdoors",
-      description: "Explore trails, parks, and Hill Country natural beauty.",
-      href: "/outdoor",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-        </svg>
-      ),
-    },
-    {
-      title: "Marketplace",
-      description: "Shop local artisans, farmers, and small businesses.",
-      href: "/marketplace",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-        </svg>
-      ),
-      badge: "New",
-    },
-  ];
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Get featured (elite) providers
+  const featuredProviders = serviceProvidersData.providers
+    .filter(p => p.membershipTier === 'elite')
+    .slice(0, 4);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/services?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push('/services');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-20 pb-24 lg:pt-32 lg:pb-32">
-          <div className="max-w-3xl">
-            <h1 className="text-5xl lg:text-7xl font-semibold tracking-tight text-gray-900 leading-[1.1]">
-              Your guide to
-              <span className="block text-boerne-navy">Boerne, Texas</span>
+      <section className="relative bg-gradient-to-br from-boerne-navy via-boerne-dark-gray to-boerne-navy">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-20 pb-24 lg:pt-28 lg:pb-32">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+              Find Trusted Home Services
+              <span className="block text-boerne-gold mt-2">in Boerne, Texas</span>
             </h1>
-            <p className="mt-8 text-xl text-gray-600 leading-relaxed max-w-2xl">
-              Discover the heart of Texas Hill Country. From local dining and outdoor adventures
-              to wedding planning and community events.
+            <p className="mt-6 text-xl text-white/80 leading-relaxed max-w-2xl mx-auto">
+              Connect with licensed, insured, and highly-rated local professionals.
+              From plumbers to contractors, we've got the Hill Country covered.
             </p>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Link
-                href="/about"
-                className="inline-flex items-center px-6 py-3 bg-boerne-navy text-white font-medium rounded-full hover:bg-boerne-navy/90 transition-colors"
-              >
-                Explore Boerne
-                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-              <Link
-                href="/business"
-                className="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-900 font-medium rounded-full hover:bg-gray-200 transition-colors"
-              >
-                List Your Business
-              </Link>
+
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="mt-10 max-w-2xl mx-auto">
+              <div className="relative flex">
+                <input
+                  type="text"
+                  placeholder="What service do you need? (e.g., plumber, electrician, AC repair...)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 px-6 py-4 rounded-l-xl text-lg focus:outline-none focus:ring-2 focus:ring-boerne-gold"
+                />
+                <button
+                  type="submit"
+                  className="px-8 py-4 bg-boerne-gold text-boerne-navy font-semibold rounded-r-xl hover:bg-boerne-gold-alt transition-colors"
+                >
+                  Search
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <span className="text-white/60 text-sm">Popular:</span>
+              {['Plumbing', 'Electrical', 'HVAC', 'Handyman'].map((service) => (
+                <Link
+                  key={service}
+                  href={`/services/${service.toLowerCase()}`}
+                  className="text-sm text-boerne-gold hover:text-boerne-gold-alt transition-colors"
+                >
+                  {service}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Decorative element */}
-        <div className="absolute top-0 right-0 -z-10 w-1/2 h-full bg-gradient-to-l from-gray-50 to-transparent" />
+        {/* Decorative wave */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 100V50C360 0 720 100 1080 50C1260 25 1380 37.5 1440 50V100H0Z" fill="white"/>
+          </svg>
+        </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-24 bg-gray-50">
+      {/* Service Categories Grid */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="max-w-2xl mb-16">
+          <div className="text-center mb-14">
             <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900">
-              Explore by category
+              Home Service Categories
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              Everything you need to discover, plan, and enjoy Boerne.
+              Find the right professional for any job around your home
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {serviceCategories.map((category) => (
               <Link
-                key={category.title}
-                href={category.href}
-                className="group relative bg-white p-8 rounded-2xl border border-gray-200 hover:border-boerne-navy/20 hover:shadow-lg transition-all duration-300"
+                key={category.id}
+                href={`/services/${category.slug}`}
+                className="group relative bg-gray-50 hover:bg-boerne-navy p-6 rounded-xl text-center transition-all duration-300 hover:shadow-lg"
               >
-                <div className="flex items-start justify-between mb-6">
-                  <div className="w-12 h-12 bg-boerne-navy/5 rounded-xl flex items-center justify-center text-boerne-navy group-hover:bg-boerne-navy group-hover:text-white transition-colors">
-                    {category.icon}
-                  </div>
-                  {category.badge && (
-                    <span className="px-2.5 py-1 bg-boerne-green/10 text-boerne-green text-xs font-medium rounded-full">
-                      {category.badge}
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-boerne-navy transition-colors">
-                  {category.title}
+                <div className="text-4xl mb-3">{category.icon}</div>
+                <h3 className="font-semibold text-gray-900 group-hover:text-white transition-colors">
+                  {category.name}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {category.description}
+                <p className="mt-1 text-xs text-gray-500 group-hover:text-white/70 transition-colors">
+                  {serviceProvidersData.providers.filter(p => p.category === category.slug).length} providers
                 </p>
-                <div className="mt-6 flex items-center text-boerne-navy font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span>Learn more</span>
-                  <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
+                {category.featured && (
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-boerne-gold rounded-full" />
+                )}
               </Link>
             ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <Link
+              href="/services"
+              className="inline-flex items-center px-6 py-3 bg-boerne-navy text-white font-medium rounded-full hover:bg-boerne-navy/90 transition-colors"
+            >
+              View All Services
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-24">
+      {/* Featured Providers */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900">
+              Featured Providers
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Top-rated professionals trusted by your Boerne neighbors
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredProviders.map((provider) => {
+              const category = serviceCategories.find(c => c.slug === provider.category);
+              return (
+                <Link
+                  key={provider.id}
+                  href={`/services/${provider.category}/${provider.id}`}
+                  className="group bg-white p-6 rounded-xl border border-gray-200 hover:border-boerne-gold hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-2xl">{category?.icon}</span>
+                    <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                      💎 Elite
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-boerne-navy transition-colors">
+                    {provider.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-3">{category?.name}</p>
+                  <div className="flex items-center gap-1 mb-3">
+                    <span className="text-yellow-400">★</span>
+                    <span className="font-medium">{provider.rating}</span>
+                    <span className="text-gray-400 text-sm">({provider.reviewCount})</span>
+                  </div>
+                  {provider.bernieRecommendation && (
+                    <p className="text-xs text-gray-600 italic line-clamp-2">
+                      "🤠 {provider.bernieRecommendation}"
+                    </p>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Section */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900 leading-tight">
-                A charming Hill Country town since 1849
+                Why Boerne Handy Hub?
               </h2>
               <p className="mt-6 text-lg text-gray-600 leading-relaxed">
-                Pronounced &quot;BURN-ee,&quot; Boerne blends German heritage with modern Texas charm.
-                Just 30 miles from San Antonio, we offer small-town warmth with easy access
-                to everything the Hill Country has to offer.
+                We connect homeowners with trusted, local service professionals who know the
+                Hill Country. Every provider is vetted, and many are recommended by Bernie himself.
               </p>
-              <Link
-                href="/about"
-                className="inline-flex items-center mt-8 text-boerne-navy font-medium hover:underline"
-              >
-                Learn our history
-                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
+
+              <div className="mt-10 space-y-6">
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <span className="text-xl">✅</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Verified Professionals</h3>
+                    <p className="text-gray-600">Licensed and insured providers you can trust</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                    <span className="text-xl">⭐</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Real Reviews</h3>
+                    <p className="text-gray-600">Ratings from your Boerne neighbors</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <span className="text-xl">📍</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Local Service</h3>
+                    <p className="text-gray-600">Providers who know and serve our community</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <span className="text-xl">🤠</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Ask Bernie</h3>
+                    <p className="text-gray-600">Our AI assistant knows all the local pros</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-8">
-              <div className="text-center p-8 bg-gray-50 rounded-2xl">
-                <div className="text-4xl lg:text-5xl font-semibold text-boerne-navy">1849</div>
-                <div className="mt-2 text-gray-600">Founded</div>
-              </div>
-              <div className="text-center p-8 bg-gray-50 rounded-2xl">
-                <div className="text-4xl lg:text-5xl font-semibold text-boerne-navy">24K+</div>
-                <div className="mt-2 text-gray-600">Population</div>
-              </div>
-              <div className="text-center p-8 bg-gray-50 rounded-2xl">
-                <div className="text-4xl lg:text-5xl font-semibold text-boerne-navy">30</div>
-                <div className="mt-2 text-gray-600">Miles to SA</div>
-              </div>
+            <div className="grid grid-cols-2 gap-6">
               <div className="text-center p-8 bg-gray-50 rounded-2xl">
                 <div className="text-4xl lg:text-5xl font-semibold text-boerne-navy">100+</div>
-                <div className="mt-2 text-gray-600">Local Businesses</div>
+                <div className="mt-2 text-gray-600">Service Providers</div>
+              </div>
+              <div className="text-center p-8 bg-gray-50 rounded-2xl">
+                <div className="text-4xl lg:text-5xl font-semibold text-boerne-navy">10</div>
+                <div className="mt-2 text-gray-600">Service Categories</div>
+              </div>
+              <div className="text-center p-8 bg-gray-50 rounded-2xl">
+                <div className="text-4xl lg:text-5xl font-semibold text-boerne-navy">4.7</div>
+                <div className="mt-2 text-gray-600">Avg. Rating</div>
+              </div>
+              <div className="text-center p-8 bg-gray-50 rounded-2xl">
+                <div className="text-4xl lg:text-5xl font-semibold text-boerne-navy">24/7</div>
+                <div className="mt-2 text-gray-600">Emergency Services</div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* More Boerne Section - Secondary Content */}
+      <section className="py-16 bg-gray-50 border-t">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Explore More of Boerne
+            </h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link
+              href="/dining"
+              className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+            >
+              <span className="text-2xl">🍽️</span>
+              <div>
+                <h3 className="font-medium text-gray-900">Dining</h3>
+                <p className="text-sm text-gray-500">Local restaurants</p>
+              </div>
+            </Link>
+            <Link
+              href="/weddings"
+              className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+            >
+              <span className="text-2xl">💍</span>
+              <div>
+                <h3 className="font-medium text-gray-900">Weddings</h3>
+                <p className="text-sm text-gray-500">Event vendors</p>
+              </div>
+            </Link>
+            <Link
+              href="/events"
+              className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+            >
+              <span className="text-2xl">📅</span>
+              <div>
+                <h3 className="font-medium text-gray-900">Events</h3>
+                <p className="text-sm text-gray-500">Community happenings</p>
+              </div>
+            </Link>
+            <Link
+              href="/outdoor"
+              className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+            >
+              <span className="text-2xl">🌳</span>
+              <div>
+                <h3 className="font-medium text-gray-900">Outdoors</h3>
+                <p className="text-sm text-gray-500">Parks & trails</p>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -201,20 +312,29 @@ export default function Home() {
       <section className="py-24 bg-boerne-navy">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-semibold text-white">
-            Own a local business?
+            Are you a home service provider?
           </h2>
           <p className="mt-4 text-lg text-white/80 max-w-2xl mx-auto">
-            Join Boerne Handy Hub and connect with visitors and locals looking for what you offer.
+            Join Boerne Handy Hub and connect with homeowners looking for your services.
+            Get listed today and grow your business.
           </p>
-          <Link
-            href="/business"
-            className="inline-flex items-center mt-8 px-8 py-4 bg-white text-boerne-navy font-semibold rounded-full hover:bg-gray-100 transition-colors"
-          >
-            Get Listed
-            <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link
+              href="/business"
+              className="inline-flex items-center px-8 py-4 bg-boerne-gold text-boerne-navy font-semibold rounded-full hover:bg-boerne-gold-alt transition-colors"
+            >
+              Get Listed
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <Link
+              href="/services"
+              className="inline-flex items-center px-8 py-4 border border-white text-white font-semibold rounded-full hover:bg-white hover:text-boerne-navy transition-colors"
+            >
+              Learn More
+            </Link>
+          </div>
         </div>
       </section>
 
