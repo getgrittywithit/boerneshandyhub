@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { serviceCategories, getFeaturedCategories } from '@/data/serviceCategories';
+import { serviceCategories, serviceBuckets, getFeaturedCategories } from '@/data/serviceCategories';
 import serviceProvidersData from '@/data/serviceProviders.json';
 
 const getProviderCountByCategory = (categorySlug: string) => {
@@ -11,12 +11,36 @@ const getProviderCountByCategory = (categorySlug: string) => {
 
 export default function ServicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBucket, setSelectedBucket] = useState<string | null>(null);
 
-  const filteredCategories = serviceCategories.filter(category =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    category.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    category.subcategories.some(sub => sub.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredCategories = useMemo(() => {
+    let categories = serviceCategories;
+
+    // Filter by bucket
+    if (selectedBucket) {
+      categories = categories.filter(cat => cat.bucket === selectedBucket);
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      categories = categories.filter(category =>
+        category.name.toLowerCase().includes(query) ||
+        category.description.toLowerCase().includes(query) ||
+        category.subcategories.some(sub => sub.toLowerCase().includes(query))
+      );
+    }
+
+    return categories;
+  }, [selectedBucket, searchQuery]);
+
+  const getBucketStats = (bucketSlug: string) => {
+    const categories = serviceCategories.filter(c => c.bucket === bucketSlug);
+    const providerCount = serviceProvidersData.providers.filter(p =>
+      categories.some(c => c.slug === p.category)
+    ).length;
+    return { categoryCount: categories.length, providerCount };
+  };
 
   return (
     <div className="bg-boerne-light-gray min-h-screen">
@@ -25,11 +49,11 @@ export default function ServicesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-white mb-4">
-              Find Trusted Home Services in Boerne
+              Find Trusted Local Services in Boerne
             </h1>
             <p className="text-xl text-boerne-gold mb-8 max-w-3xl mx-auto">
-              Connect with licensed, insured, and highly-rated local professionals for all your home service needs.
-              From plumbers to painters, we've got the Hill Country covered.
+              Connect with licensed, insured, and highly-rated local professionals.
+              From plumbers to pet groomers, we've got the Hill Country covered.
             </p>
 
             {/* Search Bar */}
@@ -37,7 +61,7 @@ export default function ServicesPage() {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search for a service (e.g., plumber, electrician, AC repair...)"
+                  placeholder="Search for a service (e.g., plumber, mechanic, groomer...)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full px-6 py-4 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-boerne-gold"
@@ -66,38 +90,84 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      {/* Featured Categories Quick Links */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h2 className="text-lg font-semibold text-boerne-navy mb-4">Popular Services:</h2>
-          <div className="flex flex-wrap gap-3">
-            {getFeaturedCategories().map((category) => (
-              <Link
-                key={category.id}
-                href={`/services/${category.slug}`}
-                className="px-4 py-2 rounded-full text-sm font-medium bg-boerne-light-gray text-boerne-dark-gray hover:bg-boerne-gold hover:text-boerne-navy transition-colors"
-              >
-                {category.icon} {category.name}
-              </Link>
-            ))}
+      {/* Bucket Filter Tabs */}
+      <div className="bg-white shadow-sm border-b sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 py-4 overflow-x-auto">
+            <button
+              onClick={() => setSelectedBucket(null)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                selectedBucket === null
+                  ? 'bg-boerne-navy text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              All Services
+              <span className="text-xs opacity-75">({serviceCategories.length})</span>
+            </button>
+            {serviceBuckets.map((bucket) => {
+              const stats = getBucketStats(bucket.slug);
+              return (
+                <button
+                  key={bucket.id}
+                  onClick={() => setSelectedBucket(bucket.slug)}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                    selectedBucket === bucket.slug
+                      ? 'bg-boerne-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <span>{bucket.icon}</span>
+                  <span>{bucket.name}</span>
+                  <span className="text-xs opacity-75">({stats.categoryCount})</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
+
+      {/* Featured Categories Quick Links */}
+      {!selectedBucket && (
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <h2 className="text-lg font-semibold text-boerne-navy mb-4">Popular Services:</h2>
+            <div className="flex flex-wrap gap-3">
+              {getFeaturedCategories().map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/services/${category.slug}`}
+                  className="px-4 py-2 rounded-full text-sm font-medium bg-boerne-light-gray text-boerne-dark-gray hover:bg-boerne-gold hover:text-boerne-navy transition-colors"
+                >
+                  {category.icon} {category.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Service Categories Grid */}
       <div id="categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-boerne-navy mb-4">
-            Home Service Categories
+            {selectedBucket
+              ? `${serviceBuckets.find(b => b.slug === selectedBucket)?.name} Services`
+              : 'All Service Categories'
+            }
           </h2>
           <p className="text-lg text-boerne-dark-gray">
-            Find the right professional for any job around your home
+            {selectedBucket
+              ? serviceBuckets.find(b => b.slug === selectedBucket)?.description
+              : 'Find the right professional for any job'
+            }
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCategories.map((category) => {
             const providerCount = getProviderCountByCategory(category.slug);
+            const bucket = serviceBuckets.find(b => b.slug === category.bucket);
             return (
               <Link
                 key={category.id}
@@ -109,11 +179,18 @@ export default function ServicesPage() {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="text-4xl">{category.icon}</div>
-                    {category.featured && (
-                      <span className="bg-boerne-gold text-boerne-navy text-xs font-bold px-2 py-1 rounded-full">
-                        POPULAR
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {!selectedBucket && (
+                        <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+                          {bucket?.icon} {bucket?.name}
+                        </span>
+                      )}
+                      {category.featured && (
+                        <span className="bg-boerne-gold text-boerne-navy text-xs font-bold px-2 py-1 rounded-full">
+                          POPULAR
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <h3 className="text-xl font-bold text-boerne-navy mb-2">
                     {category.name}
@@ -155,10 +232,13 @@ export default function ServicesPage() {
               No services found matching "{searchQuery}". Try a different search term.
             </p>
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedBucket(null);
+              }}
               className="mt-4 text-boerne-gold hover:text-boerne-gold-alt font-medium"
             >
-              Clear search
+              Clear filters
             </button>
           </div>
         )}
@@ -206,10 +286,10 @@ export default function ServicesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Are You a Home Service Provider?
+              Are You a Service Provider?
             </h2>
             <p className="text-xl text-white/90">
-              Get listed and connect with homeowners in Boerne and the Hill Country
+              Get listed and connect with customers in Boerne and the Hill Country
             </p>
           </div>
 
