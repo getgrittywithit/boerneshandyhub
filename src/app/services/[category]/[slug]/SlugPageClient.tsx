@@ -1,13 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import serviceProvidersData from '@/data/serviceProviders.json';
-import { getServiceCategory, serviceCategories, membershipTiers, type MembershipTier } from '@/data/serviceCategories';
-import { getLocation, locationCategoryPages, locations } from '@/data/locations';
-import { getSubcategoryPage, getSubcategoriesForCategory } from '@/data/subcategories';
-import { getGuidesForCategory, getRelatedSubcategories, getRelatedCategories } from '@/data/internalLinks';
-import { guides } from '@/data/guides';
+import { getTopLevelCategory, getSubcategory, topLevelCategories, membershipTiers, type MembershipTier } from '@/data/serviceCategories';
 
 interface ServiceProvider {
   id: string;
@@ -38,515 +34,307 @@ interface ServiceProvider {
 }
 
 interface SlugPageClientProps {
-  category: string;
-  slug: string;
-  pageType: 'location' | 'subcategory';
+  topCategorySlug: string;
+  subcategorySlug: string;
 }
 
-export default function SlugPageClient({ category, slug, pageType }: SlugPageClientProps) {
-  const [providers, setProviders] = useState<ServiceProvider[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function SlugPageClient({ topCategorySlug, subcategorySlug }: SlugPageClientProps) {
   const [sortBy, setSortBy] = useState('rating');
   const [filterTier, setFilterTier] = useState('all');
 
-  const categoryData = getServiceCategory(category);
-  const location = pageType === 'location' ? getLocation(slug) : null;
-  const subcategoryPage = pageType === 'subcategory' ? getSubcategoryPage(category, slug) : null;
+  const topCategory = getTopLevelCategory(topCategorySlug);
+  const subcategory = getSubcategory(topCategorySlug, subcategorySlug);
 
-  useEffect(() => {
-    let filteredProviders = serviceProvidersData.providers.filter(
-      p => p.category === category
+  // Filter providers by subcategory slug (providers have category field like "plumbing")
+  const allProviders = useMemo(() => {
+    return serviceProvidersData.providers.filter(
+      p => p.category === subcategorySlug
     ) as ServiceProvider[];
+  }, [subcategorySlug]);
 
-    if (pageType === 'location' && location) {
-      // Filter by service area
-      filteredProviders = filteredProviders.filter(p =>
-        p.serviceArea.some(area =>
-          area.toLowerCase().includes(location.name.toLowerCase())
-        )
-      );
-    } else if (pageType === 'subcategory' && subcategoryPage) {
-      // Filter by subcategory
-      filteredProviders = filteredProviders.filter(p =>
-        p.subcategories.some(sub =>
-          sub.toLowerCase().includes(subcategoryPage.subcategory.toLowerCase())
-        )
-      );
+  // Apply sorting and filtering
+  const providers = useMemo(() => {
+    let filtered = [...allProviders];
+
+    // Filter by tier
+    if (filterTier !== 'all') {
+      filtered = filtered.filter(p => p.membershipTier === filterTier);
     }
 
-    setProviders(filteredProviders);
-    setLoading(false);
-  }, [category, slug, pageType, location, subcategoryPage]);
-
-  const getTierBadge = (tier: MembershipTier) => {
-    switch (tier) {
-      case 'basic':
-        return <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">Basic</span>;
-      case 'verified':
-        return <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">Verified</span>;
-      case 'premium':
-        return <span className="bg-boerne-gold text-boerne-navy text-xs font-medium px-2 py-1 rounded-full">Premium</span>;
-      case 'elite':
-        return <span className="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-1 rounded-full">Elite</span>;
-      default:
-        return null;
+    // Sort
+    switch (sortBy) {
+      case 'rating':
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'reviews':
+        filtered.sort((a, b) => b.reviewCount - a.reviewCount);
+        break;
+      case 'name':
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
     }
-  };
 
-  const sortedAndFilteredProviders = providers
-    .filter(provider => {
-      if (filterTier !== 'all' && provider.membershipTier !== filterTier) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'rating':
-          return b.rating - a.rating;
-        case 'name':
-          return a.name.localeCompare(b.name);
-        case 'tier':
-          return membershipTiers[b.membershipTier].priority - membershipTiers[a.membershipTier].priority;
-        case 'reviews':
-          return b.reviewCount - a.reviewCount;
-        default:
-          return 0;
-      }
+    // Always prioritize by membership tier
+    filtered.sort((a, b) => {
+      const tierPriority = { elite: 4, premium: 3, verified: 2, basic: 1 };
+      return (tierPriority[b.membershipTier] || 0) - (tierPriority[a.membershipTier] || 0);
     });
 
-  if (!categoryData) {
+    return filtered;
+  }, [allProviders, sortBy, filterTier]);
+
+  if (!topCategory || !subcategory) {
     return (
-      <div className="bg-boerne-light-gray min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">?</div>
-          <h1 className="text-2xl font-bold text-boerne-navy mb-4">Page Not Found</h1>
-          <Link
-            href="/services"
-            className="px-6 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
-          >
-            Browse All Services
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Service Not Found</h1>
+          <Link href="/services" className="text-boerne-gold hover:underline">
+            Browse all services
           </Link>
         </div>
       </div>
     );
   }
 
-  if (loading) {
-    return (
-      <div className="bg-boerne-light-gray min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-boerne-gold mx-auto"></div>
-          <p className="mt-4 text-boerne-dark-gray">Loading providers...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Page title and description based on type
-  const pageTitle = pageType === 'location'
-    ? `${categoryData.name} in ${location?.name}`
-    : subcategoryPage?.h1 || `${subcategoryPage?.subcategory} Services`;
-
-  const pageDescription = pageType === 'location'
-    ? `Find trusted ${categoryData.name.toLowerCase()} professionals serving ${location?.name}, Texas and the surrounding Hill Country area.`
-    : subcategoryPage?.intro || categoryData.description;
+  // Get related subcategories from the same top category
+  const relatedSubcategories = topCategory.subcategories
+    .filter(s => s.slug !== subcategorySlug)
+    .slice(0, 6);
 
   return (
-    <div className="bg-boerne-light-gray min-h-screen">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-boerne-navy to-boerne-dark-gray">
+    <div className="bg-white min-h-screen">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-boerne-navy via-boerne-dark-gray to-boerne-navy">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <div className="text-6xl mb-4">{categoryData.icon}</div>
-            <h1 className="text-4xl font-bold text-white mb-4">
-              {pageTitle}
-            </h1>
-            <p className="text-xl text-boerne-gold mb-6 max-w-2xl mx-auto">
-              {pageDescription}
-            </p>
-            <nav className="flex items-center justify-center space-x-2 text-sm text-boerne-gold">
-              <Link href="/" className="hover:text-white">Home</Link>
-              <span>›</span>
-              <Link href="/services" className="hover:text-white">Services</Link>
-              <span>›</span>
-              <Link href={`/services/${category}`} className="hover:text-white">{categoryData.name}</Link>
-              <span>›</span>
-              <span className="text-white">
-                {pageType === 'location' ? location?.name : subcategoryPage?.subcategory}
-              </span>
-            </nav>
+          {/* Breadcrumb */}
+          <nav className="mb-6">
+            <ol className="flex items-center gap-2 text-sm text-white/60">
+              <li>
+                <Link href="/" className="hover:text-white transition-colors">Home</Link>
+              </li>
+              <li>/</li>
+              <li>
+                <Link href="/services" className="hover:text-white transition-colors">Services</Link>
+              </li>
+              <li>/</li>
+              <li>
+                <Link href={`/services/${topCategorySlug}`} className="hover:text-white transition-colors">
+                  {topCategory.name}
+                </Link>
+              </li>
+              <li>/</li>
+              <li className="text-white font-medium">{subcategory.name}</li>
+            </ol>
+          </nav>
+
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-5xl">{subcategory.icon}</span>
+            <div>
+              <h1 className="text-3xl lg:text-4xl font-bold text-white">
+                {subcategory.name} in Boerne, TX
+              </h1>
+              <p className="mt-2 text-lg text-white/80">
+                {subcategory.description}
+              </p>
+            </div>
           </div>
+
+          <div className="flex items-center gap-4 text-white/70">
+            <span className="flex items-center gap-1">
+              <span className="text-boerne-gold font-semibold">{providers.length}</span> providers available
+            </span>
+          </div>
+        </div>
+
+        {/* Decorative wave */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 40V20C360 0 720 40 1080 20C1260 10 1380 15 1440 20V40H0Z" fill="#f9fafb"/>
+          </svg>
         </div>
       </div>
 
-      {/* Location Info (for location pages) */}
-      {pageType === 'location' && location && (
-        <div className="bg-white border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <h2 className="text-lg font-semibold text-boerne-navy">
-                  Serving {location.name}, {location.county} County
-                </h2>
-                <p className="text-sm text-boerne-dark-gray">
-                  Also serving: {location.nearbyAreas.join(', ')}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="bg-boerne-light-gray text-boerne-dark-gray text-xs px-3 py-1 rounded-full">
-                  ZIP: {location.zipCodes.join(', ')}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Filters and Sort */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-4">
-              <div>
-                <label htmlFor="sortBy" className="text-sm font-medium text-boerne-dark-gray mr-2">
-                  Sort by:
-                </label>
-                <select
-                  id="sortBy"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
-                >
-                  <option value="rating">Highest Rated</option>
-                  <option value="reviews">Most Reviews</option>
-                  <option value="name">Name A-Z</option>
-                  <option value="tier">Membership Tier</option>
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="filterTier" className="text-sm font-medium text-boerne-dark-gray mr-2">
-                  Tier:
-                </label>
-                <select
-                  id="filterTier"
-                  value={filterTier}
-                  onChange={(e) => setFilterTier(e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
-                >
-                  <option value="all">All Providers</option>
-                  <option value="elite">Elite Only</option>
-                  <option value="premium">Premium Only</option>
-                  <option value="verified">Verified Only</option>
-                  <option value="basic">Basic Only</option>
-                </select>
-              </div>
+      {/* Filters & Results */}
+      <div className="bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Filter Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-600">Sort by:</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-boerne-gold"
+              >
+                <option value="rating">Highest Rated</option>
+                <option value="reviews">Most Reviews</option>
+                <option value="name">Name A-Z</option>
+              </select>
             </div>
 
-            <div className="text-sm text-boerne-dark-gray">
-              {sortedAndFilteredProviders.length} {sortedAndFilteredProviders.length === 1 ? 'provider' : 'providers'} found
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-600">Filter:</label>
+              <select
+                value={filterTier}
+                onChange={(e) => setFilterTier(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-boerne-gold"
+              >
+                <option value="all">All Providers</option>
+                <option value="elite">Elite Only</option>
+                <option value="premium">Premium & Elite</option>
+                <option value="verified">Verified & Up</option>
+              </select>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Providers Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {sortedAndFilteredProviders.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-boerne-navy mb-2">No providers found</h3>
-            <p className="text-boerne-dark-gray mb-4">
-              {pageType === 'location'
-                ? `We're still adding ${categoryData.name.toLowerCase()} providers in ${location?.name}. Check back soon!`
-                : `We're still adding providers for this service. Check back soon!`}
-            </p>
-            <Link
-              href={`/services/${category}`}
-              className="px-4 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
-            >
-              View All {categoryData.name} Providers
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedAndFilteredProviders.map((provider) => (
-              <div key={provider.id} className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-boerne-navy mb-1">{provider.name}</h3>
-                      <p className="text-sm text-boerne-dark-gray mb-2">
-                        {provider.subcategories.slice(0, 2).join(' • ')}
-                      </p>
+          {/* Provider Grid */}
+          {providers.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {providers.map((provider) => {
+                const tierInfo = membershipTiers[provider.membershipTier];
+                return (
+                  <div
+                    key={provider.id}
+                    className="bg-white rounded-xl border border-gray-200 p-6 hover:border-boerne-gold hover:shadow-lg transition-all duration-300"
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg text-gray-900">
+                          {provider.name}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-yellow-400">★</span>
+                          <span className="font-medium">{provider.rating}</span>
+                          <span className="text-gray-400 text-sm">({provider.reviewCount} reviews)</span>
+                        </div>
+                      </div>
+                      {tierInfo.badge && (
+                        <span className={`px-2 py-1 ${tierInfo.color} text-xs font-medium rounded-full`}>
+                          {tierInfo.badge} {tierInfo.name}
+                        </span>
+                      )}
                     </div>
-                    {getTierBadge(provider.membershipTier)}
-                  </div>
 
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="flex items-center">
-                      <span className="text-yellow-400">★</span>
-                      <span className="font-medium ml-1">{provider.rating}</span>
+                    {/* Badges */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {provider.licensed && (
+                        <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">Licensed</span>
+                      )}
+                      {provider.insured && (
+                        <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">Insured</span>
+                      )}
+                      {provider.yearsInBusiness && provider.yearsInBusiness >= 10 && (
+                        <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">
+                          {provider.yearsInBusiness}+ Years
+                        </span>
+                      )}
                     </div>
-                    <span className="text-boerne-dark-gray text-sm">
-                      ({provider.reviewCount} reviews)
-                    </span>
-                  </div>
 
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {provider.licensed && (
-                      <span className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded">
-                        Licensed
-                      </span>
+                    {/* Description */}
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {provider.description}
+                    </p>
+
+                    {/* Special Offer */}
+                    {provider.specialOffers && provider.specialOffers.length > 0 && (
+                      <div className="bg-yellow-50 border border-yellow-200 p-2 rounded-lg mb-4">
+                        <span className="text-yellow-700 text-xs font-medium">
+                          🎉 {provider.specialOffers[0]}
+                        </span>
+                      </div>
                     )}
-                    {provider.insured && (
-                      <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">
-                        Insured
-                      </span>
+
+                    {/* Recommendation */}
+                    {provider.bernieRecommendation && (
+                      <div className="bg-gray-50 p-3 rounded-lg mb-4">
+                        <p className="text-xs text-gray-600 italic line-clamp-2">
+                          &quot;{provider.bernieRecommendation}&quot;
+                        </p>
+                      </div>
                     )}
-                    {provider.yearsInBusiness && (
-                      <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                        {provider.yearsInBusiness}+ years
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <span className="text-sm text-gray-500">
+                        📍 {provider.serviceArea[0]}
                       </span>
-                    )}
-                  </div>
-
-                  <p className="text-boerne-dark-gray mb-4 text-sm line-clamp-2">
-                    {provider.description}
-                  </p>
-
-                  {provider.specialOffers && provider.specialOffers.length > 0 && (
-                    <div className="bg-yellow-50 border border-yellow-200 p-2 rounded-lg mb-4">
-                      <span className="text-yellow-700 text-xs font-medium">
-                        🎉 {provider.specialOffers[0]}
-                      </span>
-                    </div>
-                  )}
-
-                  {provider.bernieRecommendation && (
-                    <div className="bg-boerne-light-gray p-3 rounded-lg mb-4">
-                      <p className="text-xs text-boerne-dark-gray italic line-clamp-2">
-                        &quot;{provider.bernieRecommendation}&quot;
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-boerne-dark-gray">
-                      📍 {provider.serviceArea[0]}
-                    </div>
-                    <Link
-                      href={`/services/${category}/${provider.id}`}
-                      className="px-4 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors text-sm"
-                    >
-                      Get Quote
-                    </Link>
-                  </div>
-
-                  {provider.claimStatus === 'unclaimed' && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
                       <Link
-                        href="/business/onboard"
-                        className="text-xs text-boerne-gold hover:text-boerne-gold-alt"
+                        href={`/services/${topCategorySlug}/${subcategorySlug}/${provider.id}`}
+                        className="px-4 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors text-sm"
                       >
-                        Own this business? Claim it →
+                        View Profile
                       </Link>
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Related Locations (for location pages) */}
-      {pageType === 'location' && location && (
-        <div className="bg-white py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold text-boerne-navy mb-6">
-              {categoryData.name} in Nearby Areas
-            </h2>
-            <div className="flex flex-wrap gap-3">
-              {location.nearbyAreas.map(area => {
-                const areaSlug = area.toLowerCase().replace(/\s+/g, '-');
-                const hasPage = locationCategoryPages.some(
-                  p => p.category === category && p.location === areaSlug
-                );
-                return hasPage ? (
-                  <Link
-                    key={area}
-                    href={`/services/${category}/${areaSlug}`}
-                    className="px-4 py-2 bg-boerne-light-gray text-boerne-navy rounded-lg hover:bg-boerne-gold hover:text-boerne-navy transition-colors"
-                  >
-                    {categoryData.name} in {area}
-                  </Link>
-                ) : (
-                  <Link
-                    key={area}
-                    href={`/services/${category}`}
-                    className="px-4 py-2 bg-boerne-light-gray text-boerne-navy rounded-lg hover:bg-boerne-gold hover:text-boerne-navy transition-colors"
-                  >
-                    {categoryData.name} in {area}
-                  </Link>
+                  </div>
                 );
               })}
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Other Services in This Location (for location pages) */}
-      {pageType === 'location' && location && (() => {
-        const otherCategoriesInLocation = locationCategoryPages
-          .filter(p => p.location === slug && p.category !== category)
-          .map(p => serviceCategories.find(c => c.slug === p.category))
-          .filter(Boolean);
-        if (otherCategoriesInLocation.length === 0) return null;
-        return (
-          <div className="bg-boerne-light-gray py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-2xl font-bold text-boerne-navy mb-6">
-                Other Services in {location.name}
-              </h2>
-              <div className="flex flex-wrap gap-4">
-                {otherCategoriesInLocation.slice(0, 6).map(cat => cat && (
-                  <Link
-                    key={cat.slug}
-                    href={`/services/${cat.slug}/${slug}`}
-                    className="flex items-center gap-3 px-5 py-3 bg-white rounded-lg hover:bg-boerne-gold transition-colors shadow-sm"
-                  >
-                    <span className="text-2xl">{cat.icon}</span>
-                    <span className="font-medium text-boerne-navy">{cat.name}</span>
-                  </Link>
-                ))}
-              </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="text-5xl mb-4">🔍</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                No providers found yet
+              </h3>
+              <p className="text-gray-600 mb-6">
+                We&apos;re actively adding {subcategory.name.toLowerCase()} providers in Boerne.
+              </p>
+              <Link
+                href="/business"
+                className="inline-flex items-center px-6 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
+              >
+                Are you a {subcategory.name} provider? Get listed free
+              </Link>
             </div>
-          </div>
-        );
-      })()}
-
-      {/* Related Services (for subcategory pages) */}
-      {pageType === 'subcategory' && (() => {
-        const relatedSubSlugs = getRelatedSubcategories(slug);
-        const allSubcategories = getSubcategoriesForCategory(category);
-        const relatedSubs = relatedSubSlugs
-          .map(s => allSubcategories.find(sub => sub.slug === s))
-          .filter(Boolean);
-        const otherSubs = allSubcategories
-          .filter(sub => sub.slug !== slug && !relatedSubSlugs.includes(sub.slug))
-          .slice(0, 3);
-        const displaySubs = [...relatedSubs, ...otherSubs].slice(0, 4);
-
-        if (displaySubs.length === 0) return null;
-        return (
-          <div className="bg-white py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-2xl font-bold text-boerne-navy mb-6">
-                Related {categoryData.name} Services
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {displaySubs.map(sub => sub && (
-                  <Link
-                    key={sub.slug}
-                    href={`/services/${category}/${sub.slug}`}
-                    className="p-4 bg-boerne-light-gray rounded-lg hover:bg-boerne-gold transition-colors group"
-                  >
-                    <h3 className="font-semibold text-boerne-navy group-hover:text-boerne-navy">
-                      {sub.subcategory}
-                    </h3>
-                    <p className="text-sm text-boerne-dark-gray mt-1 line-clamp-2">
-                      {sub.description.slice(0, 80)}...
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Related Guides */}
-      {(() => {
-        const guideSlugs = getGuidesForCategory(category);
-        const relatedGuides = guideSlugs.map(s => guides.find(g => g.slug === s)).filter(Boolean);
-        if (relatedGuides.length === 0) return null;
-        return (
-          <div className={`${pageType === 'location' ? 'bg-white' : 'bg-boerne-light-gray'} py-12`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-2xl font-bold text-boerne-navy mb-6">
-                Helpful {categoryData.name} Guides
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {relatedGuides.slice(0, 3).map(guide => guide && (
-                  <Link
-                    key={guide.slug}
-                    href={`/guides/${guide.slug}`}
-                    className={`p-6 ${pageType === 'location' ? 'bg-boerne-light-gray' : 'bg-white'} rounded-lg hover:shadow-lg transition-shadow group`}
-                  >
-                    <h3 className="font-semibold text-boerne-navy mb-2 group-hover:text-boerne-gold">
-                      {guide.title}
-                    </h3>
-                    <p className="text-sm text-boerne-dark-gray line-clamp-2">
-                      {guide.metaDescription}
-                    </p>
-                    <span className="inline-block mt-3 text-boerne-gold text-sm font-medium">
-                      Read Guide →
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Related Categories */}
-      {(() => {
-        const relatedCategorySlugs = getRelatedCategories(category);
-        const relatedCats = relatedCategorySlugs
-          .map(s => serviceCategories.find(c => c.slug === s))
-          .filter(Boolean);
-        if (relatedCats.length === 0) return null;
-        return (
-          <div className={`${pageType === 'subcategory' ? 'bg-white' : 'bg-boerne-light-gray'} py-12`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-2xl font-bold text-boerne-navy mb-6">
-                You Might Also Need
-              </h2>
-              <div className="flex flex-wrap gap-4">
-                {relatedCats.slice(0, 4).map(cat => cat && (
-                  <Link
-                    key={cat.slug}
-                    href={`/services/${cat.slug}`}
-                    className={`flex items-center gap-3 px-5 py-3 ${pageType === 'subcategory' ? 'bg-boerne-light-gray' : 'bg-white'} rounded-lg hover:bg-boerne-gold transition-colors shadow-sm`}
-                  >
-                    <span className="text-2xl">{cat.icon}</span>
-                    <span className="font-medium text-boerne-navy">{cat.name}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Call to Action */}
-      <div className="bg-boerne-navy py-12">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-white mb-4">
-            Are you a {categoryData.name.toLowerCase()} professional?
-          </h2>
-          <p className="text-boerne-gold mb-6">
-            Join Boerne&apos;s Handy Hub and connect with customers in {location?.name || 'Boerne'} and beyond.
-          </p>
-          <Link
-            href="/business/onboard"
-            className="px-6 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
-          >
-            Get Listed Today
-          </Link>
+          )}
         </div>
       </div>
+
+      {/* Related Services */}
+      {relatedSubcategories.length > 0 && (
+        <section className="py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+              Related {topCategory.name} Services
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {relatedSubcategories.map((sub) => (
+                <Link
+                  key={sub.id}
+                  href={`/services/${topCategorySlug}/${sub.slug}`}
+                  className="group bg-gray-50 hover:bg-boerne-navy p-4 rounded-xl text-center transition-all"
+                >
+                  <div className="text-2xl mb-2">{sub.icon}</div>
+                  <h3 className="text-sm font-medium text-gray-900 group-hover:text-white transition-colors">
+                    {sub.name}
+                  </h3>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA Section */}
+      <section className="py-16 bg-boerne-navy">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-semibold text-white mb-4">
+            Offer {subcategory.name} Services?
+          </h2>
+          <p className="text-lg text-white/80 mb-8">
+            Get your business listed and connect with customers in Boerne looking for {subcategory.name.toLowerCase()} services.
+          </p>
+          <Link
+            href="/business"
+            className="inline-flex items-center px-8 py-4 bg-boerne-gold text-boerne-navy font-semibold rounded-full hover:bg-boerne-gold-alt transition-colors"
+          >
+            Get Listed Free
+            <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }
