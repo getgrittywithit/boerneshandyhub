@@ -304,7 +304,7 @@ export default function ProviderPageClient({
                   Claim your listing to manage your information and unlock premium features.
                 </p>
                 <Link
-                  href="/business"
+                  href={`/business/claim/${providerId}`}
                   className="inline-block w-full px-6 py-3 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors text-center"
                 >
                   Claim This Business
