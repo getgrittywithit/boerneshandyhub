@@ -132,13 +132,13 @@ export default function ProviderPageClient({ category, providerId, provider }: P
 
                 <p className="text-lg text-boerne-dark-gray mb-6">{provider.description}</p>
 
-                {/* Bernie's Recommendation */}
+                {/* Staff Pick */}
                 {provider.bernieRecommendation && (
                   <div className="bg-boerne-light-gray p-4 rounded-lg mb-6">
                     <div className="flex items-start gap-3">
-                      <div className="text-2xl">B</div>
+                      <div className="text-2xl">⭐</div>
                       <div>
-                        <h4 className="font-semibold text-boerne-navy mb-1">Bernie's Recommendation:</h4>
+                        <h4 className="font-semibold text-boerne-navy mb-1">Why We Recommend:</h4>
                         <p className="text-boerne-dark-gray italic">"{provider.bernieRecommendation}"</p>
                       </div>
                     </div>

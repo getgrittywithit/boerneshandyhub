@@ -237,11 +237,11 @@ export default function LocationCard({ location, compact = false }: {
         )}
       </div>
 
-      {/* Bernie's Recommendation */}
+      {/* Local Tip */}
       {location.bernieRecommendation && (
         <div className="mb-3 p-3 bg-boerne-light-blue bg-opacity-10 border border-boerne-light-blue rounded">
           <p className="text-xs font-semibold text-boerne-navy mb-1">
-            Bernie&apos;s Recommendation: 🤠
+            💡 Local Tip:
           </p>
           <p className="text-sm text-boerne-dark-gray italic">
             &quot;{location.bernieRecommendation}&quot;

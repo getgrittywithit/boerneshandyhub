@@ -178,7 +178,7 @@ export default function DiningPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-boerne-navy mb-4">
-            🌟 Bernie's Top Picks
+            🌟 Top Picks
           </h2>
           <p className="text-lg text-boerne-dark-gray">
             Local favorites that capture the true taste of Boerne
@@ -228,9 +228,9 @@ export default function DiningPage() {
                 {restaurant.bernieRecommendation && (
                   <div className="bg-boerne-light-blue bg-opacity-10 p-3 rounded-lg mb-4">
                     <div className="flex items-start space-x-2">
-                      <span className="text-lg">🤠</span>
+                      <span className="text-lg">💡</span>
                       <div>
-                        <div className="text-xs font-medium text-boerne-light-blue mb-1">Bernie says:</div>
+                        <div className="text-xs font-medium text-boerne-light-blue mb-1">Local Tip:</div>
                         <div className="text-sm text-boerne-dark-gray italic">"{restaurant.bernieRecommendation}"</div>
                       </div>
                     </div>

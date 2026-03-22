@@ -166,9 +166,9 @@ export default function BusinessDetailPage() {
                 {vendor.bernieRecommendation && (
                   <div className="bg-boerne-light-gray p-4 rounded-lg mb-6">
                     <div className="flex items-start gap-3">
-                      <div className="text-2xl">🤠</div>
+                      <div className="text-2xl">⭐</div>
                       <div>
-                        <h4 className="font-semibold text-boerne-navy mb-1">Bernie's Recommendation:</h4>
+                        <h4 className="font-semibold text-boerne-navy mb-1">Why We Recommend:</h4>
                         <p className="text-boerne-dark-gray italic">"{vendor.bernieRecommendation}"</p>
                       </div>
                     </div>

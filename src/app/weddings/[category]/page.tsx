@@ -256,15 +256,9 @@ export default function WeddingCategoryPage() {
 
                   {vendor.bernieRecommendation && (
                     <div className="bg-boerne-light-gray p-3 rounded-lg mb-4">
-                      <div className="flex items-start gap-2">
-                        <span className="text-lg">🤠</span>
-                        <div>
-                          <div className="text-xs font-medium text-boerne-navy mb-1">Bernie says:</div>
-                          <p className="text-xs text-boerne-dark-gray italic line-clamp-2">
-                            "{vendor.bernieRecommendation}"
-                          </p>
-                        </div>
-                      </div>
+                      <p className="text-xs text-boerne-dark-gray italic line-clamp-2">
+                        "{vendor.bernieRecommendation}"
+                      </p>
                     </div>
                   )}
 

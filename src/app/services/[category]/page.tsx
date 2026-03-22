@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getServiceCategory, serviceCategories } from '@/data/serviceCategories';
-import serviceProvidersData from '@/data/serviceProviders.json';
+import { getTopLevelCategory, topLevelCategories } from '@/data/serviceCategories';
 import CategoryPageClient from './CategoryPageClient';
 
 interface PageProps {
@@ -9,14 +8,14 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return serviceCategories.map((category) => ({
+  return topLevelCategories.map((category) => ({
     category: category.slug,
   }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category } = await params;
-  const categoryData = getServiceCategory(category);
+  const categoryData = getTopLevelCategory(category);
 
   if (!categoryData) {
     return {
@@ -24,22 +23,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const providerCount = serviceProvidersData.providers.filter(
-    (p) => p.category === category
-  ).length;
-
-  const title = `${categoryData.name} in Boerne TX | Find Local ${categoryData.name} Pros`;
-  const description = `Find ${providerCount}+ trusted ${categoryData.name.toLowerCase()} professionals in Boerne, Texas. ${categoryData.description} Licensed, insured, and highly-rated local providers.`;
+  const subcategoryNames = categoryData.subcategories.map(s => s.name).slice(0, 5).join(', ');
+  const title = `${categoryData.name} Services in Boerne TX | ${subcategoryNames} & More`;
+  const description = `Browse ${categoryData.subcategories.length} ${categoryData.name.toLowerCase()} services in Boerne, Texas. ${categoryData.description} Find trusted local professionals.`;
 
   return {
     title,
     description,
     keywords: [
-      `${categoryData.name} Boerne`,
+      `${categoryData.name} services Boerne`,
       `${categoryData.name} Boerne TX`,
-      `${categoryData.name.toLowerCase()} near me`,
-      `local ${categoryData.name.toLowerCase()}`,
-      ...categoryData.subcategories.map((sub) => `${sub} Boerne`),
+      ...categoryData.subcategories.map((sub) => `${sub.name} Boerne`),
       'Boerne Texas',
       'Hill Country',
       'Kendall County',
@@ -62,9 +56,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ServiceCategoryPage({ params }: PageProps) {
+export default async function TopCategoryPage({ params }: PageProps) {
   const { category } = await params;
-  const categoryData = getServiceCategory(category);
+  const categoryData = getTopLevelCategory(category);
 
   if (!categoryData) {
     notFound();
@@ -96,24 +90,20 @@ export default async function ServiceCategoryPage({ params }: PageProps) {
     ],
   };
 
-  // Service category schema
-  const serviceSchema = {
+  // ItemList schema for subcategories
+  const itemListSchema = {
     '@context': 'https://schema.org',
-    '@type': 'Service',
+    '@type': 'ItemList',
     name: `${categoryData.name} Services in Boerne, TX`,
     description: categoryData.description,
-    areaServed: {
-      '@type': 'City',
-      name: 'Boerne',
-      addressRegion: 'TX',
-      addressCountry: 'US',
-    },
-    provider: {
-      '@type': 'LocalBusiness',
-      name: "Boerne's Handy Hub",
-      url: 'https://boerneshandyhub.com',
-    },
-    serviceType: categoryData.subcategories,
+    numberOfItems: categoryData.subcategories.length,
+    itemListElement: categoryData.subcategories.map((sub, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: sub.name,
+      url: `https://boerneshandyhub.com/services/${category}/${sub.slug}`,
+      description: sub.description,
+    })),
   };
 
   return (
@@ -124,9 +114,9 @@ export default async function ServiceCategoryPage({ params }: PageProps) {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
-      <CategoryPageClient category={category} />
+      <CategoryPageClient categorySlug={category} />
     </>
   );
 }

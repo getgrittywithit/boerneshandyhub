@@ -193,15 +193,15 @@ export default function Events() {
         </div>
       </div>
       
-      {/* Bernie's Tip */}
+      {/* Event Tips */}
       <div className="bg-gradient-to-r from-boerne-light-blue to-blue-400 text-white rounded-lg p-6">
         <div className="flex items-start gap-3">
-          <span className="text-2xl">🤠</span>
+          <span className="text-2xl">💬</span>
           <div>
-            <h3 className="text-lg font-bold mb-2">Bernie's Event Tips</h3>
+            <h3 className="text-lg font-bold mb-2">Need Event Info?</h3>
             <p className="text-sm opacity-90">
-              Hey there! Want to know about upcoming events? Just ask me in the chat - I always have the latest scoop on what's happening around our beautiful town! 
-              I can tell you about this weekend's activities, upcoming festivals, and recurring events like our weekly farmers market.
+              Want to know about upcoming events? Ask our AI assistant in the chat - it has the latest scoop on what's happening around town!
+              Get info about this weekend's activities, upcoming festivals, and recurring events like our weekly farmers market.
             </p>
           </div>
         </div>

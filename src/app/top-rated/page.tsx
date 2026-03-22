@@ -139,7 +139,7 @@ export default function TopRatedPage() {
                   {provider.bernieRecommendation && (
                     <div className="bg-boerne-light-gray p-3 rounded-lg mb-4">
                       <p className="text-xs text-boerne-dark-gray italic">
-                        🤠 &quot;{provider.bernieRecommendation}&quot;
+                        &quot;{provider.bernieRecommendation}&quot;
                       </p>
                     </div>
                   )}

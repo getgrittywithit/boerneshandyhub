@@ -234,9 +234,9 @@ export default function StayPlayPage() {
                 {stay.bernieRecommendation && (
                   <div className="bg-boerne-green bg-opacity-10 p-3 rounded-lg mb-4">
                     <div className="flex items-start space-x-2">
-                      <span className="text-lg">🤠</span>
+                      <span className="text-lg">💡</span>
                       <div>
-                        <div className="text-xs font-medium text-boerne-green mb-1">Bernie says:</div>
+                        <div className="text-xs font-medium text-boerne-green mb-1">Local Tip:</div>
                         <div className="text-sm text-boerne-dark-gray italic">"{stay.bernieRecommendation}"</div>
                       </div>
                     </div>
@@ -304,9 +304,9 @@ export default function StayPlayPage() {
                 {activity.bernieRecommendation && (
                   <div className="bg-boerne-light-blue bg-opacity-10 p-3 rounded-lg mb-4">
                     <div className="flex items-start space-x-2">
-                      <span className="text-lg">🤠</span>
+                      <span className="text-lg">💡</span>
                       <div>
-                        <div className="text-xs font-medium text-boerne-light-blue mb-1">Bernie says:</div>
+                        <div className="text-xs font-medium text-boerne-light-blue mb-1">Local Tip:</div>
                         <div className="text-sm text-boerne-dark-gray italic">"{activity.bernieRecommendation}"</div>
                       </div>
                     </div>

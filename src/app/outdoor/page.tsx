@@ -894,11 +894,11 @@ export default function OutdoorAdventuresPage() {
                     </div>
                   </div>
 
-                  {/* Bernie's Tip */}
+                  {/* Insider Tip */}
                   {activity.bernieRecommendation && (
                     <div className="mt-4 p-3 bg-boerne-light-blue bg-opacity-10 rounded-lg">
                       <p className="text-xs text-boerne-navy italic">
-                        <span className="font-semibold">Bernie's Tip:</span> {activity.bernieRecommendation}
+                        <span className="font-semibold">Insider Tip:</span> {activity.bernieRecommendation}
                       </p>
                     </div>
                   )}
