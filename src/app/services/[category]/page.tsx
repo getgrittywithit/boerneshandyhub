@@ -110,7 +110,7 @@ export default async function ServiceCategoryPage({ params }: PageProps) {
     },
     provider: {
       '@type': 'LocalBusiness',
-      name: 'Boerne Handy Hub',
+      name: "Boerne's Handy Hub",
       url: 'https://boerneshandyhub.com',
     },
     serviceType: categoryData.subcategories,

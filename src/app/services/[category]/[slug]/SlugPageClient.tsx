@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import serviceProvidersData from '@/data/serviceProviders.json';
 import { getServiceCategory, serviceCategories, membershipTiers, type MembershipTier } from '@/data/serviceCategories';
-import { getGuidesForCategory, getRelatedCategories } from '@/data/internalLinks';
+import { getLocation, locationCategoryPages, locations } from '@/data/locations';
+import { getSubcategoryPage, getSubcategoriesForCategory } from '@/data/subcategories';
+import { getGuidesForCategory, getRelatedSubcategories, getRelatedCategories } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
-import { getSubcategoriesForCategory } from '@/data/subcategories';
-import { getLocationsByCategory } from '@/data/locations';
 
 interface ServiceProvider {
   id: string;
@@ -37,27 +37,46 @@ interface ServiceProvider {
   updatedAt: string;
 }
 
-interface CategoryPageClientProps {
+interface SlugPageClientProps {
   category: string;
+  slug: string;
+  pageType: 'location' | 'subcategory';
 }
 
-export default function CategoryPageClient({ category }: CategoryPageClientProps) {
+export default function SlugPageClient({ category, slug, pageType }: SlugPageClientProps) {
   const [providers, setProviders] = useState<ServiceProvider[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('rating');
   const [filterTier, setFilterTier] = useState('all');
-  const [filterSubcategory, setFilterSubcategory] = useState('all');
 
   const categoryData = getServiceCategory(category);
+  const location = pageType === 'location' ? getLocation(slug) : null;
+  const subcategoryPage = pageType === 'subcategory' ? getSubcategoryPage(category, slug) : null;
 
   useEffect(() => {
-    // Load providers for this category
-    const categoryProviders = serviceProvidersData.providers.filter(
+    let filteredProviders = serviceProvidersData.providers.filter(
       p => p.category === category
     ) as ServiceProvider[];
-    setProviders(categoryProviders);
+
+    if (pageType === 'location' && location) {
+      // Filter by service area
+      filteredProviders = filteredProviders.filter(p =>
+        p.serviceArea.some(area =>
+          area.toLowerCase().includes(location.name.toLowerCase())
+        )
+      );
+    } else if (pageType === 'subcategory' && subcategoryPage) {
+      // Filter by subcategory
+      filteredProviders = filteredProviders.filter(p =>
+        p.subcategories.some(sub =>
+          sub.toLowerCase().includes(subcategoryPage.subcategory.toLowerCase())
+        )
+      );
+    }
+
+    setProviders(filteredProviders);
     setLoading(false);
-  }, [category]);
+  }, [category, slug, pageType, location, subcategoryPage]);
 
   const getTierBadge = (tier: MembershipTier) => {
     switch (tier) {
@@ -74,15 +93,9 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
     }
   };
 
-  // Get unique subcategories from providers
-  const availableSubcategories = Array.from(
-    new Set(providers.flatMap(p => p.subcategories))
-  ).sort();
-
   const sortedAndFilteredProviders = providers
     .filter(provider => {
       if (filterTier !== 'all' && provider.membershipTier !== filterTier) return false;
-      if (filterSubcategory !== 'all' && !provider.subcategories.includes(filterSubcategory)) return false;
       return true;
     })
     .sort((a, b) => {
@@ -105,8 +118,7 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
       <div className="bg-boerne-light-gray min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">?</div>
-          <h1 className="text-2xl font-bold text-boerne-navy mb-4">Category Not Found</h1>
-          <p className="text-boerne-dark-gray mb-6">We couldn't find the service category you're looking for.</p>
+          <h1 className="text-2xl font-bold text-boerne-navy mb-4">Page Not Found</h1>
           <Link
             href="/services"
             className="px-6 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
@@ -129,6 +141,15 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
     );
   }
 
+  // Page title and description based on type
+  const pageTitle = pageType === 'location'
+    ? `${categoryData.name} in ${location?.name}`
+    : subcategoryPage?.h1 || `${subcategoryPage?.subcategory} Services`;
+
+  const pageDescription = pageType === 'location'
+    ? `Find trusted ${categoryData.name.toLowerCase()} professionals serving ${location?.name}, Texas and the surrounding Hill Country area.`
+    : subcategoryPage?.intro || categoryData.description;
+
   return (
     <div className="bg-boerne-light-gray min-h-screen">
       {/* Header */}
@@ -137,19 +158,48 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
           <div className="text-center">
             <div className="text-6xl mb-4">{categoryData.icon}</div>
             <h1 className="text-4xl font-bold text-white mb-4">
-              {categoryData.name} in Boerne
+              {pageTitle}
             </h1>
             <p className="text-xl text-boerne-gold mb-6 max-w-2xl mx-auto">
-              {categoryData.description}
+              {pageDescription}
             </p>
             <nav className="flex items-center justify-center space-x-2 text-sm text-boerne-gold">
-              <Link href="/services" className="hover:text-white">Home Services</Link>
+              <Link href="/" className="hover:text-white">Home</Link>
               <span>›</span>
-              <span className="text-white">{categoryData.name}</span>
+              <Link href="/services" className="hover:text-white">Services</Link>
+              <span>›</span>
+              <Link href={`/services/${category}`} className="hover:text-white">{categoryData.name}</Link>
+              <span>›</span>
+              <span className="text-white">
+                {pageType === 'location' ? location?.name : subcategoryPage?.subcategory}
+              </span>
             </nav>
           </div>
         </div>
       </div>
+
+      {/* Location Info (for location pages) */}
+      {pageType === 'location' && location && (
+        <div className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-boerne-navy">
+                  Serving {location.name}, {location.county} County
+                </h2>
+                <p className="text-sm text-boerne-dark-gray">
+                  Also serving: {location.nearbyAreas.join(', ')}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="bg-boerne-light-gray text-boerne-dark-gray text-xs px-3 py-1 rounded-full">
+                  ZIP: {location.zipCodes.join(', ')}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filters and Sort */}
       <div className="bg-white shadow-sm border-b">
@@ -190,25 +240,6 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
                   <option value="basic">Basic Only</option>
                 </select>
               </div>
-
-              {availableSubcategories.length > 0 && (
-                <div>
-                  <label htmlFor="filterSubcategory" className="text-sm font-medium text-boerne-dark-gray mr-2">
-                    Service:
-                  </label>
-                  <select
-                    id="filterSubcategory"
-                    value={filterSubcategory}
-                    onChange={(e) => setFilterSubcategory(e.target.value)}
-                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
-                  >
-                    <option value="all">All Services</option>
-                    {availableSubcategories.map(sub => (
-                      <option key={sub} value={sub}>{sub}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
             </div>
 
             <div className="text-sm text-boerne-dark-gray">
@@ -222,19 +253,19 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {sortedAndFilteredProviders.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">?</div>
+            <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-semibold text-boerne-navy mb-2">No providers found</h3>
-            <p className="text-boerne-dark-gray mb-4">Try adjusting your filters to see more results.</p>
-            <button
-              onClick={() => {
-                setSortBy('rating');
-                setFilterTier('all');
-                setFilterSubcategory('all');
-              }}
+            <p className="text-boerne-dark-gray mb-4">
+              {pageType === 'location'
+                ? `We're still adding ${categoryData.name.toLowerCase()} providers in ${location?.name}. Check back soon!`
+                : `We're still adding providers for this service. Check back soon!`}
+            </p>
+            <Link
+              href={`/services/${category}`}
               className="px-4 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
             >
-              Clear Filters
-            </button>
+              View All {categoryData.name} Providers
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -245,7 +276,7 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-boerne-navy mb-1">{provider.name}</h3>
                       <p className="text-sm text-boerne-dark-gray mb-2">
-                        {provider.subcategories.slice(0, 2).join(' - ')}
+                        {provider.subcategories.slice(0, 2).join(' • ')}
                       </p>
                     </div>
                     {getTierBadge(provider.membershipTier)}
@@ -253,7 +284,7 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
 
                   <div className="flex items-center gap-2 mb-3">
                     <div className="flex items-center">
-                      <span className="text-yellow-400">*</span>
+                      <span className="text-yellow-400">★</span>
                       <span className="font-medium ml-1">{provider.rating}</span>
                     </div>
                     <span className="text-boerne-dark-gray text-sm">
@@ -286,7 +317,7 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
                   {provider.specialOffers && provider.specialOffers.length > 0 && (
                     <div className="bg-yellow-50 border border-yellow-200 p-2 rounded-lg mb-4">
                       <span className="text-yellow-700 text-xs font-medium">
-                        {provider.specialOffers[0]}
+                        🎉 {provider.specialOffers[0]}
                       </span>
                     </div>
                   )}
@@ -294,11 +325,11 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
                   {provider.bernieRecommendation && (
                     <div className="bg-boerne-light-gray p-3 rounded-lg mb-4">
                       <div className="flex items-start gap-2">
-                        <span className="text-lg">B</span>
+                        <span className="text-lg">🤠</span>
                         <div>
                           <div className="text-xs font-medium text-boerne-navy mb-1">Bernie says:</div>
                           <p className="text-xs text-boerne-dark-gray italic line-clamp-2">
-                            "{provider.bernieRecommendation}"
+                            &quot;{provider.bernieRecommendation}&quot;
                           </p>
                         </div>
                       </div>
@@ -307,7 +338,7 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
 
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-boerne-dark-gray">
-                      {provider.serviceArea[0] || 'Boerne'}
+                      📍 {provider.serviceArea[0]}
                     </div>
                     <Link
                       href={`/services/${category}/${provider.id}`}
@@ -320,10 +351,10 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
                   {provider.claimStatus === 'unclaimed' && (
                     <div className="mt-3 pt-3 border-t border-gray-100">
                       <Link
-                        href="/business"
+                        href="/business/onboard"
                         className="text-xs text-boerne-gold hover:text-boerne-gold-alt"
                       >
-                        Own this business? Claim it
+                        Own this business? Claim it →
                       </Link>
                     </div>
                   )}
@@ -334,18 +365,93 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
         )}
       </div>
 
-      {/* Subcategory Quick Links */}
-      {(() => {
-        const subcategories = getSubcategoriesForCategory(category);
-        if (subcategories.length === 0) return null;
+      {/* Related Locations (for location pages) */}
+      {pageType === 'location' && location && (
+        <div className="bg-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-bold text-boerne-navy mb-6">
+              {categoryData.name} in Nearby Areas
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {location.nearbyAreas.map(area => {
+                const areaSlug = area.toLowerCase().replace(/\s+/g, '-');
+                const hasPage = locationCategoryPages.some(
+                  p => p.category === category && p.location === areaSlug
+                );
+                return hasPage ? (
+                  <Link
+                    key={area}
+                    href={`/services/${category}/${areaSlug}`}
+                    className="px-4 py-2 bg-boerne-light-gray text-boerne-navy rounded-lg hover:bg-boerne-gold hover:text-boerne-navy transition-colors"
+                  >
+                    {categoryData.name} in {area}
+                  </Link>
+                ) : (
+                  <Link
+                    key={area}
+                    href={`/services/${category}`}
+                    className="px-4 py-2 bg-boerne-light-gray text-boerne-navy rounded-lg hover:bg-boerne-gold hover:text-boerne-navy transition-colors"
+                  >
+                    {categoryData.name} in {area}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Other Services in This Location (for location pages) */}
+      {pageType === 'location' && location && (() => {
+        const otherCategoriesInLocation = locationCategoryPages
+          .filter(p => p.location === slug && p.category !== category)
+          .map(p => serviceCategories.find(c => c.slug === p.category))
+          .filter(Boolean);
+        if (otherCategoriesInLocation.length === 0) return null;
         return (
-          <div className="bg-white py-12 border-t">
+          <div className="bg-boerne-light-gray py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-2xl font-bold text-boerne-navy mb-6">
-                {categoryData.name} Services
+                Other Services in {location.name}
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {subcategories.map(sub => (
+              <div className="flex flex-wrap gap-4">
+                {otherCategoriesInLocation.slice(0, 6).map(cat => cat && (
+                  <Link
+                    key={cat.slug}
+                    href={`/services/${cat.slug}/${slug}`}
+                    className="flex items-center gap-3 px-5 py-3 bg-white rounded-lg hover:bg-boerne-gold transition-colors shadow-sm"
+                  >
+                    <span className="text-2xl">{cat.icon}</span>
+                    <span className="font-medium text-boerne-navy">{cat.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Related Services (for subcategory pages) */}
+      {pageType === 'subcategory' && (() => {
+        const relatedSubSlugs = getRelatedSubcategories(slug);
+        const allSubcategories = getSubcategoriesForCategory(category);
+        const relatedSubs = relatedSubSlugs
+          .map(s => allSubcategories.find(sub => sub.slug === s))
+          .filter(Boolean);
+        const otherSubs = allSubcategories
+          .filter(sub => sub.slug !== slug && !relatedSubSlugs.includes(sub.slug))
+          .slice(0, 3);
+        const displaySubs = [...relatedSubs, ...otherSubs].slice(0, 4);
+
+        if (displaySubs.length === 0) return null;
+        return (
+          <div className="bg-white py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-2xl font-bold text-boerne-navy mb-6">
+                Related {categoryData.name} Services
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {displaySubs.map(sub => sub && (
                   <Link
                     key={sub.slug}
                     href={`/services/${category}/${sub.slug}`}
@@ -355,7 +461,7 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
                       {sub.subcategory}
                     </h3>
                     <p className="text-sm text-boerne-dark-gray mt-1 line-clamp-2">
-                      {sub.title.replace(' | Boerne\'s Handy Hub', '')}
+                      {sub.description.slice(0, 80)}...
                     </p>
                   </Link>
                 ))}
@@ -365,42 +471,13 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
         );
       })()}
 
-      {/* Location Quick Links */}
-      {(() => {
-        const locationSlugs = getLocationsByCategory(category);
-        if (locationSlugs.length === 0) return null;
-        return (
-          <div className="bg-boerne-light-gray py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-2xl font-bold text-boerne-navy mb-6">
-                {categoryData.name} by Location
-              </h2>
-              <div className="flex flex-wrap gap-3">
-                {locationSlugs.map(locSlug => {
-                  const locationName = locSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                  return (
-                    <Link
-                      key={locSlug}
-                      href={`/services/${category}/${locSlug}`}
-                      className="px-4 py-2 bg-white text-boerne-navy rounded-lg hover:bg-boerne-gold transition-colors shadow-sm"
-                    >
-                      {categoryData.name} in {locationName}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
       {/* Related Guides */}
       {(() => {
         const guideSlugs = getGuidesForCategory(category);
-        const relatedGuides = guideSlugs.map(slug => guides.find(g => g.slug === slug)).filter(Boolean);
+        const relatedGuides = guideSlugs.map(s => guides.find(g => g.slug === s)).filter(Boolean);
         if (relatedGuides.length === 0) return null;
         return (
-          <div className="bg-white py-12 border-t">
+          <div className={`${pageType === 'location' ? 'bg-white' : 'bg-boerne-light-gray'} py-12`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-2xl font-bold text-boerne-navy mb-6">
                 Helpful {categoryData.name} Guides
@@ -410,7 +487,7 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
                   <Link
                     key={guide.slug}
                     href={`/guides/${guide.slug}`}
-                    className="p-6 bg-boerne-light-gray rounded-lg hover:shadow-lg transition-shadow group"
+                    className={`p-6 ${pageType === 'location' ? 'bg-boerne-light-gray' : 'bg-white'} rounded-lg hover:shadow-lg transition-shadow group`}
                   >
                     <h3 className="font-semibold text-boerne-navy mb-2 group-hover:text-boerne-gold">
                       {guide.title}
@@ -429,25 +506,25 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
         );
       })()}
 
-      {/* Related Service Categories */}
+      {/* Related Categories */}
       {(() => {
         const relatedCategorySlugs = getRelatedCategories(category);
         const relatedCats = relatedCategorySlugs
-          .map(slug => serviceCategories.find(c => c.slug === slug))
+          .map(s => serviceCategories.find(c => c.slug === s))
           .filter(Boolean);
         if (relatedCats.length === 0) return null;
         return (
-          <div className="bg-boerne-light-gray py-12">
+          <div className={`${pageType === 'subcategory' ? 'bg-white' : 'bg-boerne-light-gray'} py-12`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-2xl font-bold text-boerne-navy mb-6">
-                Related Services
+                You Might Also Need
               </h2>
               <div className="flex flex-wrap gap-4">
                 {relatedCats.slice(0, 4).map(cat => cat && (
                   <Link
                     key={cat.slug}
                     href={`/services/${cat.slug}`}
-                    className="flex items-center gap-3 px-5 py-3 bg-white rounded-lg hover:bg-boerne-gold transition-colors shadow-sm"
+                    className={`flex items-center gap-3 px-5 py-3 ${pageType === 'subcategory' ? 'bg-boerne-light-gray' : 'bg-white'} rounded-lg hover:bg-boerne-gold transition-colors shadow-sm`}
                   >
                     <span className="text-2xl">{cat.icon}</span>
                     <span className="font-medium text-boerne-navy">{cat.name}</span>
@@ -466,13 +543,13 @@ export default function CategoryPageClient({ category }: CategoryPageClientProps
             Are you a {categoryData.name.toLowerCase()} professional?
           </h2>
           <p className="text-boerne-gold mb-6">
-            Join Boerne's Handy Hub and connect with homeowners looking for your services.
+            Join Boerne&apos;s Handy Hub and connect with customers in {location?.name || 'Boerne'} and beyond.
           </p>
           <Link
             href="/business/onboard"
             className="px-6 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
           >
-            Get Listed
+            Get Listed Today
           </Link>
         </div>
       </div>

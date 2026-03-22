@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     'Kendall County services',
   ],
   openGraph: {
-    title: 'Find Local Services in Boerne, TX | Boerne Handy Hub',
+    title: "Find Local Services in Boerne, TX | Boerne's Handy Hub",
     description: `Browse ${serviceCategories.length}+ service categories and connect with trusted local professionals in Boerne, Texas.`,
     type: 'website',
     locale: 'en_US',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Find Local Services in Boerne, TX | Boerne Handy Hub',
+    title: "Find Local Services in Boerne, TX | Boerne's Handy Hub",
     description: `Browse ${serviceCategories.length}+ service categories and connect with trusted local professionals in Boerne, Texas.`,
   },
   alternates: {
@@ -54,11 +54,11 @@ export default function ServicesPage() {
     })),
   };
 
-  // Organization schema for Boerne Handy Hub
+  // Organization schema for Boerne's Handy Hub
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Boerne Handy Hub',
+    name: "Boerne's Handy Hub",
     url: 'https://boerneshandyhub.com',
     description: 'Local service directory connecting Boerne, Texas residents with trusted home, auto, business, and pet service providers.',
     areaServed: {

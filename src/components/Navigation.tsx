@@ -80,7 +80,7 @@ export default function Navigation() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <span className="text-xl font-bold text-boerne-gold hover:text-boerne-gold-alt transition-colors">
-                Boerne Handy Hub
+                Boerne's Handy Hub
               </span>
             </Link>
 
