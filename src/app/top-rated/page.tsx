@@ -5,6 +5,27 @@ import { getServiceCategory, serviceCategories } from '@/data/serviceCategories'
 import { getAggregatePageLinks } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
 
+interface ServiceProvider {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  address: string;
+  phone: string;
+  email: string;
+  website?: string;
+  licensed: boolean;
+  insured: boolean;
+  services: string[];
+  serviceArea: string[];
+  rating: number;
+  reviewCount: number;
+  membershipTier: string;
+  claimStatus: string;
+  yearsInBusiness?: number;
+  bernieRecommendation?: string;
+}
+
 export const metadata: Metadata = {
   title: "Top Rated Service Providers in Boerne TX | Boerne's Handy Hub",
   description: 'Discover the highest-rated service providers in Boerne, Texas. 4.5+ star rated professionals trusted by your neighbors for quality home services.',
@@ -22,7 +43,7 @@ export const metadata: Metadata = {
 
 export default function TopRatedPage() {
   // Filter providers with 4.5+ rating, sorted by rating then review count
-  const topRatedProviders = serviceProvidersData.providers
+  const topRatedProviders = (serviceProvidersData.providers as ServiceProvider[])
     .filter(provider => provider.rating >= 4.5)
     .sort((a, b) => {
       if (b.rating !== a.rating) return b.rating - a.rating;

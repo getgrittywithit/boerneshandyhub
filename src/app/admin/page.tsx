@@ -73,7 +73,7 @@ export default function AdminDashboard() {
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500">Welcome to Boerne Handy Hub admin panel</p>
+        <p className="text-gray-500">Welcome to Boerne's Handy Hub admin panel</p>
       </div>
 
       {/* Stats Grid */}

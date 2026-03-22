@@ -26,14 +26,14 @@ interface SiteSettings {
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: 'Boerne Handy Hub',
+  siteName: "Boerne's Handy Hub",
   siteTagline: 'Find trusted home services in Boerne, Texas',
-  contactEmail: 'hello@boernehandyhub.com',
+  contactEmail: 'hello@boerneshandyhub.com',
   contactPhone: '(830) 555-0000',
   socialLinks: {
-    facebook: 'https://facebook.com/boernehandyhub',
-    instagram: 'https://instagram.com/boernehandyhub',
-    twitter: 'https://twitter.com/boernehandyhub',
+    facebook: 'https://facebook.com/boerneshandyhub',
+    instagram: 'https://instagram.com/boerneshandyhub',
+    twitter: 'https://twitter.com/boerneshandyhub',
   },
   features: {
     chatEnabled: true,
@@ -42,7 +42,7 @@ const defaultSettings: SiteSettings = {
     marketplaceEnabled: true,
   },
   seo: {
-    metaTitle: 'Boerne Handy Hub | Find Trusted Home Services in Boerne, TX',
+    metaTitle: "Boerne's Handy Hub | Find Trusted Home Services in Boerne, TX",
     metaDescription: 'Connect with licensed, insured, and highly-rated local professionals in Boerne, Texas. From plumbers to contractors, find the right service provider for your home.',
   },
 };
@@ -346,7 +346,7 @@ export default function AdminSettings() {
                     <p className="text-blue-600 text-lg hover:underline cursor-pointer">
                       {settings.seo.metaTitle}
                     </p>
-                    <p className="text-green-700 text-sm">boernehandyhub.com</p>
+                    <p className="text-green-700 text-sm">boerneshandyhub.com</p>
                     <p className="text-gray-600 text-sm mt-1">
                       {settings.seo.metaDescription}
                     </p>

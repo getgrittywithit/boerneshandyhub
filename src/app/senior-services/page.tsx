@@ -5,6 +5,28 @@ import { getServiceCategory, serviceCategories } from '@/data/serviceCategories'
 import { getAggregatePageLinks } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
 
+interface ServiceProvider {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  address: string;
+  phone: string;
+  email: string;
+  website?: string;
+  licensed: boolean;
+  insured: boolean;
+  services: string[];
+  serviceArea: string[];
+  rating: number;
+  reviewCount: number;
+  membershipTier: string;
+  claimStatus: string;
+  yearsInBusiness?: number;
+  keywords: string[];
+  specialOffers?: string[];
+}
+
 export const metadata: Metadata = {
   title: "Senior-Friendly Home Services in Boerne TX | Boerne's Handy Hub",
   description: 'Find trusted, patient, and reliable home service providers in Boerne who specialize in helping seniors. From home repairs to lawn care, get the help you need.',
@@ -31,7 +53,7 @@ const seniorFriendlyCategories = [
 
 export default function SeniorServicesPage() {
   // Get providers who offer senior discounts or have relevant keywords
-  const seniorFriendlyProviders = serviceProvidersData.providers
+  const seniorFriendlyProviders = (serviceProvidersData.providers as ServiceProvider[])
     .filter(provider => {
       const allText = [
         ...provider.keywords,

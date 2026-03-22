@@ -124,7 +124,7 @@ export default function WeddingWebsite() {
             href="https://boerneshandyhub.com" 
             className="bg-pink-600 text-white px-8 py-3 rounded-lg hover:bg-pink-700 transition-all"
           >
-            Visit Boerne Handy Hub
+            Visit Boerne's Handy Hub
           </a>
         </div>
       </div>

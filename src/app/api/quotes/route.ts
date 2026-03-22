@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     // Example:
     // await sendEmail({
     //   to: body.providerEmail,
-    //   subject: `New Quote Request from ${body.name} via Boerne Handy Hub`,
+    //   subject: `New Quote Request from ${body.name} via Boerne's Handy Hub`,
     //   body: formatQuoteEmail(body),
     // });
 

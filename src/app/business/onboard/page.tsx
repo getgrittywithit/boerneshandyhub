@@ -17,7 +17,7 @@ export default function BusinessOnboarding() {
   const steps: OnboardingStep[] = [
     {
       id: 'welcome',
-      title: 'Welcome to Boerne Handy Hub',
+      title: "Welcome to Boerne's Handy Hub",
       description: 'Get your business verified and meet Bernie!',
       completed: currentStep !== 'welcome'
     },
@@ -47,7 +47,7 @@ export default function BusinessOnboarding() {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-boerne-navy mb-4">
-              Welcome to Boerne Handy Hub! 🤠
+              Welcome to Boerne's Handy Hub! 🤠
             </h1>
             <p className="text-xl text-boerne-dark-gray max-w-2xl mx-auto">
               Let&apos;s get your business set up and introduce you to Bernie, 
@@ -238,7 +238,7 @@ export default function BusinessOnboarding() {
               onClick={() => window.location.href = '/'}
               className="px-8 py-3 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors mx-2"
             >
-              Explore Boerne Handy Hub
+              Explore Boerne's Handy Hub
             </button>
             
             <button

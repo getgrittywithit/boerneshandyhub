@@ -305,7 +305,7 @@ export default function QuotesInbox() {
                 {/* Quick Actions */}
                 <div className="flex gap-3">
                   <a
-                    href={`mailto:${selectedQuote.email}?subject=Re: Your quote request on Boerne Handy Hub`}
+                    href={`mailto:${selectedQuote.email}?subject=Re: Your quote request on Boerne's Handy Hub`}
                     className="flex-1 px-4 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-lg text-center hover:bg-boerne-gold-alt transition-colors"
                   >
                     Send Email

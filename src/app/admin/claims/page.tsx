@@ -425,7 +425,7 @@ export default function ClaimsManagement() {
                 {/* Quick Actions */}
                 <div className="flex gap-3 pt-4 border-t">
                   <a
-                    href={`mailto:${selectedClaim.claimerEmail}?subject=Re: Your business claim on Boerne Handy Hub`}
+                    href={`mailto:${selectedClaim.claimerEmail}?subject=Re: Your business claim on Boerne's Handy Hub`}
                     className="flex-1 px-4 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-lg text-center hover:bg-boerne-gold-alt transition-colors"
                   >
                     Email Claimant

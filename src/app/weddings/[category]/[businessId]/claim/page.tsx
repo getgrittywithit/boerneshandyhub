@@ -138,7 +138,7 @@ export default function ClaimBusinessPage() {
               🏢 Claim Your Business Listing
             </h1>
             <p className="text-lg text-boerne-dark-gray">
-              Claim and verify your business to unlock enhanced listing features and manage your presence on Boerne Handy Hub.
+              Claim and verify your business to unlock enhanced listing features and manage your presence on Boerne's Handy Hub.
             </p>
           </div>
 

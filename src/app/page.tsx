@@ -7,12 +7,33 @@ import FloatingChat from "@/components/FloatingChat";
 import { topLevelCategories, getSeasonalSubcategories, serviceCategories } from '@/data/serviceCategories';
 import serviceProvidersData from '@/data/serviceProviders.json';
 
+interface ServiceProvider {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  address: string;
+  phone: string;
+  email: string;
+  website?: string;
+  licensed: boolean;
+  insured: boolean;
+  services: string[];
+  serviceArea: string[];
+  rating: number;
+  reviewCount: number;
+  membershipTier: string;
+  claimStatus: string;
+  yearsInBusiness?: number;
+  bernieRecommendation?: string;
+}
+
 export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Get featured (elite) providers
-  const featuredProviders = serviceProvidersData.providers
+  const featuredProviders = (serviceProvidersData.providers as ServiceProvider[])
     .filter(p => p.membershipTier === 'elite')
     .slice(0, 4);
 

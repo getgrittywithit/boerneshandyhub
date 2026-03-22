@@ -5,6 +5,26 @@ import { getServiceCategory, serviceCategories } from '@/data/serviceCategories'
 import { getAggregatePageLinks } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
 
+interface ServiceProvider {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  address: string;
+  phone: string;
+  email: string;
+  website?: string;
+  licensed: boolean;
+  insured: boolean;
+  services: string[];
+  serviceArea: string[];
+  rating: number;
+  reviewCount: number;
+  membershipTier: string;
+  claimStatus: string;
+  yearsInBusiness?: number;
+}
+
 export const metadata: Metadata = {
   title: "Licensed & Insured Contractors in Boerne TX | Boerne's Handy Hub",
   description: 'Find licensed and insured contractors in Boerne, Texas. Verified professionals for plumbing, electrical, HVAC, roofing, and more. Protect your home with trusted pros.',
@@ -22,7 +42,7 @@ export const metadata: Metadata = {
 
 export default function LicensedContractorsPage() {
   // Filter providers that are both licensed and insured
-  const licensedProviders = serviceProvidersData.providers
+  const licensedProviders = (serviceProvidersData.providers as ServiceProvider[])
     .filter(provider => provider.licensed && provider.insured)
     .sort((a, b) => b.rating - a.rating);
 
