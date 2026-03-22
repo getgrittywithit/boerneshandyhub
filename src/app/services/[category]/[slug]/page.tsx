@@ -79,7 +79,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         `${categoryData.name.toLowerCase()} ${location.name}`,
         `${categoryData.name.toLowerCase()} ${location.name} TX`,
         `${categoryData.name.toLowerCase()} near ${location.name}`,
-        ...categoryData.subcategories.map(sub => `${sub.toLowerCase()} ${location.name}`),
         location.name,
         'Texas Hill Country',
         location.county + ' County',
@@ -204,7 +203,7 @@ export default async function SlugPage({ params }: PageProps) {
       url: 'https://boerneshandyhub.com',
     },
     serviceType: pageType === 'location'
-      ? categoryData.subcategories
+      ? [categoryData.name]
       : [subcategoryPage?.subcategory],
   };
 
