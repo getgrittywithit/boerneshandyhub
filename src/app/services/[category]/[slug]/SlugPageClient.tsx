@@ -321,7 +321,7 @@ export default function SlugPageClient({ topCategorySlug, subcategorySlug }: Slu
           <h2 className="text-3xl font-semibold text-white mb-4">
             Offer {subcategory.name} Services?
           </h2>
-          <p className="text-lg text-white/80 mb-8">
+          <p className="text-lg text-white mb-8">
             Get your business listed and connect with customers in Boerne looking for {subcategory.name.toLowerCase()} services.
           </p>
           <Link

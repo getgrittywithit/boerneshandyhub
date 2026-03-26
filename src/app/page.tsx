@@ -350,7 +350,7 @@ export default function Home() {
           <h2 className="text-3xl lg:text-4xl font-semibold text-white">
             Are you a service provider?
           </h2>
-          <p className="mt-4 text-lg text-white/80 max-w-2xl mx-auto">
+          <p className="mt-4 text-lg text-white max-w-2xl mx-auto">
             Join Boerne's Handy Hub and connect with customers looking for your services.
             Get listed today and grow your business.
           </p>

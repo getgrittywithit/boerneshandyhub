@@ -169,7 +169,7 @@ export default function ServicesPageClient() {
           <h2 className="text-3xl font-semibold text-white mb-4">
             Are you a service provider?
           </h2>
-          <p className="text-lg text-white/80 mb-8">
+          <p className="text-lg text-white mb-8">
             Get your business listed on Boerne&apos;s Handy Hub and connect with local customers.
           </p>
           <Link

@@ -156,7 +156,7 @@ export default function CategoryPageClient({ categorySlug }: CategoryPageClientP
           <h2 className="text-3xl font-semibold text-white mb-4">
             Offer {category.name} Services?
           </h2>
-          <p className="text-lg text-white/80 mb-8">
+          <p className="text-lg text-white mb-8">
             Get your business listed and connect with customers in Boerne looking for {category.name.toLowerCase()} services.
           </p>
           <Link
