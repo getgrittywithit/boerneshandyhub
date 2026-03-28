@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { getServiceCategory, membershipTiers, type MembershipTier } from '@/data/serviceCategories';
 import QuoteRequestForm from '@/components/QuoteRequestForm';
+import ProviderSEOContent from '@/components/ProviderSEOContent';
 import serviceProvidersData from '@/data/serviceProviders.json';
 
 interface ServiceProvider {
@@ -302,6 +303,22 @@ export default function ProviderPageClient({ category, providerId, provider }: P
               </div>
             </div>
           </div>
+        </div>
+
+        {/* SEO Content Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ProviderSEOContent
+            providerName={provider.name}
+            categoryName={categoryData?.name || 'Service'}
+            description={provider.description}
+            services={provider.services}
+            serviceArea={provider.serviceArea}
+            yearsInBusiness={provider.yearsInBusiness}
+            licensed={provider.licensed}
+            insured={provider.insured}
+            rating={provider.rating}
+            reviewCount={provider.reviewCount}
+          />
         </div>
       </div>
 
