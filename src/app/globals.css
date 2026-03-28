@@ -3,6 +3,16 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Boerne brand colors */
+  --color-boerne-navy: #1B365D;
+  --color-boerne-gold: #F5A623;
+  --color-boerne-gold-alt: #FF8C00;
+  --color-boerne-green: #7BA05B;
+  --color-boerne-light-blue: #4A90B8;
+  --color-boerne-white: #FFFFFF;
+  --color-boerne-light-gray: #F8F9FA;
+  --color-boerne-dark-gray: #2C3E50;
 }
 
 /* Force light mode for Boerne's Handy Hub */
