@@ -72,7 +72,7 @@ export default function Home() {
                   placeholder="What service do you need? (e.g., plumber, mechanic, landscaping...)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 px-6 py-4 rounded-l-xl text-lg focus:outline-none focus:ring-2 focus:ring-boerne-gold"
+                  className="flex-1 px-6 py-4 rounded-l-xl text-lg bg-white text-gray-900 placeholder-gray-500 border-2 border-white focus:outline-none focus:ring-2 focus:ring-boerne-gold shadow-lg"
                 />
                 <button
                   type="submit"
