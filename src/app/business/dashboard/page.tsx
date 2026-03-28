@@ -152,16 +152,37 @@ export default function BusinessDashboardPage() {
             )}
           </div>
         </div>
-        {business.membership_tier === 'basic' && (
-          <div className="mt-4 p-4 bg-boerne-gold/10 rounded-lg border border-boerne-gold/20">
-            <p className="text-sm text-boerne-navy">
-              <strong>Upgrade your listing</strong> to get more visibility and leads.{' '}
-              <Link href="/business/dashboard/settings" className="text-boerne-gold hover:underline">
-                View plans
-              </Link>
-            </p>
-          </div>
-        )}
+        {(() => {
+          const allSubcategories = (business as any).subcategories || [];
+          const activeSubcategories = (business as any).active_subcategories || allSubcategories.slice(0, 1);
+          const inactiveCount = allSubcategories.length - activeSubcategories.length;
+
+          if (inactiveCount > 0 && business.membership_tier !== 'elite') {
+            return (
+              <div className="mt-4 p-4 bg-boerne-gold/10 rounded-lg border border-boerne-gold/20">
+                <p className="text-sm text-boerne-navy">
+                  <strong>You have {inactiveCount} inactive {inactiveCount === 1 ? 'category' : 'categories'}!</strong>{' '}
+                  Upgrade to appear in all {allSubcategories.length} categories you selected.{' '}
+                  <Link href="/business/dashboard/settings" className="text-boerne-gold hover:underline">
+                    View plans
+                  </Link>
+                </p>
+              </div>
+            );
+          } else if (business.membership_tier === 'basic') {
+            return (
+              <div className="mt-4 p-4 bg-boerne-gold/10 rounded-lg border border-boerne-gold/20">
+                <p className="text-sm text-boerne-navy">
+                  <strong>Upgrade your listing</strong> to get more visibility and leads.{' '}
+                  <Link href="/business/dashboard/settings" className="text-boerne-gold hover:underline">
+                    View plans
+                  </Link>
+                </p>
+              </div>
+            );
+          }
+          return null;
+        })()}
       </div>
 
       {/* Stats Grid */}

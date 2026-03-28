@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { topLevelCategories, getAllSubcategories, membershipTiers } from '@/data/serviceCategories';
 import { locations } from '@/data/locations';
 
-// New registrations start at Basic tier
-const REGISTRATION_CATEGORY_LIMIT = membershipTiers.basic.categoryLimit;
+// Registration allows selecting up to 5 categories (for upsell data)
+const MAX_SELECTABLE_CATEGORIES = 5;
+// But only 1 is active on Basic tier
+const BASIC_ACTIVE_CATEGORIES = membershipTiers.basic.categoryLimit;
 
 interface FormData {
   // Step 1: Business Info
@@ -99,10 +101,10 @@ export default function BusinessRegistrationForm() {
           newErrors.topCategory = 'Please select a category';
         }
         if (formData.subcategories.length === 0) {
-          newErrors.subcategories = 'Please select a service type';
+          newErrors.subcategories = 'Please select at least one service type';
         }
-        if (formData.subcategories.length > REGISTRATION_CATEGORY_LIMIT) {
-          newErrors.subcategories = `Basic plan allows ${REGISTRATION_CATEGORY_LIMIT} category. Upgrade for more.`;
+        if (formData.subcategories.length > MAX_SELECTABLE_CATEGORIES) {
+          newErrors.subcategories = `Maximum ${MAX_SELECTABLE_CATEGORIES} categories allowed`;
         }
         if (!formData.description || formData.description.length < 50) {
           newErrors.description = 'Description must be at least 50 characters';
@@ -200,14 +202,15 @@ export default function BusinessRegistrationForm() {
       // Always allow deselection
       updateField('subcategories', formData.subcategories.filter(s => s !== slug));
     } else {
-      // Only allow selection if under the limit
-      if (formData.subcategories.length < REGISTRATION_CATEGORY_LIMIT) {
+      // Allow selection up to max (5 categories for upsell data)
+      if (formData.subcategories.length < MAX_SELECTABLE_CATEGORIES) {
         updateField('subcategories', [...formData.subcategories, slug]);
       }
     }
   };
 
-  const isAtCategoryLimit = formData.subcategories.length >= REGISTRATION_CATEGORY_LIMIT;
+  const isAtMaxSelection = formData.subcategories.length >= MAX_SELECTABLE_CATEGORIES;
+  const hasExtraCategories = formData.subcategories.length > BASIC_ACTIVE_CATEGORIES;
 
   const handleSubmit = async () => {
     if (!validateStep(5)) return;
@@ -328,19 +331,23 @@ export default function BusinessRegistrationForm() {
             {formData.topCategory && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Service Type * <span className="font-normal text-gray-500">(select {REGISTRATION_CATEGORY_LIMIT})</span>
+                  Service Types * <span className="font-normal text-gray-500">(select up to {MAX_SELECTABLE_CATEGORIES})</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {availableSubcategories.map((sub) => {
+                  {availableSubcategories.map((sub, index) => {
                     const isSelected = formData.subcategories.includes(sub.slug);
-                    const isLocked = !isSelected && isAtCategoryLimit;
+                    const selectionIndex = formData.subcategories.indexOf(sub.slug);
+                    const isFirstSelection = selectionIndex === 0;
+                    const isLocked = !isSelected && isAtMaxSelection;
 
                     return (
                       <label
                         key={sub.slug}
                         className={`flex items-center gap-2 p-3 border rounded-lg transition-colors ${
                           isSelected
-                            ? 'border-boerne-gold bg-boerne-gold/10 cursor-pointer'
+                            ? isFirstSelection
+                              ? 'border-green-500 bg-green-50 cursor-pointer'
+                              : 'border-boerne-gold bg-boerne-gold/10 cursor-pointer'
                             : isLocked
                             ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
                             : 'border-gray-200 hover:border-gray-300 cursor-pointer'
@@ -355,6 +362,12 @@ export default function BusinessRegistrationForm() {
                         />
                         <span>{sub.icon}</span>
                         <span className="text-sm">{sub.name}</span>
+                        {isSelected && isFirstSelection && (
+                          <span className="ml-auto text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">Active</span>
+                        )}
+                        {isSelected && !isFirstSelection && (
+                          <span className="ml-auto text-xs bg-gray-300 text-gray-600 px-2 py-0.5 rounded-full">Upgrade</span>
+                        )}
                         {isLocked && <span className="ml-auto text-gray-400">🔒</span>}
                       </label>
                     );
@@ -362,15 +375,23 @@ export default function BusinessRegistrationForm() {
                 </div>
                 {errors.subcategories && <p className="text-red-500 text-sm mt-1">{errors.subcategories}</p>}
 
-                {/* Upsell prompt */}
-                {isAtCategoryLimit && (
-                  <div className="mt-4 p-4 bg-boerne-gold/10 border border-boerne-gold/20 rounded-lg">
-                    <p className="text-sm text-boerne-navy">
-                      <strong>Want to list in more categories?</strong> Upgrade your plan after registration to appear in up to 5 categories.{' '}
-                      <Link href="/pricing" className="text-boerne-gold hover:underline">
-                        View plans
-                      </Link>
-                    </p>
+                {/* Info about active vs upgrade categories */}
+                {formData.subcategories.length > 0 && (
+                  <div className={`mt-4 p-4 rounded-lg ${hasExtraCategories ? 'bg-boerne-gold/10 border border-boerne-gold/20' : 'bg-green-50 border border-green-200'}`}>
+                    {hasExtraCategories ? (
+                      <div className="text-sm text-boerne-navy">
+                        <p className="font-semibold mb-1">
+                          Your listing will appear in: <span className="text-green-600">{formData.subcategories[0]}</span>
+                        </p>
+                        <p className="text-gray-600">
+                          Upgrade after registration to also appear in: {formData.subcategories.slice(1).join(', ')}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-green-700">
+                        Your listing will appear in <strong>{formData.subcategories[0]}</strong>. Select more categories above if you offer additional services.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

@@ -5,8 +5,10 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// New registrations start at Basic tier with 1 category limit
-const BASIC_CATEGORY_LIMIT = 1;
+// Registration allows selecting up to 5 categories (for upsell)
+const MAX_SELECTABLE_CATEGORIES = 5;
+// Basic tier has 1 active category
+const BASIC_ACTIVE_CATEGORIES = 1;
 
 interface RegistrationData {
   name: string;
@@ -39,8 +41,8 @@ function validateData(data: RegistrationData): string | null {
   if (!data.subcategories || data.subcategories.length === 0) {
     return 'At least one subcategory is required';
   }
-  if (data.subcategories.length > BASIC_CATEGORY_LIMIT) {
-    return `Basic plan allows ${BASIC_CATEGORY_LIMIT} category. Upgrade for more.`;
+  if (data.subcategories.length > MAX_SELECTABLE_CATEGORIES) {
+    return `Maximum ${MAX_SELECTABLE_CATEGORIES} categories allowed`;
   }
   if (!data.description || data.description.length < 50) {
     return 'Description must be at least 50 characters';
@@ -166,14 +168,18 @@ export async function POST(request: NextRequest) {
       .replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
 
     // Step 4: Insert into the businesses table with owner_id
+    // Store all selected subcategories, but only activate based on tier limit
+    const activeSubcategories = data.subcategories.slice(0, BASIC_ACTIVE_CATEGORIES);
+
     const { data: insertedData, error: businessError } = await supabase
       .from('businesses')
       .insert([
         {
           id: businessId,
           name: data.name,
-          category: data.subcategories[0], // Primary subcategory
-          subcategories: data.subcategories,
+          category: data.subcategories[0], // Primary subcategory (active)
+          subcategories: data.subcategories, // All selected (for upsell)
+          active_subcategories: activeSubcategories, // Currently active based on tier
           description: data.description,
           address: data.address,
           phone: data.phone,

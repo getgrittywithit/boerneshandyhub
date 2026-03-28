@@ -173,10 +173,10 @@ export default function BusinessProfilePage() {
               const tier = business.membership_tier as keyof typeof membershipTiers;
               const tierConfig = membershipTiers[tier];
               const categoryLimit = tierConfig.categoryLimit;
-              const subcategories = (business as any).subcategories || [];
-              const currentCount = subcategories.length;
-              const isAtLimit = categoryLimit !== Infinity && currentCount >= categoryLimit;
-              const limitDisplay = categoryLimit === Infinity ? 'Unlimited' : categoryLimit;
+              const allSubcategories = (business as any).subcategories || [];
+              const activeSubcategories = (business as any).active_subcategories || allSubcategories.slice(0, 1);
+              const inactiveSubcategories = allSubcategories.filter((cat: string) => !activeSubcategories.includes(cat));
+              const hasInactiveCategories = inactiveSubcategories.length > 0;
 
               return (
                 <>
@@ -184,7 +184,7 @@ export default function BusinessProfilePage() {
                     <div>
                       <h2 className="text-lg font-semibold text-gray-900">Categories</h2>
                       <p className="text-sm text-gray-500">
-                        {currentCount} of {limitDisplay} categories used
+                        {activeSubcategories.length} active of {allSubcategories.length} selected
                       </p>
                     </div>
                     <span className={`px-3 py-1 text-sm font-medium rounded-full ${tierConfig.color}`}>
@@ -192,29 +192,54 @@ export default function BusinessProfilePage() {
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {subcategories.map((cat: string, index: number) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center gap-1 px-3 py-2 bg-boerne-gold/20 text-boerne-navy rounded-lg text-sm font-medium"
-                      >
-                        {cat}
-                      </span>
-                    ))}
+                  {/* Active Categories */}
+                  <div className="mb-4">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Active Listings</p>
+                    <div className="flex flex-wrap gap-2">
+                      {activeSubcategories.map((cat: string, index: number) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center gap-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium"
+                        >
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
-                  {subcategories.length === 0 && (
+                  {/* Inactive Categories (Upsell Opportunity) */}
+                  {hasInactiveCategories && (
+                    <div className="mb-4">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Upgrade to Activate</p>
+                      <div className="flex flex-wrap gap-2">
+                        {inactiveSubcategories.map((cat: string, index: number) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center gap-1 px-3 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm font-medium"
+                          >
+                            <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                            {cat}
+                            <span className="text-xs">🔒</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {allSubcategories.length === 0 && (
                     <p className="text-gray-500 text-sm mb-4">No categories assigned</p>
                   )}
 
-                  {isAtLimit && tier !== 'elite' && (
+                  {/* Upsell Prompt */}
+                  {hasInactiveCategories && tier !== 'elite' && (
                     <div className="p-4 bg-boerne-gold/10 border border-boerne-gold/20 rounded-lg">
                       <p className="text-sm text-boerne-navy">
-                        <strong>Want to list in more categories?</strong>{' '}
+                        <strong>You have {inactiveSubcategories.length} inactive {inactiveSubcategories.length === 1 ? 'category' : 'categories'}!</strong>{' '}
                         <Link href="/business/dashboard/settings" className="text-boerne-gold hover:underline">
                           Upgrade your plan
                         </Link>
-                        {' '}to appear in up to {tier === 'basic' ? '2' : tier === 'verified' ? '5' : 'unlimited'} categories.
+                        {' '}to appear in all {allSubcategories.length} categories you selected.
                       </p>
                     </div>
                   )}
