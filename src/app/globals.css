@@ -1,13 +1,6 @@
 @import "tailwindcss";
 
-:root {
-  --background: #F8F9FA;
-  --foreground: #2C3E50;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -23,28 +16,8 @@ html {
 
 body {
   background: #F8F9FA;
+  color: #2C3E50;
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
-}
-
-/* Ensure Tailwind color utilities override inherited colors */
-.text-white { color: #ffffff !important; }
-.text-white\/60 { color: rgba(255, 255, 255, 0.6) !important; }
-.text-white\/70 { color: rgba(255, 255, 255, 0.7) !important; }
-.text-white\/80 { color: rgba(255, 255, 255, 0.8) !important; }
-.text-white\/50 { color: rgba(255, 255, 255, 0.5) !important; }
-
-/* Base text color - can be overridden by utility classes */
-
-/* Override any dark mode that might be applied */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #F8F9FA;
-    --foreground: #2C3E50;
-  }
-
-  body {
-    background: #F8F9FA;
-  }
 }
