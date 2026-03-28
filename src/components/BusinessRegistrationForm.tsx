@@ -27,6 +27,8 @@ interface FormData {
   ownerName: string;
   ownerEmail: string;
   ownerPhone: string;
+  password: string;
+  confirmPassword: string;
   agreedToTerms: boolean;
 }
 
@@ -47,6 +49,8 @@ const initialFormData: FormData = {
   ownerName: '',
   ownerEmail: '',
   ownerPhone: '',
+  password: '',
+  confirmPassword: '',
   agreedToTerms: false,
 };
 
@@ -139,6 +143,12 @@ export default function BusinessRegistrationForm() {
         if (!formData.ownerPhone) {
           newErrors.ownerPhone = 'Phone number is required';
         }
+        if (!formData.password || formData.password.length < 8) {
+          newErrors.password = 'Password must be at least 8 characters';
+        }
+        if (formData.password !== formData.confirmPassword) {
+          newErrors.confirmPassword = 'Passwords do not match';
+        }
         if (!formData.agreedToTerms) {
           newErrors.agreedToTerms = 'You must agree to the terms';
         }
@@ -204,7 +214,8 @@ export default function BusinessRegistrationForm() {
         throw new Error(data.error || 'Failed to register business');
       }
 
-      router.push('/business/register/success');
+      // Redirect to dashboard (auto-logged in via API)
+      router.push('/business/dashboard');
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
     } finally {
@@ -643,6 +654,43 @@ export default function BusinessRegistrationForm() {
                     placeholder="(830) 555-0000"
                   />
                   {errors.ownerPhone && <p className="text-red-500 text-sm mt-1">{errors.ownerPhone}</p>}
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Create Your Account Password</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Password *
+                  </label>
+                  <input
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => updateField('password', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent ${
+                      errors.password ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Minimum 8 characters"
+                  />
+                  {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm Password *
+                  </label>
+                  <input
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => updateField('confirmPassword', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent ${
+                      errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Re-enter your password"
+                  />
+                  {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
                 </div>
               </div>
             </div>

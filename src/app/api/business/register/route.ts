@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
+// Initialize Supabase admin client (for creating users)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 interface RegistrationData {
   name: string;
@@ -22,6 +22,7 @@ interface RegistrationData {
   ownerName: string;
   ownerEmail: string;
   ownerPhone: string;
+  password: string;
   agreedToTerms: boolean;
 }
 
@@ -62,6 +63,9 @@ function validateData(data: RegistrationData): string | null {
   if (!data.ownerPhone) {
     return 'Owner phone is required';
   }
+  if (!data.password || data.password.length < 8) {
+    return 'Password must be at least 8 characters';
+  }
   if (!data.agreedToTerms) {
     return 'You must agree to the terms';
   }
@@ -79,7 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if Supabase is configured
-    if (!supabaseUrl || !supabaseKey) {
+    if (!supabaseUrl || !supabaseServiceKey) {
       // In development without Supabase, just log and return success
       console.log('Business registration (no Supabase):', {
         name: data.name,
@@ -95,21 +99,72 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Create Supabase client
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // Create Supabase admin client
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
 
-    // Generate a URL-friendly ID
-    const id = data.name
+    // Step 1: Create Supabase auth user
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email: data.ownerEmail,
+      password: data.password,
+      email_confirm: true, // Auto-confirm email for now
+      user_metadata: {
+        full_name: data.ownerName,
+        role: 'business_owner',
+      },
+    });
+
+    if (authError) {
+      console.error('Auth error:', authError);
+
+      // Check for duplicate email
+      if (authError.message.includes('already') || authError.message.includes('exists')) {
+        return NextResponse.json(
+          { error: 'An account with this email already exists. Please log in or use a different email.' },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: 'Failed to create account. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    const userId = authData.user.id;
+
+    // Step 2: Create profile record
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({
+        id: userId,
+        email: data.ownerEmail,
+        full_name: data.ownerName,
+        role: 'business_owner',
+        created_at: new Date().toISOString(),
+      });
+
+    if (profileError) {
+      console.error('Profile error:', profileError);
+      // Continue anyway - profile can be created later
+    }
+
+    // Step 3: Generate a URL-friendly business ID
+    const businessId = data.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
 
-    // Insert into the businesses table
-    const { data: insertedData, error } = await supabase
+    // Step 4: Insert into the businesses table with owner_id
+    const { data: insertedData, error: businessError } = await supabase
       .from('businesses')
       .insert([
         {
-          id,
+          id: businessId,
           name: data.name,
           category: data.subcategories[0], // Primary subcategory
           subcategories: data.subcategories,
@@ -123,10 +178,11 @@ export async function POST(request: NextRequest) {
           years_in_business: data.yearsInBusiness ? parseInt(data.yearsInBusiness) : null,
           licensed: data.licensed,
           insured: data.insured,
+          owner_id: userId, // Link to auth user
           owner_name: data.ownerName,
           owner_email: data.ownerEmail,
           owner_phone: data.ownerPhone,
-          claim_status: 'pending',
+          claim_status: 'verified', // Auto-verified since owner registered it
           membership_tier: 'basic',
           rating: 0,
           review_count: 0,
@@ -139,21 +195,23 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (error) {
-      console.error('Supabase error:', error);
+    if (businessError) {
+      console.error('Business insert error:', businessError);
+
+      // Try to clean up the auth user if business insert fails
+      await supabase.auth.admin.deleteUser(userId);
+
       return NextResponse.json(
         { error: 'Failed to register business. Please try again.' },
         { status: 500 }
       );
     }
 
-    // TODO: Send confirmation email to owner
-    // TODO: Send notification to admin
-
     return NextResponse.json({
       success: true,
       message: 'Business registered successfully',
-      id: insertedData?.id || id,
+      id: insertedData?.id || businessId,
+      userId: userId,
     });
   } catch (error) {
     console.error('Registration error:', error);
