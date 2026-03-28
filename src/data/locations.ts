@@ -82,6 +82,7 @@ export const locations: Location[] = [
 ];
 
 // Location + Category combinations for SEO pages
+// Categories must match actual provider categories in serviceProviders.json
 export const locationCategoryPages = [
   { category: 'plumbing', location: 'boerne' },
   { category: 'plumbing', location: 'fair-oaks-ranch' },
@@ -93,16 +94,14 @@ export const locationCategoryPages = [
   { category: 'roofing', location: 'fair-oaks-ranch' },
   { category: 'landscaping', location: 'boerne' },
   { category: 'pest-control', location: 'boerne' },
-  { category: 'cleaning', location: 'boerne' },
-  { category: 'pool-spa', location: 'boerne' },
-  { category: 'auto-repair', location: 'boerne' },
-  { category: 'auto-detailing', location: 'boerne' },
-  { category: 'veterinarians', location: 'boerne' },
-  { category: 'pet-grooming', location: 'boerne' },
-  { category: 'it-services', location: 'boerne' },
-  { category: 'accounting', location: 'boerne' },
-  { category: 'contractors', location: 'boerne' },
+  { category: 'mechanic', location: 'boerne' },
+  { category: 'detailing', location: 'boerne' },
+  { category: 'remodeling', location: 'boerne' },
   { category: 'handyman', location: 'boerne' },
+  { category: 'tree-service', location: 'boerne' },
+  { category: 'fencing', location: 'boerne' },
+  { category: 'concrete', location: 'boerne' },
+  { category: 'painting', location: 'boerne' },
 ];
 
 export const getLocation = (slug: string): Location | undefined => {

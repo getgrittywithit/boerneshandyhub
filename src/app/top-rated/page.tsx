@@ -4,6 +4,7 @@ import serviceProvidersData from '@/data/serviceProviders.json';
 import { getServiceCategory, serviceCategories } from '@/data/serviceCategories';
 import { getAggregatePageLinks } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
+import { generateItemListSchema, generateBreadcrumbSchema } from '@/utils/schema';
 
 interface ServiceProvider {
   id: string;
@@ -50,20 +51,30 @@ export default function TopRatedPage() {
       return b.reviewCount - a.reviewCount;
     });
 
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://boerneshandyhub.com' },
-      { '@type': 'ListItem', position: 2, name: 'Top Rated', item: 'https://boerneshandyhub.com/top-rated' },
-    ],
-  };
+  // Generate structured data schemas
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://boerneshandyhub.com' },
+    { name: 'Top Rated', url: 'https://boerneshandyhub.com/top-rated' },
+  ]);
+
+  const itemListSchema = generateItemListSchema(
+    'Top Rated Service Providers in Boerne, TX',
+    'The highest-rated service providers in Boerne, Texas with 4.5+ star ratings.',
+    topRatedProviders.slice(0, 20).map(provider => ({
+      name: provider.name,
+      url: `https://boerneshandyhub.com/services/${provider.category}/${provider.id}`,
+    }))
+  );
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
 
       <div className="bg-boerne-light-gray min-h-screen">

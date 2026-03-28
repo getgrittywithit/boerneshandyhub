@@ -134,7 +134,7 @@ export const subcategoryPages: SubcategoryPage[] = [
 
   // Auto Repair subcategories
   {
-    category: 'auto-repair',
+    category: 'mechanic',
     subcategory: 'Brake Service',
     slug: 'brake-service',
     title: 'Brake Repair in Boerne TX | Brake Pads, Rotors & Service',
@@ -144,7 +144,7 @@ export const subcategoryPages: SubcategoryPage[] = [
     intro: 'Your safety depends on reliable brakes. Our Boerne auto repair shops provide comprehensive brake inspection, repair, and replacement services.',
   },
   {
-    category: 'auto-repair',
+    category: 'mechanic',
     subcategory: 'Oil Change',
     slug: 'oil-change',
     title: 'Oil Change in Boerne TX | Quick Lube & Fluid Services',

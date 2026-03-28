@@ -4,6 +4,7 @@ import serviceProvidersData from '@/data/serviceProviders.json';
 import { getServiceCategory, serviceCategories } from '@/data/serviceCategories';
 import { getAggregatePageLinks } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
+import { generateItemListSchema, generateBreadcrumbSchema } from '@/utils/schema';
 
 export const metadata: Metadata = {
   title: "24/7 Emergency Services in Boerne TX | Boerne's Handy Hub",
@@ -36,20 +37,30 @@ export default function EmergencyServicesPage() {
            description.includes('24 hour');
   });
 
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://boerneshandyhub.com' },
-      { '@type': 'ListItem', position: 2, name: 'Emergency Services', item: 'https://boerneshandyhub.com/emergency-services' },
-    ],
-  };
+  // Generate structured data schemas
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://boerneshandyhub.com' },
+    { name: 'Emergency Services', url: 'https://boerneshandyhub.com/emergency-services' },
+  ]);
+
+  const itemListSchema = generateItemListSchema(
+    '24/7 Emergency Service Providers in Boerne, TX',
+    'Emergency plumbers, electricians, HVAC technicians and more available around the clock in Boerne.',
+    emergencyProviders.slice(0, 20).map(provider => ({
+      name: provider.name,
+      url: `https://boerneshandyhub.com/services/${provider.category}/${provider.id}`,
+    }))
+  );
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
 
       <div className="bg-boerne-light-gray min-h-screen">

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { serviceCategories } from '@/data/serviceCategories';
 import { getAggregatePageLinks } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
+import { generateItemListSchema, generateBreadcrumbSchema } from '@/utils/schema';
 
 export const metadata: Metadata = {
   title: "New Homeowner Services in Boerne TX | Boerne's Handy Hub",
@@ -79,20 +80,30 @@ const essentialServices = [
 ];
 
 export default function NewHomeownerPage() {
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://boerneshandyhub.com' },
-      { '@type': 'ListItem', position: 2, name: 'New Homeowner', item: 'https://boerneshandyhub.com/new-homeowner' },
-    ],
-  };
+  // Generate structured data schemas
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://boerneshandyhub.com' },
+    { name: 'New Homeowner', url: 'https://boerneshandyhub.com/new-homeowner' },
+  ]);
+
+  const itemListSchema = generateItemListSchema(
+    'Essential Services for New Homeowners in Boerne, TX',
+    'First-time home services checklist for new homeowners in Boerne, Texas.',
+    essentialServices.map(service => ({
+      name: service.title,
+      url: `https://boerneshandyhub.com/services/${service.category}`,
+    }))
+  );
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
 
       <div className="bg-boerne-light-gray min-h-screen">

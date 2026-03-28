@@ -4,6 +4,7 @@ import serviceProvidersData from '@/data/serviceProviders.json';
 import { getServiceCategory, serviceCategories } from '@/data/serviceCategories';
 import { getAggregatePageLinks } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
+import { generateItemListSchema, generateBreadcrumbSchema } from '@/utils/schema';
 
 interface ServiceProvider {
   id: string;
@@ -46,20 +47,30 @@ export default function LicensedContractorsPage() {
     .filter(provider => provider.licensed && provider.insured)
     .sort((a, b) => b.rating - a.rating);
 
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://boerneshandyhub.com' },
-      { '@type': 'ListItem', position: 2, name: 'Licensed Contractors', item: 'https://boerneshandyhub.com/licensed-contractors' },
-    ],
-  };
+  // Generate structured data schemas
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://boerneshandyhub.com' },
+    { name: 'Licensed Contractors', url: 'https://boerneshandyhub.com/licensed-contractors' },
+  ]);
+
+  const itemListSchema = generateItemListSchema(
+    'Licensed & Insured Contractors in Boerne, TX',
+    'Verified licensed and insured contractors in Boerne, Texas.',
+    licensedProviders.slice(0, 20).map(provider => ({
+      name: provider.name,
+      url: `https://boerneshandyhub.com/services/${provider.category}/${provider.id}`,
+    }))
+  );
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
 
       <div className="bg-boerne-light-gray min-h-screen">

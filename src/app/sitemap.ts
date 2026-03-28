@@ -1,8 +1,6 @@
 import type { MetadataRoute } from 'next';
-import { serviceCategories } from '@/data/serviceCategories';
+import { topLevelCategories } from '@/data/serviceCategories';
 import serviceProvidersData from '@/data/serviceProviders.json';
-import { locationCategoryPages } from '@/data/locations';
-import { getAllSubcategorySlugs } from '@/data/subcategories';
 import { getAllGuideSlugs } from '@/data/guides';
 
 const BASE_URL = 'https://boerneshandyhub.com';
@@ -72,29 +70,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // Category pages
-  const categoryPages: MetadataRoute.Sitemap = serviceCategories.map((category) => ({
+  // Top-level category pages (home, auto, outdoor, commercial, specialty)
+  const categoryPages: MetadataRoute.Sitemap = topLevelCategories.map((category) => ({
     url: `${BASE_URL}/services/${category.slug}`,
     lastModified: currentDate,
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));
 
-  // Location + Category pages (20 new SEO pages)
-  const locationPages: MetadataRoute.Sitemap = locationCategoryPages.map((page) => ({
-    url: `${BASE_URL}/services/${page.category}/${page.location}`,
-    lastModified: currentDate,
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }));
+  // Subcategory listing pages (e.g., /services/home/plumbing)
+  const subcategoryListingPages: MetadataRoute.Sitemap = topLevelCategories.flatMap((topCat) =>
+    topCat.subcategories.map((sub) => ({
+      url: `${BASE_URL}/services/${topCat.slug}/${sub.slug}`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    }))
+  );
 
-  // Subcategory pages (15 new SEO pages)
-  const subcategoryPages: MetadataRoute.Sitemap = getAllSubcategorySlugs().map((page) => ({
-    url: `${BASE_URL}/services/${page.category}/${page.slug}`,
-    lastModified: currentDate,
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }));
 
   // Guide pages (8 new SEO pages)
   const guidePages: MetadataRoute.Sitemap = getAllGuideSlugs().map((slug) => ({
@@ -116,8 +109,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...staticPages,
     ...aggregatePages,
     ...categoryPages,
-    ...locationPages,
-    ...subcategoryPages,
+    ...subcategoryListingPages,
     ...guidePages,
     ...providerPages,
   ];

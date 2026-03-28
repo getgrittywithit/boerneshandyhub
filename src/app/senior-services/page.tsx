@@ -4,6 +4,7 @@ import serviceProvidersData from '@/data/serviceProviders.json';
 import { getServiceCategory, serviceCategories } from '@/data/serviceCategories';
 import { getAggregatePageLinks } from '@/data/internalLinks';
 import { guides } from '@/data/guides';
+import { generateItemListSchema, generateBreadcrumbSchema } from '@/utils/schema';
 
 interface ServiceProvider {
   id: string;
@@ -69,20 +70,30 @@ export default function SeniorServicesPage() {
     .sort((a, b) => b.rating - a.rating)
     .slice(0, 6);
 
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://boerneshandyhub.com' },
-      { '@type': 'ListItem', position: 2, name: 'Senior Services', item: 'https://boerneshandyhub.com/senior-services' },
-    ],
-  };
+  // Generate structured data schemas
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://boerneshandyhub.com' },
+    { name: 'Senior Services', url: 'https://boerneshandyhub.com/senior-services' },
+  ]);
+
+  const itemListSchema = generateItemListSchema(
+    'Senior-Friendly Service Providers in Boerne, TX',
+    'Trusted, patient home service providers in Boerne who specialize in helping seniors.',
+    seniorFriendlyProviders.map(provider => ({
+      name: provider.name,
+      url: `https://boerneshandyhub.com/services/${provider.category}/${provider.id}`,
+    }))
+  );
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
 
       <div className="bg-boerne-light-gray min-h-screen">

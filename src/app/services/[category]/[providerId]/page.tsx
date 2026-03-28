@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { getServiceCategory, serviceCategories, type MembershipTier } from '@/data/serviceCategories';
 import serviceProvidersData from '@/data/serviceProviders.json';
 import ProviderPageClient from './ProviderPageClient';
+import { generateLocalBusinessSchema, generateBreadcrumbSchema } from '@/utils/schema';
+import { generateProviderTitle, generateProviderDescription, generateProviderKeywords } from '@/utils/metadata';
 
 interface ServiceProvider {
   id: string;
@@ -60,26 +62,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const title = `${provider.name} | ${categoryData.name} in Boerne, TX`;
-  const description = `${provider.name} - ${provider.description.slice(0, 150)}... Rated ${provider.rating}/5 with ${provider.reviewCount} reviews. Serving ${provider.serviceArea.join(', ')}.`;
+  // Generate SEO-optimized title (max 60 chars) and description (max 155 chars)
+  const title = generateProviderTitle(provider.name, categoryData.name);
+  const description = generateProviderDescription(
+    provider.name,
+    provider.description,
+    provider.rating,
+    provider.reviewCount
+  );
+  const keywords = generateProviderKeywords(
+    provider.name,
+    categoryData.name,
+    provider.services,
+    provider.serviceArea
+  );
+  const canonicalUrl = `https://boerneshandyhub.com/services/${category}/${providerId}`;
 
   return {
     title,
     description,
-    keywords: [
-      provider.name,
-      `${categoryData.name} Boerne`,
-      ...provider.subcategories,
-      ...provider.keywords,
-      'Boerne Texas',
-      'Hill Country',
-    ],
+    keywords,
     openGraph: {
       title,
       description,
       type: 'website',
       locale: 'en_US',
-      url: `https://boerneshandyhub.com/services/${category}/${providerId}`,
+      url: canonicalUrl,
+      images: provider.photos?.[0] ? [{ url: provider.photos[0] }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
@@ -87,7 +96,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
     },
     alternates: {
-      canonical: `/services/${category}/${providerId}`,
+      canonical: canonicalUrl,
     },
   };
 }
@@ -101,110 +110,40 @@ export default async function ProviderDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // BreadcrumbList JSON-LD Schema
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://boerneshandyhub.com',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Services',
-        item: 'https://boerneshandyhub.com/services',
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: categoryData.name,
-        item: `https://boerneshandyhub.com/services/${category}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 4,
-        name: provider.name,
-        item: `https://boerneshandyhub.com/services/${category}/${providerId}`,
-      },
-    ],
-  };
+  const canonicalUrl = `https://boerneshandyhub.com/services/${category}/${providerId}`;
 
-  // Parse address for structured data
-  const addressParts = provider.address.split(', ');
-  const streetAddress = addressParts[0] || provider.address;
-  const cityStateZip = addressParts.slice(1).join(', ');
-  const city = addressParts[1] || 'Boerne';
-  const stateZip = addressParts[2] || 'TX 78006';
-  const [state, postalCode] = stateZip.split(' ');
+  // Generate BreadcrumbList schema using utility
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://boerneshandyhub.com' },
+    { name: 'Services', url: 'https://boerneshandyhub.com/services' },
+    { name: categoryData.name, url: `https://boerneshandyhub.com/services/${category}` },
+    { name: provider.name, url: canonicalUrl },
+  ]);
 
-  // LocalBusiness JSON-LD Schema
-  const localBusinessSchema: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    '@id': `https://boerneshandyhub.com/services/${category}/${providerId}#business`,
-    name: provider.name,
-    description: provider.description,
-    url: `https://boerneshandyhub.com/services/${category}/${providerId}`,
-    telephone: provider.phone,
-    email: provider.email,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: streetAddress,
-      addressLocality: city,
-      addressRegion: state || 'TX',
-      postalCode: postalCode || '78006',
-      addressCountry: 'US',
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: provider.rating,
+  // Generate LocalBusiness schema using utility (includes proper @type, image, priceRange, openingHours)
+  const localBusinessSchema = generateLocalBusinessSchema(
+    {
+      id: provider.id,
+      name: provider.name,
+      category: provider.category,
+      description: provider.description,
+      address: provider.address,
+      phone: provider.phone,
+      email: provider.email,
+      website: provider.website,
+      photos: provider.photos,
+      rating: provider.rating,
       reviewCount: provider.reviewCount,
-      bestRating: 5,
-      worstRating: 1,
+      services: provider.services,
+      serviceArea: provider.serviceArea,
+      yearsInBusiness: provider.yearsInBusiness,
+      membershipTier: provider.membershipTier,
+      licensed: provider.licensed,
+      insured: provider.insured,
+      coordinates: provider.coordinates,
     },
-    areaServed: provider.serviceArea.map((area) => ({
-      '@type': 'City',
-      name: area,
-      addressRegion: 'TX',
-      addressCountry: 'US',
-    })),
-    knowsAbout: provider.services,
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: `${provider.name} Services`,
-      itemListElement: provider.services.map((service, index) => ({
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: service,
-        },
-      })),
-    },
-  };
-
-  // Add geo coordinates if available
-  if (provider.coordinates) {
-    localBusinessSchema.geo = {
-      '@type': 'GeoCoordinates',
-      latitude: provider.coordinates.lat,
-      longitude: provider.coordinates.lng,
-    };
-  }
-
-  // Add website if available
-  if (provider.website) {
-    localBusinessSchema.sameAs = [provider.website];
-  }
-
-  // Add founding year if years in business is available
-  if (provider.yearsInBusiness) {
-    const currentYear = new Date().getFullYear();
-    localBusinessSchema.foundingDate = String(currentYear - provider.yearsInBusiness);
-  }
+    canonicalUrl
+  );
 
   return (
     <>
