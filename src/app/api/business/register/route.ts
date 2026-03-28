@@ -15,7 +15,12 @@ interface RegistrationData {
   topCategory: string;
   subcategories: string[];
   description: string;
-  address: string;
+  // Structured address fields
+  streetAddress: string;
+  suite?: string;
+  city: string;
+  state: string;
+  zip: string;
   phone: string;
   email: string;
   website?: string;
@@ -47,8 +52,17 @@ function validateData(data: RegistrationData): string | null {
   if (!data.description || data.description.length < 50) {
     return 'Description must be at least 50 characters';
   }
-  if (!data.address) {
-    return 'Address is required';
+  if (!data.streetAddress) {
+    return 'Street address is required';
+  }
+  if (!data.city) {
+    return 'City is required';
+  }
+  if (!data.state) {
+    return 'State is required';
+  }
+  if (!data.zip || !/^\d{5}(-\d{4})?$/.test(data.zip)) {
+    return 'Valid ZIP code is required';
   }
   if (!data.phone) {
     return 'Phone is required';
@@ -171,6 +185,18 @@ export async function POST(request: NextRequest) {
     // Store all selected subcategories, but only activate based on tier limit
     const activeSubcategories = data.subcategories.slice(0, BASIC_ACTIVE_CATEGORIES);
 
+    // Build combined address from structured fields
+    const addressParts = [data.streetAddress];
+    if (data.suite) addressParts[0] += `, ${data.suite}`;
+    addressParts.push(`${data.city}, ${data.state} ${data.zip}`);
+    const combinedAddress = addressParts.join(', ');
+
+    // Normalize website - auto-prepend https:// if needed
+    let normalizedWebsite = data.website?.trim() || null;
+    if (normalizedWebsite && !normalizedWebsite.match(/^https?:\/\//i)) {
+      normalizedWebsite = `https://${normalizedWebsite}`;
+    }
+
     const { data: insertedData, error: businessError } = await supabase
       .from('businesses')
       .insert([
@@ -181,10 +207,10 @@ export async function POST(request: NextRequest) {
           subcategories: data.subcategories, // All selected (for upsell)
           active_subcategories: activeSubcategories, // Currently active based on tier
           description: data.description,
-          address: data.address,
+          address: combinedAddress,
           phone: data.phone,
           email: data.email,
-          website: data.website || null,
+          website: normalizedWebsite,
           services: data.services,
           service_area: data.serviceArea,
           years_in_business: data.yearsInBusiness ? parseInt(data.yearsInBusiness) : null,

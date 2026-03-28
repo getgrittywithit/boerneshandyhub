@@ -11,6 +11,62 @@ const MAX_SELECTABLE_CATEGORIES = 5;
 // But only 1 is active on Basic tier
 const BASIC_ACTIVE_CATEGORIES = membershipTiers.basic.categoryLimit;
 
+// Common services for each subcategory - users select from these
+const subcategoryServices: Record<string, string[]> = {
+  // Home
+  plumbing: ['Leak repair', 'Drain cleaning', 'Water heater installation', 'Water heater repair', 'Faucet installation', 'Toilet repair', 'Sewer line repair', 'Garbage disposal', 'Water softener', 'Gas line repair', 'Emergency plumbing'],
+  electrical: ['Outlet installation', 'Ceiling fan installation', 'Panel upgrades', 'Lighting installation', 'Wiring repair', 'Generator hookup', 'EV charger installation', 'Smoke detector installation', 'Troubleshooting', 'Emergency electrical'],
+  hvac: ['AC repair', 'AC installation', 'Heating repair', 'Furnace installation', 'Duct cleaning', 'Thermostat installation', 'Mini-split installation', 'Maintenance plans', 'Air quality testing', 'Emergency HVAC'],
+  roofing: ['Roof repair', 'Roof replacement', 'Shingle repair', 'Metal roofing', 'Flat roof repair', 'Leak repair', 'Storm damage repair', 'Roof inspection', 'Gutter installation'],
+  fencing: ['Wood fence installation', 'Iron fence installation', 'Chain link fence', 'Privacy fence', 'Gate installation', 'Fence repair', 'Post replacement', 'Fence staining'],
+  painting: ['Interior painting', 'Exterior painting', 'Cabinet painting', 'Deck staining', 'Pressure washing', 'Drywall repair', 'Wallpaper removal', 'Color consultation'],
+  flooring: ['Hardwood installation', 'Tile installation', 'Carpet installation', 'Laminate flooring', 'Vinyl flooring', 'Floor refinishing', 'Grout cleaning', 'Floor repair'],
+  remodeling: ['Kitchen remodel', 'Bathroom remodel', 'Room additions', 'Garage conversion', 'Deck building', 'Patio construction', 'Home renovation', 'Custom carpentry'],
+  'pest-control': ['Termite treatment', 'Ant control', 'Roach control', 'Rodent control', 'Bee removal', 'Mosquito treatment', 'Wildlife removal', 'Preventive treatment'],
+  landscaping: ['Lawn mowing', 'Landscape design', 'Irrigation installation', 'Sprinkler repair', 'Mulching', 'Tree planting', 'Flower bed installation', 'Yard cleanup', 'Sod installation'],
+  'tree-service': ['Tree trimming', 'Tree removal', 'Stump grinding', 'Emergency tree service', 'Tree health assessment', 'Lot clearing', 'Pruning'],
+  'pool-service': ['Pool cleaning', 'Pool repair', 'Equipment repair', 'Liner replacement', 'Pool opening/closing', 'Chemical balancing', 'Filter cleaning', 'Heater repair'],
+  cleaning: ['Regular cleaning', 'Deep cleaning', 'Move-in/move-out cleaning', 'Post-construction cleaning', 'Window cleaning', 'Carpet cleaning', 'Organization'],
+  handyman: ['Minor repairs', 'Furniture assembly', 'TV mounting', 'Shelf installation', 'Door repair', 'Drywall patching', 'Caulking', 'Weather stripping', 'Odd jobs'],
+  'garage-doors': ['Garage door installation', 'Garage door repair', 'Opener installation', 'Spring replacement', 'Panel replacement', 'Maintenance'],
+  'foundation-repair': ['Foundation inspection', 'Pier installation', 'Crack repair', 'Leveling', 'Drainage solutions', 'Waterproofing'],
+  septic: ['Septic pumping', 'Septic inspection', 'Drain field repair', 'Tank installation', 'Maintenance'],
+  gutters: ['Gutter installation', 'Gutter cleaning', 'Gutter repair', 'Gutter guards', 'Downspout installation'],
+  'pressure-washing': ['House washing', 'Driveway cleaning', 'Deck cleaning', 'Fence cleaning', 'Concrete cleaning', 'Roof cleaning'],
+  locksmith: ['Lockout service', 'Lock installation', 'Rekeying', 'Key duplication', 'Smart lock installation', 'Safe services'],
+  // Auto
+  mechanic: ['Oil change', 'Brake repair', 'Engine repair', 'Transmission service', 'Diagnostics', 'Tune-up', 'AC repair', 'Suspension work'],
+  'body-shop': ['Collision repair', 'Dent removal', 'Paint work', 'Frame straightening', 'Bumper repair', 'Scratch repair'],
+  towing: ['Emergency towing', 'Roadside assistance', 'Jump start', 'Tire change', 'Fuel delivery', 'Lockout service'],
+  detailing: ['Full detail', 'Interior cleaning', 'Exterior wash', 'Waxing', 'Ceramic coating', 'Paint correction', 'Headlight restoration'],
+  'tire-shop': ['Tire sales', 'Tire installation', 'Wheel alignment', 'Tire rotation', 'Flat repair', 'Balancing'],
+  'windshield-glass': ['Windshield replacement', 'Chip repair', 'Window replacement', 'Mobile service'],
+  'oil-change': ['Conventional oil change', 'Synthetic oil change', 'Filter replacement', 'Fluid top-off'],
+  'mobile-mechanic': ['On-site diagnostics', 'Mobile oil change', 'Battery replacement', 'Brake service', 'Minor repairs'],
+  // Outdoor
+  welding: ['Custom fabrication', 'Gate welding', 'Fence welding', 'Trailer repair', 'Equipment repair', 'Ornamental work'],
+  'ag-fencing': ['Barbed wire fence', 'Cattle fence', 'Game fence', 'Pipe fence', 'T-post fence', 'Ranch entrance'],
+  'brush-clearing': ['Cedar clearing', 'Land clearing', 'Mulching', 'Forestry mowing', 'Lot clearing', 'Fire break creation'],
+  excavation: ['Site grading', 'Driveway grading', 'Pond construction', 'Trenching', 'Land leveling', 'Dirt work'],
+  concrete: ['Driveway installation', 'Patio pouring', 'Sidewalk', 'Foundation work', 'Concrete repair', 'Stamped concrete'],
+  'well-drilling': ['Well drilling', 'Pump installation', 'Pump repair', 'Well inspection', 'Water testing'],
+  'wildlife-management': ['Hog trapping', 'Varmint control', 'Deer management', 'Habitat improvement', 'Wildlife surveys'],
+  'barn-shop': ['Metal building construction', 'Pole barn', 'Shop building', 'Carport installation', 'Barn repair'],
+  // Commercial
+  'commercial-hvac': ['Commercial AC repair', 'Rooftop unit service', 'Commercial installation', 'Preventive maintenance'],
+  janitorial: ['Office cleaning', 'Floor care', 'Restroom service', 'Window cleaning', 'Carpet cleaning'],
+  'parking-lot': ['Striping', 'Sealcoating', 'Pothole repair', 'Asphalt patching', 'Sign installation'],
+  signage: ['Business signs', 'Monument signs', 'Vehicle wraps', 'Banners', 'Window graphics'],
+  'commercial-construction': ['Tenant buildout', 'Commercial renovation', 'ADA compliance', 'Office construction'],
+  // Specialty
+  'holiday-lighting': ['Christmas light installation', 'Light removal', 'Commercial displays', 'Residential decorating'],
+  moving: ['Local moving', 'Long-distance moving', 'Packing services', 'Loading/unloading', 'Storage'],
+  'junk-hauling': ['Junk removal', 'Dumpster rental', 'Estate cleanout', 'Construction debris', 'Appliance removal'],
+  'porta-potty': ['Standard rentals', 'Luxury restrooms', 'Event rentals', 'Construction site rentals'],
+  storage: ['Self storage', 'Climate controlled', 'RV/boat storage', 'Portable storage'],
+  generators: ['Generator installation', 'Generator repair', 'Maintenance', 'Transfer switch installation'],
+};
+
 interface FormData {
   // Step 1: Business Info
   name: string;
@@ -18,7 +74,11 @@ interface FormData {
   subcategories: string[];
   description: string;
   // Step 2: Contact Info
-  address: string;
+  streetAddress: string;
+  suite: string;
+  city: string;
+  state: string;
+  zip: string;
   phone: string;
   email: string;
   website: string;
@@ -43,7 +103,11 @@ const initialFormData: FormData = {
   topCategory: '',
   subcategories: [],
   description: '',
-  address: '',
+  streetAddress: '',
+  suite: '',
+  city: 'Boerne',
+  state: 'TX',
+  zip: '',
   phone: '',
   email: '',
   website: '',
@@ -115,8 +179,17 @@ export default function BusinessRegistrationForm() {
         break;
 
       case 2:
-        if (!formData.address) {
-          newErrors.address = 'Address is required';
+        if (!formData.streetAddress) {
+          newErrors.streetAddress = 'Street address is required';
+        }
+        if (!formData.city) {
+          newErrors.city = 'City is required';
+        }
+        if (!formData.state) {
+          newErrors.state = 'State is required';
+        }
+        if (!formData.zip || !/^\d{5}(-\d{4})?$/.test(formData.zip)) {
+          newErrors.zip = 'Valid ZIP code is required';
         }
         if (!formData.phone || !/^[\d\s\-\(\)]+$/.test(formData.phone)) {
           newErrors.phone = 'Valid phone number is required';
@@ -124,9 +197,7 @@ export default function BusinessRegistrationForm() {
         if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
           newErrors.email = 'Valid email address is required';
         }
-        if (formData.website && !/^https?:\/\/.+/.test(formData.website)) {
-          newErrors.website = 'Website must start with http:// or https://';
-        }
+        // Website validation - just check it looks like a domain if provided
         break;
 
       case 3:
@@ -418,20 +489,85 @@ export default function BusinessRegistrationForm() {
         {/* Step 2: Contact Info */}
         {currentStep === 2 && (
           <div className="space-y-6">
+            {/* Address Fields */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Business Address *
+                Street Address *
               </label>
               <input
                 type="text"
-                value={formData.address}
-                onChange={(e) => updateField('address', e.target.value)}
+                value={formData.streetAddress}
+                onChange={(e) => updateField('streetAddress', e.target.value)}
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent ${
-                  errors.address ? 'border-red-300' : 'border-gray-300'
+                  errors.streetAddress ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder="123 Main St, Boerne, TX 78006"
+                placeholder="123 Main St"
               />
-              {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
+              {errors.streetAddress && <p className="text-red-500 text-sm mt-1">{errors.streetAddress}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Suite / Unit (optional)
+              </label>
+              <input
+                type="text"
+                value={formData.suite}
+                onChange={(e) => updateField('suite', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
+                placeholder="Suite 100"
+              />
+            </div>
+
+            <div className="grid grid-cols-6 gap-4">
+              <div className="col-span-3">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City *
+                </label>
+                <input
+                  type="text"
+                  value={formData.city}
+                  onChange={(e) => updateField('city', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent ${
+                    errors.city ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="Boerne"
+                />
+                {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+              </div>
+
+              <div className="col-span-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  State *
+                </label>
+                <input
+                  type="text"
+                  value={formData.state}
+                  onChange={(e) => updateField('state', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent ${
+                    errors.state ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="TX"
+                  maxLength={2}
+                />
+                {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state}</p>}
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ZIP Code *
+                </label>
+                <input
+                  type="text"
+                  value={formData.zip}
+                  onChange={(e) => updateField('zip', e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent ${
+                    errors.zip ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="78006"
+                />
+                {errors.zip && <p className="text-red-500 text-sm mt-1">{errors.zip}</p>}
+              </div>
             </div>
 
             <div>
@@ -471,15 +607,13 @@ export default function BusinessRegistrationForm() {
                 Website (optional)
               </label>
               <input
-                type="url"
+                type="text"
                 value={formData.website}
                 onChange={(e) => updateField('website', e.target.value)}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent ${
-                  errors.website ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="https://www.yourbusiness.com"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
+                placeholder="www.yourbusiness.com"
               />
-              {errors.website && <p className="text-red-500 text-sm mt-1">{errors.website}</p>}
+              <p className="text-xs text-gray-500 mt-1">No need to include http:// or https://</p>
             </div>
           </div>
         )}
@@ -489,48 +623,120 @@ export default function BusinessRegistrationForm() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Services Offered * (minimum 3)
+                Services Offered * <span className="font-normal text-gray-500">(select at least 3)</span>
               </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={newService}
-                  onChange={(e) => setNewService(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addService())}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
-                  placeholder="e.g., Water heater installation"
-                />
-                <button
-                  type="button"
-                  onClick={addService}
-                  className="px-4 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
-                >
-                  Add
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.services.map((service, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+              <p className="text-sm text-gray-500 mb-4">
+                Based on your selected categories, choose the services you offer:
+              </p>
+
+              {/* Dynamic services based on selected subcategories */}
+              {formData.subcategories.map((subcatSlug) => {
+                const subcat = availableSubcategories.find(s => s.slug === subcatSlug);
+                const services = subcategoryServices[subcatSlug] || [];
+                if (services.length === 0) return null;
+
+                return (
+                  <div key={subcatSlug} className="mb-6">
+                    <h4 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                      <span>{subcat?.icon}</span>
+                      <span>{subcat?.name}</span>
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {services.map((service) => {
+                        const isSelected = formData.services.includes(service);
+                        return (
+                          <label
+                            key={service}
+                            className={`flex items-center gap-2 p-2 border rounded-lg cursor-pointer transition-colors text-sm ${
+                              isSelected
+                                ? 'border-boerne-gold bg-boerne-gold/10'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {
+                                if (isSelected) {
+                                  removeService(service);
+                                } else {
+                                  updateField('services', [...formData.services, service]);
+                                }
+                              }}
+                              className="sr-only"
+                            />
+                            <span className={`w-4 h-4 rounded border flex items-center justify-center ${
+                              isSelected ? 'bg-boerne-gold border-boerne-gold' : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </span>
+                            <span>{service}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Add custom service */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600 mb-2">Don't see a service? Add your own:</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newService}
+                    onChange={(e) => setNewService(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addService())}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent text-sm"
+                    placeholder="Add a custom service..."
+                  />
+                  <button
+                    type="button"
+                    onClick={addService}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors text-sm"
                   >
-                    {service}
-                    <button
-                      type="button"
-                      onClick={() => removeService(service)}
-                      className="text-gray-400 hover:text-red-500"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
+                    Add
+                  </button>
+                </div>
               </div>
-              {errors.services && <p className="text-red-500 text-sm mt-1">{errors.services}</p>}
+
+              {/* Selected services summary */}
+              {formData.services.length > 0 && (
+                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800 font-medium mb-2">
+                    {formData.services.length} service{formData.services.length !== 1 ? 's' : ''} selected
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {formData.services.map((service, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-white text-gray-700 rounded text-xs border border-green-200"
+                      >
+                        {service}
+                        <button
+                          type="button"
+                          onClick={() => removeService(service)}
+                          className="text-gray-400 hover:text-red-500 ml-1"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {errors.services && <p className="text-red-500 text-sm mt-2">{errors.services}</p>}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Service Areas * (select all that apply)
+                Service Areas * <span className="font-normal text-gray-500">(select all that apply)</span>
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {locations.map((location) => (
@@ -640,7 +846,10 @@ export default function BusinessRegistrationForm() {
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Address:</dt>
-                  <dd className="text-gray-900">{formData.address}</dd>
+                  <dd className="text-gray-900 text-right">
+                    {formData.streetAddress}{formData.suite ? `, ${formData.suite}` : ''}<br />
+                    {formData.city}, {formData.state} {formData.zip}
+                  </dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Phone:</dt>
