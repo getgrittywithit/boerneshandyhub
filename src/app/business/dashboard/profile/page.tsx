@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useBusinessDashboard } from '../layout';
+import { membershipTiers } from '@/data/serviceCategories';
 
 interface ProfileFormData {
   name: string;
@@ -163,6 +165,66 @@ export default function BusinessProfilePage() {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Categories */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            {(() => {
+              const tier = business.membership_tier as keyof typeof membershipTiers;
+              const tierConfig = membershipTiers[tier];
+              const categoryLimit = tierConfig.categoryLimit;
+              const subcategories = (business as any).subcategories || [];
+              const currentCount = subcategories.length;
+              const isAtLimit = categoryLimit !== Infinity && currentCount >= categoryLimit;
+              const limitDisplay = categoryLimit === Infinity ? 'Unlimited' : categoryLimit;
+
+              return (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900">Categories</h2>
+                      <p className="text-sm text-gray-500">
+                        {currentCount} of {limitDisplay} categories used
+                      </p>
+                    </div>
+                    <span className={`px-3 py-1 text-sm font-medium rounded-full ${tierConfig.color}`}>
+                      {tierConfig.name} Plan
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {subcategories.map((cat: string, index: number) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-1 px-3 py-2 bg-boerne-gold/20 text-boerne-navy rounded-lg text-sm font-medium"
+                      >
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+
+                  {subcategories.length === 0 && (
+                    <p className="text-gray-500 text-sm mb-4">No categories assigned</p>
+                  )}
+
+                  {isAtLimit && tier !== 'elite' && (
+                    <div className="p-4 bg-boerne-gold/10 border border-boerne-gold/20 rounded-lg">
+                      <p className="text-sm text-boerne-navy">
+                        <strong>Want to list in more categories?</strong>{' '}
+                        <Link href="/business/dashboard/settings" className="text-boerne-gold hover:underline">
+                          Upgrade your plan
+                        </Link>
+                        {' '}to appear in up to {tier === 'basic' ? '2' : tier === 'verified' ? '5' : 'unlimited'} categories.
+                      </p>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-gray-400 mt-4">
+                    Contact support to change your categories
+                  </p>
+                </>
+              );
+            })()}
           </div>
 
           {/* Contact Info */}

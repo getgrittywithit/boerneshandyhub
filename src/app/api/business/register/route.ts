@@ -5,6 +5,9 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+// New registrations start at Basic tier with 1 category limit
+const BASIC_CATEGORY_LIMIT = 1;
+
 interface RegistrationData {
   name: string;
   topCategory: string;
@@ -35,6 +38,9 @@ function validateData(data: RegistrationData): string | null {
   }
   if (!data.subcategories || data.subcategories.length === 0) {
     return 'At least one subcategory is required';
+  }
+  if (data.subcategories.length > BASIC_CATEGORY_LIMIT) {
+    return `Basic plan allows ${BASIC_CATEGORY_LIMIT} category. Upgrade for more.`;
   }
   if (!data.description || data.description.length < 50) {
     return 'Description must be at least 50 characters';

@@ -2,8 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { topLevelCategories, getAllSubcategories } from '@/data/serviceCategories';
+import Link from 'next/link';
+import { topLevelCategories, getAllSubcategories, membershipTiers } from '@/data/serviceCategories';
 import { locations } from '@/data/locations';
+
+// New registrations start at Basic tier
+const REGISTRATION_CATEGORY_LIMIT = membershipTiers.basic.categoryLimit;
 
 interface FormData {
   // Step 1: Business Info
@@ -95,7 +99,10 @@ export default function BusinessRegistrationForm() {
           newErrors.topCategory = 'Please select a category';
         }
         if (formData.subcategories.length === 0) {
-          newErrors.subcategories = 'Please select at least one subcategory';
+          newErrors.subcategories = 'Please select a service type';
+        }
+        if (formData.subcategories.length > REGISTRATION_CATEGORY_LIMIT) {
+          newErrors.subcategories = `Basic plan allows ${REGISTRATION_CATEGORY_LIMIT} category. Upgrade for more.`;
         }
         if (!formData.description || formData.description.length < 50) {
           newErrors.description = 'Description must be at least 50 characters';
@@ -190,11 +197,17 @@ export default function BusinessRegistrationForm() {
 
   const toggleSubcategory = (slug: string) => {
     if (formData.subcategories.includes(slug)) {
+      // Always allow deselection
       updateField('subcategories', formData.subcategories.filter(s => s !== slug));
     } else {
-      updateField('subcategories', [...formData.subcategories, slug]);
+      // Only allow selection if under the limit
+      if (formData.subcategories.length < REGISTRATION_CATEGORY_LIMIT) {
+        updateField('subcategories', [...formData.subcategories, slug]);
+      }
     }
   };
+
+  const isAtCategoryLimit = formData.subcategories.length >= REGISTRATION_CATEGORY_LIMIT;
 
   const handleSubmit = async () => {
     if (!validateStep(5)) return;
@@ -315,30 +328,51 @@ export default function BusinessRegistrationForm() {
             {formData.topCategory && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Service Types * (select all that apply)
+                  Service Type * <span className="font-normal text-gray-500">(select {REGISTRATION_CATEGORY_LIMIT})</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {availableSubcategories.map((sub) => (
-                    <label
-                      key={sub.slug}
-                      className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-colors ${
-                        formData.subcategories.includes(sub.slug)
-                          ? 'border-boerne-gold bg-boerne-gold/10'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={formData.subcategories.includes(sub.slug)}
-                        onChange={() => toggleSubcategory(sub.slug)}
-                        className="sr-only"
-                      />
-                      <span>{sub.icon}</span>
-                      <span className="text-sm">{sub.name}</span>
-                    </label>
-                  ))}
+                  {availableSubcategories.map((sub) => {
+                    const isSelected = formData.subcategories.includes(sub.slug);
+                    const isLocked = !isSelected && isAtCategoryLimit;
+
+                    return (
+                      <label
+                        key={sub.slug}
+                        className={`flex items-center gap-2 p-3 border rounded-lg transition-colors ${
+                          isSelected
+                            ? 'border-boerne-gold bg-boerne-gold/10 cursor-pointer'
+                            : isLocked
+                            ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                            : 'border-gray-200 hover:border-gray-300 cursor-pointer'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSubcategory(sub.slug)}
+                          disabled={isLocked}
+                          className="sr-only"
+                        />
+                        <span>{sub.icon}</span>
+                        <span className="text-sm">{sub.name}</span>
+                        {isLocked && <span className="ml-auto text-gray-400">🔒</span>}
+                      </label>
+                    );
+                  })}
                 </div>
                 {errors.subcategories && <p className="text-red-500 text-sm mt-1">{errors.subcategories}</p>}
+
+                {/* Upsell prompt */}
+                {isAtCategoryLimit && (
+                  <div className="mt-4 p-4 bg-boerne-gold/10 border border-boerne-gold/20 rounded-lg">
+                    <p className="text-sm text-boerne-navy">
+                      <strong>Want to list in more categories?</strong> Upgrade your plan after registration to appear in up to 5 categories.{' '}
+                      <Link href="/pricing" className="text-boerne-gold hover:underline">
+                        View plans
+                      </Link>
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 

@@ -70,22 +70,26 @@ export default function SettingsPage() {
     basic: {
       name: 'Basic',
       price: 'Free',
-      features: ['Basic listing', 'Receive quotes', 'Business dashboard'],
+      categoryLimit: '1 category',
+      features: ['Basic listing', 'Receive quotes', 'Business dashboard', '1 category'],
     },
     verified: {
       name: 'Verified',
       price: '$29/mo',
-      features: ['Verified badge', 'Priority in search', 'Analytics dashboard', 'Email support'],
+      categoryLimit: '2 categories',
+      features: ['Verified badge', 'Priority in search', 'Analytics dashboard', 'Email support', '2 categories'],
     },
     premium: {
       name: 'Premium',
       price: '$79/mo',
-      features: ['Premium badge', 'Top placement', 'Featured listings', 'Priority support', 'Review management'],
+      categoryLimit: '5 categories',
+      features: ['Premium badge', 'Top placement', 'Featured listings', 'Priority support', 'Review management', '5 categories'],
     },
     elite: {
       name: 'Elite',
       price: '$199/mo',
-      features: ['Elite badge', 'Homepage feature', 'Exclusive promotions', 'Dedicated account manager', 'All Premium features'],
+      categoryLimit: 'Unlimited categories',
+      features: ['Elite badge', 'Homepage feature', 'Exclusive promotions', 'Dedicated account manager', 'All Premium features', 'Unlimited categories'],
     },
   };
 
