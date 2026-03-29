@@ -27,8 +27,12 @@ interface RegistrationData {
   services: string[];
   serviceArea: string[];
   yearsInBusiness?: string;
-  licensed: boolean;
+  // Credentials
+  licenseNumber?: string;
+  licenseExpiration?: string;
   insured: boolean;
+  bonded: boolean;
+  certifications: string[];
   ownerName: string;
   ownerEmail: string;
   ownerPhone: string;
@@ -214,8 +218,12 @@ export async function POST(request: NextRequest) {
           services: data.services,
           service_area: data.serviceArea,
           years_in_business: data.yearsInBusiness ? parseInt(data.yearsInBusiness) : null,
-          licensed: data.licensed,
+          // Credentials
+          license_number: data.licenseNumber || null,
+          license_expiration: data.licenseExpiration || null,
           insured: data.insured,
+          bonded: data.bonded,
+          certifications: data.certifications || [],
           owner_id: userId, // Link to auth user
           owner_name: data.ownerName,
           owner_email: data.ownerEmail,

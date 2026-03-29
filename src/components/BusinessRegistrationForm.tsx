@@ -11,6 +11,28 @@ const MAX_SELECTABLE_CATEGORIES = 5;
 // But only 1 is active on Basic tier
 const BASIC_ACTIVE_CATEGORIES = membershipTiers.basic.categoryLimit;
 
+// Trades that require state licenses in Texas
+const LICENSED_TRADES: Record<string, { board: string; name: string; verifyUrl: string }> = {
+  plumbing: { board: 'TSBPE', name: 'Texas State Board of Plumbing Examiners', verifyUrl: 'https://vo.licensing.tdlr.texas.gov/' },
+  electrical: { board: 'TDLR', name: 'Texas Dept of Licensing & Regulation', verifyUrl: 'https://vo.licensing.tdlr.texas.gov/' },
+  hvac: { board: 'TDLR', name: 'Texas Dept of Licensing & Regulation', verifyUrl: 'https://vo.licensing.tdlr.texas.gov/' },
+  'commercial-hvac': { board: 'TDLR', name: 'Texas Dept of Licensing & Regulation', verifyUrl: 'https://vo.licensing.tdlr.texas.gov/' },
+};
+
+// Common certifications for unlicensed trades
+const TRADE_CERTIFICATIONS: Record<string, string[]> = {
+  handyman: ['EPA Lead-Safe Certified', 'OSHA 10/30 Certified', 'Home Improvement Contractor Cert'],
+  remodeling: ['EPA Lead-Safe Certified', 'OSHA 10/30 Certified', 'NAHB Certified Graduate Builder', 'NAHB Certified Green Professional'],
+  roofing: ['GAF Certified Installer', 'Owens Corning Preferred', 'CertainTeed SELECT ShingleMaster', 'OSHA 10/30 Certified'],
+  painting: ['EPA Lead-Safe Certified', 'PDCA Certified'],
+  flooring: ['CFI Certified Flooring Installer', 'NWFA Certified'],
+  landscaping: ['Texas Nursery & Landscape Assoc Certified', 'Irrigation Association Certified'],
+  'pest-control': ['TDA Structural Pest Control License', 'QualityPro Certified'],
+  'pool-service': ['CPO Certified Pool Operator', 'NSPF Certified'],
+  concrete: ['ACI Concrete Flatwork Certified', 'OSHA 10/30 Certified'],
+  welding: ['AWS Certified Welder', 'ASME Certified'],
+};
+
 // Common services for each subcategory - users select from these
 const subcategoryServices: Record<string, string[]> = {
   // Home
@@ -87,8 +109,14 @@ interface FormData {
   serviceArea: string[];
   // Step 4: Credentials
   yearsInBusiness: string;
-  licensed: boolean;
+  // For licensed trades (plumber, electrician, HVAC)
+  licenseNumber: string;
+  licenseExpiration: string;
+  // For all trades
   insured: boolean;
+  bonded: boolean;
+  // For unlicensed trades - certifications
+  certifications: string[];
   // Step 5: Account
   ownerName: string;
   ownerEmail: string;
@@ -114,8 +142,11 @@ const initialFormData: FormData = {
   services: [],
   serviceArea: [],
   yearsInBusiness: '',
-  licensed: false,
+  licenseNumber: '',
+  licenseExpiration: '',
   insured: false,
+  bonded: false,
+  certifications: [],
   ownerName: '',
   ownerEmail: '',
   ownerPhone: '',
@@ -766,6 +797,7 @@ export default function BusinessRegistrationForm() {
         {/* Step 4: Credentials */}
         {currentStep === 4 && (
           <div className="space-y-6">
+            {/* Years in Business - for all */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Years in Business
@@ -781,25 +813,117 @@ export default function BusinessRegistrationForm() {
               />
             </div>
 
-            <div className="space-y-4">
-              <label
-                className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
-                  formData.licensed ? 'border-green-500 bg-green-50' : 'border-gray-200'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={formData.licensed}
-                  onChange={(e) => updateField('licensed', e.target.checked)}
-                  className="w-5 h-5 text-green-500 rounded border-gray-300 focus:ring-green-500"
-                />
-                <div>
-                  <div className="font-medium text-gray-900">Licensed</div>
-                  <div className="text-sm text-gray-500">
-                    I hold valid professional licenses for my trade
+            {/* License section - only for licensed trades */}
+            {(() => {
+              const licensedSubcats = formData.subcategories.filter(s => LICENSED_TRADES[s]);
+              if (licensedSubcats.length === 0) return null;
+
+              const licenseInfo = LICENSED_TRADES[licensedSubcats[0]];
+              return (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                    <span>📋</span> State License Required
+                  </h4>
+                  <p className="text-sm text-blue-800 mb-4">
+                    {licensedSubcats.map(s => {
+                      const subcat = availableSubcategories.find(sub => sub.slug === s);
+                      return subcat?.name;
+                    }).join(', ')} require{licensedSubcats.length === 1 ? 's' : ''} a Texas state license issued by the {licenseInfo.name}.
+                  </p>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        License Number
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.licenseNumber}
+                        onChange={(e) => updateField('licenseNumber', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
+                        placeholder="Enter your license number"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Optional now, but required for Verified badge
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        License Expiration
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.licenseExpiration}
+                        onChange={(e) => updateField('licenseExpiration', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
+                      />
+                    </div>
                   </div>
                 </div>
-              </label>
+              );
+            })()}
+
+            {/* Certifications section - for unlicensed trades */}
+            {(() => {
+              const hasLicensedTrade = formData.subcategories.some(s => LICENSED_TRADES[s]);
+              const availableCerts = new Set<string>();
+              formData.subcategories.forEach(s => {
+                const certs = TRADE_CERTIFICATIONS[s] || [];
+                certs.forEach(c => availableCerts.add(c));
+              });
+
+              if (availableCerts.size === 0 && hasLicensedTrade) return null;
+
+              return (
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    {hasLicensedTrade ? 'Additional Certifications' : 'Certifications'} <span className="font-normal text-gray-500">(optional)</span>
+                  </h4>
+                  {!hasLicensedTrade && (
+                    <p className="text-sm text-gray-500 mb-3">
+                      Your trade doesn't require a state license in Texas. Select any certifications you hold:
+                    </p>
+                  )}
+
+                  {availableCerts.size > 0 ? (
+                    <div className="grid grid-cols-1 gap-2">
+                      {Array.from(availableCerts).map((cert) => {
+                        const isSelected = formData.certifications.includes(cert);
+                        return (
+                          <label
+                            key={cert}
+                            className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                              isSelected ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {
+                                if (isSelected) {
+                                  updateField('certifications', formData.certifications.filter(c => c !== cert));
+                                } else {
+                                  updateField('certifications', [...formData.certifications, cert]);
+                                }
+                              }}
+                              className="w-5 h-5 text-green-500 rounded border-gray-300 focus:ring-green-500"
+                            />
+                            <span className="text-sm text-gray-700">{cert}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 italic">No common certifications for your selected categories</p>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Insurance & Bonded - for all */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-900">Insurance & Bonding</h4>
 
               <label
                 className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
@@ -815,7 +939,26 @@ export default function BusinessRegistrationForm() {
                 <div>
                   <div className="font-medium text-gray-900">Insured</div>
                   <div className="text-sm text-gray-500">
-                    I carry liability insurance for my business
+                    I carry general liability insurance for my business
+                  </div>
+                </div>
+              </label>
+
+              <label
+                className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                  formData.bonded ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={formData.bonded}
+                  onChange={(e) => updateField('bonded', e.target.checked)}
+                  className="w-5 h-5 text-purple-500 rounded border-gray-300 focus:ring-purple-500"
+                />
+                <div>
+                  <div className="font-medium text-gray-900">Bonded</div>
+                  <div className="text-sm text-gray-500">
+                    I have a surety bond to protect customers
                   </div>
                 </div>
               </label>
@@ -823,8 +966,7 @@ export default function BusinessRegistrationForm() {
 
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-sm text-gray-600">
-                <strong>Note:</strong> Adding credentials builds trust with potential customers.
-                Businesses marked as licensed and insured often receive more inquiries.
+                <strong>Tip:</strong> Credentials build trust with customers. Businesses with verified licenses and insurance often receive more inquiries.
               </p>
             </div>
           </div>
