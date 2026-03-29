@@ -797,6 +797,17 @@ export default function BusinessRegistrationForm() {
         {/* Step 4: Credentials */}
         {currentStep === 4 && (
           <div className="space-y-6">
+            {/* Important notice about verification */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                <span>🔒</span> About Credential Verification
+              </h4>
+              <p className="text-sm text-amber-800">
+                To protect customers, credentials (Licensed, Insured, Bonded) are <strong>not displayed publicly</strong> until verified.
+                Upgrade to our <strong>Verified plan ($29/mo)</strong> to submit documentation and display verified badges on your listing.
+              </p>
+            </div>
+
             {/* Years in Business - for all */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -822,19 +833,20 @@ export default function BusinessRegistrationForm() {
               return (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                    <span>📋</span> State License Required
+                    <span>📋</span> State License Information
                   </h4>
                   <p className="text-sm text-blue-800 mb-4">
                     {licensedSubcats.map(s => {
                       const subcat = availableSubcategories.find(sub => sub.slug === s);
                       return subcat?.name;
-                    }).join(', ')} require{licensedSubcats.length === 1 ? 's' : ''} a Texas state license issued by the {licenseInfo.name}.
+                    }).join(', ')} require{licensedSubcats.length === 1 ? 's' : ''} a Texas state license from the {licenseInfo.name}.
+                    Provide your info now, then upload documentation when you upgrade to Verified.
                   </p>
 
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        License Number
+                        License Number <span className="font-normal text-gray-500">(optional for now)</span>
                       </label>
                       <input
                         type="text"
@@ -843,14 +855,11 @@ export default function BusinessRegistrationForm() {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
                         placeholder="Enter your license number"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Optional now, but required for Verified badge
-                      </p>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        License Expiration
+                        License Expiration <span className="font-normal text-gray-500">(optional for now)</span>
                       </label>
                       <input
                         type="date"
@@ -860,6 +869,10 @@ export default function BusinessRegistrationForm() {
                       />
                     </div>
                   </div>
+
+                  <p className="text-xs text-blue-700 mt-3">
+                    🔒 "Licensed" badge only shown after we verify your license against {licenseInfo.board} records.
+                  </p>
                 </div>
               );
             })()}
@@ -924,6 +937,9 @@ export default function BusinessRegistrationForm() {
             {/* Insurance & Bonded - for all */}
             <div className="space-y-4">
               <h4 className="font-medium text-gray-900">Insurance & Bonding</h4>
+              <p className="text-sm text-gray-500 -mt-2">
+                Check all that apply. Badges shown only after uploading proof with Verified plan.
+              </p>
 
               <label
                 className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
@@ -937,9 +953,9 @@ export default function BusinessRegistrationForm() {
                   className="w-5 h-5 text-blue-500 rounded border-gray-300 focus:ring-blue-500"
                 />
                 <div>
-                  <div className="font-medium text-gray-900">Insured</div>
+                  <div className="font-medium text-gray-900">I have General Liability Insurance</div>
                   <div className="text-sm text-gray-500">
-                    I carry general liability insurance for my business
+                    Certificate of insurance required for verification
                   </div>
                 </div>
               </label>
@@ -956,17 +972,29 @@ export default function BusinessRegistrationForm() {
                   className="w-5 h-5 text-purple-500 rounded border-gray-300 focus:ring-purple-500"
                 />
                 <div>
-                  <div className="font-medium text-gray-900">Bonded</div>
+                  <div className="font-medium text-gray-900">I have a Surety Bond</div>
                   <div className="text-sm text-gray-500">
-                    I have a surety bond to protect customers
+                    Bond certificate required for verification
                   </div>
                 </div>
               </label>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">
-                <strong>Tip:</strong> Credentials build trust with customers. Businesses with verified licenses and insurance often receive more inquiries.
+            {/* Verification upsell */}
+            <div className="bg-gradient-to-r from-boerne-navy to-boerne-navy/90 rounded-lg p-5 text-white">
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <span>✅</span> Get Verified - $29/mo
+              </h4>
+              <p className="text-sm text-white/90 mb-3">
+                Stand out with verified credential badges that customers trust:
+              </p>
+              <ul className="text-sm text-white/80 space-y-1 mb-3">
+                <li>• <strong className="text-white">Licensed ✓</strong> - We verify against state records</li>
+                <li>• <strong className="text-white">Insured ✓</strong> - Upload your certificate of insurance</li>
+                <li>• <strong className="text-white">Bonded ✓</strong> - Upload your bond certificate</li>
+              </ul>
+              <p className="text-xs text-white/70">
+                You can upgrade anytime from your dashboard after registering.
               </p>
             </div>
           </div>
