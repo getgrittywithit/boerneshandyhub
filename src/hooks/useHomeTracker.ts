@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { Home, HomeSystem, MaintenanceTask, ServiceRecord, HomeSystemType } from '@/types/homeTracker';
+import type { Home, HomeSystem, MaintenanceTask, ServiceRecord, Material, HomeSystemType, MaterialType } from '@/types/homeTracker';
 import { generateMaintenanceTasks } from '@/data/boerneMaintenanceData';
 
 const STORAGE_KEYS = {
   homes: 'bhh_homes',
   tasks: 'bhh_tasks',
   records: 'bhh_records',
+  materials: 'bhh_materials',
 };
 
 // Generate unique IDs
@@ -285,5 +286,79 @@ export function useServiceRecords() {
     deleteRecord,
     getRecordsForHome,
     getRecordsForSystem,
+  };
+}
+
+export function useMaterials() {
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setMaterials(getFromStorage<Material[]>(STORAGE_KEYS.materials, []));
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      setToStorage(STORAGE_KEYS.materials, materials);
+    }
+  }, [materials, isLoaded]);
+
+  const addMaterial = useCallback((materialData: Omit<Material, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newMaterial: Material = {
+      ...materialData,
+      id: generateId(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setMaterials(prev => [...prev, newMaterial]);
+    return newMaterial;
+  }, []);
+
+  const updateMaterial = useCallback((id: string, updates: Partial<Material>) => {
+    setMaterials(prev => prev.map(material =>
+      material.id === id
+        ? { ...material, ...updates, updatedAt: new Date().toISOString() }
+        : material
+    ));
+  }, []);
+
+  const deleteMaterial = useCallback((id: string) => {
+    setMaterials(prev => prev.filter(material => material.id !== id));
+  }, []);
+
+  const getMaterialsForHome = useCallback((homeId: string) => {
+    return materials
+      .filter(m => m.homeId === homeId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [materials]);
+
+  const getMaterialsByRoom = useCallback((homeId: string, room: string) => {
+    return materials
+      .filter(m => m.homeId === homeId && m.room === room)
+      .sort((a, b) => a.type.localeCompare(b.type));
+  }, [materials]);
+
+  const getMaterialsByType = useCallback((homeId: string, type: MaterialType) => {
+    return materials
+      .filter(m => m.homeId === homeId && m.type === type)
+      .sort((a, b) => a.room.localeCompare(b.room));
+  }, [materials]);
+
+  const getRoomsWithMaterials = useCallback((homeId: string) => {
+    const rooms = new Set(materials.filter(m => m.homeId === homeId).map(m => m.room));
+    return Array.from(rooms).sort();
+  }, [materials]);
+
+  return {
+    materials,
+    isLoaded,
+    addMaterial,
+    updateMaterial,
+    deleteMaterial,
+    getMaterialsForHome,
+    getMaterialsByRoom,
+    getMaterialsByType,
+    getRoomsWithMaterials,
   };
 }
