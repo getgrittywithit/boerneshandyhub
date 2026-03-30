@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { serviceCategories } from '@/data/serviceCategories';
+import { topLevelCategories } from '@/data/serviceCategories';
 
 interface NavItem {
   href?: string;
@@ -41,8 +41,8 @@ export default function Navigation() {
     }
   };
 
-  // Generate services dropdown from categories
-  const servicesDropdown = serviceCategories.map(cat => ({
+  // Generate services dropdown from top-level categories
+  const servicesDropdown = topLevelCategories.map(cat => ({
     href: `/services/${cat.slug}`,
     label: cat.name,
     icon: cat.icon,
@@ -54,9 +54,8 @@ export default function Navigation() {
       label: 'Services',
       featured: true,
       dropdown: [
-        { href: '/services', label: 'All Home Services', icon: '🏠' },
-        ...servicesDropdown.slice(0, 6), // Show first 6 categories
-        { href: '/services', label: 'View All Categories...', icon: '→' },
+        { href: '/services', label: 'All Services', icon: '🔍' },
+        ...servicesDropdown, // Show all 5 top-level categories
       ]
     },
     { href: '/weddings', label: 'Weddings' },

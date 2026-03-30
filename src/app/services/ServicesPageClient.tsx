@@ -41,7 +41,7 @@ export default function ServicesPageClient() {
 
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto relative">
-              <div className="relative">
+              <div className="relative flex">
                 <input
                   type="text"
                   placeholder="Search for a service (e.g., plumber, mechanic, landscaping...)"
@@ -52,11 +52,11 @@ export default function ServicesPageClient() {
                   }}
                   onFocus={() => setShowResults(true)}
                   onBlur={() => setTimeout(() => setShowResults(false), 200)}
-                  className="w-full px-6 py-4 pr-24 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-boerne-gold"
+                  className="flex-1 px-6 py-4 rounded-l-xl text-lg bg-white text-gray-900 placeholder-gray-500 border-2 border-white focus:outline-none focus:ring-2 focus:ring-boerne-gold shadow-lg"
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2.5 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
+                  className="px-8 py-4 bg-boerne-gold text-boerne-navy font-semibold rounded-r-xl hover:bg-boerne-gold-alt transition-colors"
                 >
                   Search
                 </button>
