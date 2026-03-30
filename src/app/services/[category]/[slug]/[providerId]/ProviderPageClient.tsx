@@ -130,24 +130,31 @@ export default function ProviderPageClient({
                   </div>
                 </div>
 
-                {/* Credentials */}
-                <div className="flex flex-wrap gap-3 mb-6">
-                  {provider.licensed && (
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                      Licensed
-                    </span>
-                  )}
-                  {provider.insured && (
-                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                      Insured
-                    </span>
-                  )}
-                  {provider.claimStatus === 'verified' && (
-                    <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
-                      Verified Business
-                    </span>
-                  )}
-                </div>
+                {/* Credentials - Only show for verified tier and above */}
+                {(() => {
+                  const isVerifiedTier = ['verified', 'premium', 'elite'].includes(provider.membershipTier);
+                  const hasCredentials = provider.licensed || provider.insured;
+
+                  if (!isVerifiedTier || !hasCredentials) return null;
+
+                  return (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                      <p className="text-xs text-gray-500 mb-2 font-medium">Verified Credentials</p>
+                      <div className="flex flex-wrap gap-3">
+                        {provider.licensed && (
+                          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                            ✓ Licensed
+                          </span>
+                        )}
+                        {provider.insured && (
+                          <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                            ✓ Insured
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <p className="text-lg text-gray-600 mb-6">{provider.description}</p>
 
@@ -336,6 +343,7 @@ export default function ProviderPageClient({
             insured={provider.insured}
             rating={provider.rating}
             reviewCount={provider.reviewCount}
+            membershipTier={provider.membershipTier}
           />
         </div>
       </div>

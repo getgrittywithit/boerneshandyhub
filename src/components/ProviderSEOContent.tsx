@@ -1,5 +1,7 @@
 'use client';
 
+type MembershipTier = 'basic' | 'verified' | 'premium' | 'elite';
+
 interface ProviderSEOContentProps {
   providerName: string;
   categoryName: string;
@@ -11,6 +13,7 @@ interface ProviderSEOContentProps {
   insured?: boolean;
   rating?: number;
   reviewCount?: number;
+  membershipTier?: MembershipTier;
 }
 
 export default function ProviderSEOContent({
@@ -24,10 +27,15 @@ export default function ProviderSEOContent({
   insured,
   rating,
   reviewCount,
+  membershipTier,
 }: ProviderSEOContentProps) {
   const primaryLocation = serviceArea[0] || 'Boerne';
   const otherLocations = serviceArea.slice(1, 4);
   const topServices = services.slice(0, 5);
+
+  // Only show credentials for verified tier and above
+  const isVerifiedTier = membershipTier && ['verified', 'premium', 'elite'].includes(membershipTier);
+  const showCredentials = isVerifiedTier && (licensed || insured);
 
   return (
     <section className="bg-gray-50 rounded-xl p-6 mt-8">
@@ -74,17 +82,17 @@ export default function ProviderSEOContent({
           </>
         )}
 
-        {(licensed || insured) && (
+        {showCredentials && (
           <>
             <h3 className="text-lg font-medium text-boerne-navy mt-6 mb-2">
-              Licensed & Insured Professional
+              Verified Licensed & Insured Professional
             </h3>
             <p>
               {licensed && (
-                <>When you hire {providerName}, you are working with a fully licensed professional who meets all state and local requirements for {categoryName.toLowerCase()} work in Texas. </>
+                <>When you hire {providerName}, you are working with a verified, fully licensed professional who meets all state and local requirements for {categoryName.toLowerCase()} work in Texas. </>
               )}
               {insured && (
-                <>They carry comprehensive insurance coverage to protect both you and your property throughout every project. </>
+                <>They carry verified, comprehensive insurance coverage to protect both you and your property throughout every project. </>
               )}
               {(licensed || insured) && (
                 <>This means you can have complete peace of mind knowing your home is in qualified hands.</>
