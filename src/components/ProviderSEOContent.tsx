@@ -11,8 +11,6 @@ interface ProviderSEOContentProps {
   yearsInBusiness?: number;
   licensed?: boolean;
   insured?: boolean;
-  rating?: number;
-  reviewCount?: number;
   membershipTier?: MembershipTier;
 }
 
@@ -25,8 +23,6 @@ export default function ProviderSEOContent({
   yearsInBusiness,
   licensed,
   insured,
-  rating,
-  reviewCount,
   membershipTier,
 }: ProviderSEOContentProps) {
   const primaryLocation = serviceArea[0] || 'Boerne';
@@ -48,9 +44,6 @@ export default function ProviderSEOContent({
           {providerName} is a trusted {categoryName.toLowerCase()} provider proudly serving {primaryLocation} and the surrounding Texas Hill Country communities.
           {yearsInBusiness && yearsInBusiness > 0 && (
             <> With {yearsInBusiness} years of hands-on experience, they have built a solid reputation for quality workmanship and dependable service that local homeowners count on.</>
-          )}
-          {rating && rating >= 4.5 && reviewCount && reviewCount > 0 && (
-            <> Their {rating}-star rating from {reviewCount} customer reviews reflects their commitment to excellence.</>
           )}
         </p>
 

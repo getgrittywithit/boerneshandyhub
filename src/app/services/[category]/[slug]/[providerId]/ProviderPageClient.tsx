@@ -69,7 +69,7 @@ export default function ProviderPageClient({
   };
 
   // Get related providers in the same subcategory
-  const relatedProviders = serviceProvidersData.providers
+  const relatedProviders = (serviceProvidersData.providers as ServiceProvider[])
     .filter(p => p.category === subcategorySlug && p.id !== providerId)
     .slice(0, 3);
 
@@ -113,20 +113,15 @@ export default function ProviderPageClient({
                         {subcategory?.name}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex items-center">
-                        <span className="text-yellow-400">★</span>
-                        <span className="font-medium ml-1">{provider.rating}</span>
+                    {provider.yearsInBusiness ? (
+                      <div className="text-gray-500 mb-2">
+                        {provider.yearsInBusiness}+ years in business
                       </div>
-                      <span className="text-gray-500">
-                        ({provider.reviewCount} reviews)
-                      </span>
-                      {provider.yearsInBusiness && (
-                        <span className="text-gray-500">
-                          · {provider.yearsInBusiness}+ years in business
-                        </span>
-                      )}
-                    </div>
+                    ) : (
+                      <div className="text-blue-600 font-medium mb-2">
+                        New on platform
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -341,8 +336,6 @@ export default function ProviderPageClient({
             yearsInBusiness={provider.yearsInBusiness}
             licensed={provider.licensed}
             insured={provider.insured}
-            rating={provider.rating}
-            reviewCount={provider.reviewCount}
             membershipTier={provider.membershipTier}
           />
         </div>
@@ -363,11 +356,11 @@ export default function ProviderPageClient({
                   className="bg-gray-50 rounded-xl p-4 hover:shadow-md transition-shadow"
                 >
                   <h3 className="font-semibold text-gray-900 mb-1">{otherProvider.name}</h3>
-                  <div className="flex items-center gap-1 text-sm text-gray-500">
-                    <span className="text-yellow-400">★</span>
-                    <span>{otherProvider.rating}</span>
-                    <span>· {otherProvider.reviewCount} reviews</span>
-                  </div>
+                  {otherProvider.yearsInBusiness ? (
+                    <p className="text-sm text-gray-500">{otherProvider.yearsInBusiness}+ years in business</p>
+                  ) : (
+                    <p className="text-sm text-blue-600 font-medium">New on platform</p>
+                  )}
                 </Link>
               ))}
             </div>

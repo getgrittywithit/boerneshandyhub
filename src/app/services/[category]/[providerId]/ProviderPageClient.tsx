@@ -95,20 +95,15 @@ export default function ProviderPageClient({ category, providerId, provider }: P
                         {provider.subcategories.slice(0, 2).join(' - ')}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex items-center">
-                        <span className="text-yellow-400">*</span>
-                        <span className="font-medium ml-1">{provider.rating}</span>
+                    {provider.yearsInBusiness ? (
+                      <div className="text-boerne-dark-gray mb-2">
+                        {provider.yearsInBusiness}+ years in business
                       </div>
-                      <span className="text-boerne-dark-gray">
-                        ({provider.reviewCount} reviews)
-                      </span>
-                      {provider.yearsInBusiness && (
-                        <span className="text-boerne-dark-gray">
-                          - {provider.yearsInBusiness}+ years in business
-                        </span>
-                      )}
-                    </div>
+                    ) : (
+                      <div className="text-blue-600 font-medium mb-2">
+                        New on platform
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -323,8 +318,6 @@ export default function ProviderPageClient({ category, providerId, provider }: P
             yearsInBusiness={provider.yearsInBusiness}
             licensed={provider.licensed}
             insured={provider.insured}
-            rating={provider.rating}
-            reviewCount={provider.reviewCount}
             membershipTier={provider.membershipTier}
           />
         </div>
@@ -337,7 +330,7 @@ export default function ProviderPageClient({ category, providerId, provider }: P
             Other {categoryData?.name} Providers in Boerne
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {serviceProvidersData.providers
+            {(serviceProvidersData.providers as ServiceProvider[])
               .filter(p => p.category === category && p.id !== providerId)
               .slice(0, 3)
               .map((otherProvider) => (
@@ -347,11 +340,11 @@ export default function ProviderPageClient({ category, providerId, provider }: P
                   className="bg-boerne-light-gray rounded-lg p-4 hover:shadow-md transition-shadow"
                 >
                   <h3 className="font-semibold text-boerne-navy mb-1">{otherProvider.name}</h3>
-                  <div className="flex items-center gap-1 text-sm text-boerne-dark-gray">
-                    <span className="text-yellow-400">*</span>
-                    <span>{otherProvider.rating}</span>
-                    <span>- {otherProvider.reviewCount} reviews</span>
-                  </div>
+                  {otherProvider.yearsInBusiness ? (
+                    <p className="text-sm text-boerne-dark-gray">{otherProvider.yearsInBusiness}+ years in business</p>
+                  ) : (
+                    <p className="text-sm text-blue-600 font-medium">New on platform</p>
+                  )}
                 </Link>
               ))}
           </div>

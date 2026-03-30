@@ -217,16 +217,12 @@ export default function SlugPageClient({ topCategorySlug, subcategorySlug }: Slu
                           <h3 className="font-semibold text-lg text-gray-900 truncate">
                             {provider.name}
                           </h3>
-                          {/* Condensed meta line */}
+                          {/* Meta line */}
                           <div className="flex items-center gap-2 mt-1 text-sm">
-                            <span className="text-yellow-400">★</span>
-                            <span className="font-medium">{provider.rating}</span>
-                            <span className="text-gray-400">({provider.reviewCount})</span>
-                            {provider.yearsInBusiness && provider.yearsInBusiness >= 5 && (
-                              <>
-                                <span className="text-gray-300">·</span>
-                                <span className="text-gray-500">{provider.yearsInBusiness}+ yrs</span>
-                              </>
+                            {provider.yearsInBusiness && provider.yearsInBusiness >= 1 ? (
+                              <span className="text-gray-500">{provider.yearsInBusiness}+ years in business</span>
+                            ) : (
+                              <span className="text-blue-600 font-medium">New on platform</span>
                             )}
                           </div>
                         </div>
