@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./boerne-colors.css";
 import Navigation from "@/components/Navigation";
+import { HomeownerAuthProvider } from "@/contexts/HomeownerAuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -89,8 +90,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navigation />
-        {children}
+        <HomeownerAuthProvider>
+          <Navigation />
+          {children}
+        </HomeownerAuthProvider>
       </body>
     </html>
   );

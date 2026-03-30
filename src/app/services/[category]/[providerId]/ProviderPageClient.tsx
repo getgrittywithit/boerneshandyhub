@@ -95,13 +95,9 @@ export default function ProviderPageClient({ category, providerId, provider }: P
                         {provider.subcategories.slice(0, 2).join(' - ')}
                       </span>
                     </div>
-                    {provider.yearsInBusiness ? (
+                    {provider.yearsInBusiness && (
                       <div className="text-boerne-dark-gray mb-2">
                         {provider.yearsInBusiness}+ years in business
-                      </div>
-                    ) : (
-                      <div className="text-blue-600 font-medium mb-2">
-                        New on platform
                       </div>
                     )}
                   </div>
@@ -133,7 +129,9 @@ export default function ProviderPageClient({ category, providerId, provider }: P
                   );
                 })()}
 
-                <p className="text-lg text-boerne-dark-gray mb-6">{provider.description}</p>
+                {provider.description && (
+                  <p className="text-lg text-boerne-dark-gray mb-6">{provider.description}</p>
+                )}
 
                 {/* Staff Pick */}
                 {provider.bernieRecommendation && (
@@ -149,17 +147,19 @@ export default function ProviderPageClient({ category, providerId, provider }: P
                 )}
 
                 {/* Services Offered */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-boerne-navy mb-3">Services Offered</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {provider.services.map((service, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <span className="text-green-500">*</span>
-                        <span className="text-boerne-dark-gray">{service}</span>
-                      </div>
-                    ))}
+                {provider.services && provider.services.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-boerne-navy mb-3">Services Offered</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {provider.services.map((service, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <span className="text-green-500">✓</span>
+                          <span className="text-boerne-dark-gray">{service}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Service Area */}
                 <div className="mb-6">
@@ -210,36 +210,42 @@ export default function ProviderPageClient({ category, providerId, provider }: P
               <h3 className="text-lg font-semibold text-boerne-navy mb-4">Contact Information</h3>
 
               <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <span className="text-boerne-gold text-lg">Location:</span>
-                  <div>
-                    <div className="font-medium text-boerne-dark-gray">{provider.address}</div>
+                {provider.address && (
+                  <div className="flex items-start gap-3">
+                    <span className="text-gray-400">📍</span>
+                    <div>
+                      <div className="font-medium text-boerne-dark-gray">{provider.address}</div>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className="flex items-center gap-3">
-                  <span className="text-boerne-gold text-lg">Phone:</span>
-                  <a
-                    href={`tel:${provider.phone}`}
-                    className="text-boerne-navy hover:text-boerne-gold transition-colors font-medium"
-                  >
-                    {provider.phone}
-                  </a>
-                </div>
+                {provider.phone && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-400">📞</span>
+                    <a
+                      href={`tel:${provider.phone}`}
+                      className="text-boerne-navy hover:text-boerne-gold transition-colors font-medium"
+                    >
+                      {provider.phone}
+                    </a>
+                  </div>
+                )}
 
-                <div className="flex items-center gap-3">
-                  <span className="text-boerne-gold text-lg">Email:</span>
-                  <a
-                    href={`mailto:${provider.email}`}
-                    className="text-boerne-navy hover:text-boerne-gold transition-colors"
-                  >
-                    {provider.email}
-                  </a>
-                </div>
+                {provider.email && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-400">✉️</span>
+                    <a
+                      href={`mailto:${provider.email}`}
+                      className="text-boerne-navy hover:text-boerne-gold transition-colors"
+                    >
+                      {provider.email}
+                    </a>
+                  </div>
+                )}
 
                 {provider.website && (
                   <div className="flex items-center gap-3">
-                    <span className="text-boerne-gold text-lg">Web:</span>
+                    <span className="text-gray-400">🌐</span>
                     <a
                       href={provider.website}
                       target="_blank"
@@ -253,12 +259,14 @@ export default function ProviderPageClient({ category, providerId, provider }: P
               </div>
 
               <div className="mt-6 space-y-3">
-                <a
-                  href={`tel:${provider.phone}`}
-                  className="block w-full px-4 py-3 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors text-center"
-                >
-                  Call Now
-                </a>
+                {provider.phone && (
+                  <a
+                    href={`tel:${provider.phone}`}
+                    className="block w-full px-4 py-3 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors text-center"
+                  >
+                    Call Now
+                  </a>
+                )}
 
                 <button
                   onClick={() => setShowQuoteForm(!showQuoteForm)}
@@ -340,10 +348,8 @@ export default function ProviderPageClient({ category, providerId, provider }: P
                   className="bg-boerne-light-gray rounded-lg p-4 hover:shadow-md transition-shadow"
                 >
                   <h3 className="font-semibold text-boerne-navy mb-1">{otherProvider.name}</h3>
-                  {otherProvider.yearsInBusiness ? (
+                  {otherProvider.yearsInBusiness && (
                     <p className="text-sm text-boerne-dark-gray">{otherProvider.yearsInBusiness}+ years in business</p>
-                  ) : (
-                    <p className="text-sm text-blue-600 font-medium">New on platform</p>
                   )}
                 </Link>
               ))}

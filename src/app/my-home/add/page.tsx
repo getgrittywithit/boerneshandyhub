@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useHomeownerAuth } from '@/contexts/HomeownerAuthContext';
 import { useHomes, useTasks } from '@/hooks/useHomeTracker';
 import { systemInfo, type HomeSystemType } from '@/types/homeTracker';
 
@@ -31,6 +32,7 @@ const OPTIONAL_SYSTEMS: { type: HomeSystemType; question: string }[] = [
 
 export default function AddHomePage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useHomeownerAuth();
   const { addHome, addSystem } = useHomes();
   const { generateTasksForHome } = useTasks();
 
@@ -43,6 +45,13 @@ export default function AddHomePage() {
   });
   const [optionalSystems, setOptionalSystems] = useState<Record<HomeSystemType, boolean>>({} as Record<HomeSystemType, boolean>);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/my-home/login');
+    }
+  }, [authLoading, user, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -59,34 +68,38 @@ export default function AddHomePage() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
-    // Combine standard + selected optional systems
-    const selectedOptional = OPTIONAL_SYSTEMS
-      .filter(s => optionalSystems[s.type])
-      .map(s => s.type);
-    const allSystems = [...STANDARD_SYSTEMS, ...selectedOptional];
+    try {
+      // Combine standard + selected optional systems
+      const selectedOptional = OPTIONAL_SYSTEMS
+        .filter(s => optionalSystems[s.type])
+        .map(s => s.type);
+      const allSystems = [...STANDARD_SYSTEMS, ...selectedOptional];
 
-    // Create the home
-    const newHome = addHome({
-      name: formData.name || 'My Home',
-      address: formData.address,
-      city: formData.city,
-      yearBuilt: formData.yearBuilt ? parseInt(formData.yearBuilt) : null,
-      squareFeet: formData.squareFeet ? parseInt(formData.squareFeet) : null,
-      lotSize: null,
-      bedrooms: null,
-      bathrooms: null,
-    });
-
-    // Add all systems
-    for (const systemType of allSystems) {
-      addSystem(newHome.id, {
-        type: systemType,
-        name: systemInfo[systemType].name,
+      // Create the home
+      const newHome = await addHome({
+        name: formData.name || 'My Home',
+        address: formData.address,
+        city: formData.city,
+        yearBuilt: formData.yearBuilt ? parseInt(formData.yearBuilt) : null,
+        squareFeet: formData.squareFeet ? parseInt(formData.squareFeet) : null,
+        lotSize: null,
+        bedrooms: null,
+        bathrooms: null,
       });
-    }
 
-    // Generate maintenance tasks
-    setTimeout(() => {
+      if (!newHome) {
+        throw new Error('Failed to create home');
+      }
+
+      // Add all systems
+      for (const systemType of allSystems) {
+        await addSystem(newHome.id, {
+          type: systemType,
+          name: systemInfo[systemType].name,
+        });
+      }
+
+      // Generate maintenance tasks
       const homeWithSystems = {
         ...newHome,
         systems: allSystems.map(type => ({
@@ -95,10 +108,28 @@ export default function AddHomePage() {
           name: systemInfo[type].name,
         })),
       };
-      generateTasksForHome(homeWithSystems);
+      await generateTasksForHome(homeWithSystems);
+
       router.push(`/my-home/${newHome.id}`);
-    }, 100);
+    } catch (error) {
+      console.error('Failed to create home:', error);
+      setIsSubmitting(false);
+    }
   };
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

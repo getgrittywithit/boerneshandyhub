@@ -218,13 +218,11 @@ export default function SlugPageClient({ topCategorySlug, subcategorySlug }: Slu
                             {provider.name}
                           </h3>
                           {/* Meta line */}
-                          <div className="flex items-center gap-2 mt-1 text-sm">
-                            {provider.yearsInBusiness && provider.yearsInBusiness >= 1 ? (
+                          {provider.yearsInBusiness && provider.yearsInBusiness >= 1 && (
+                            <div className="flex items-center gap-2 mt-1 text-sm">
                               <span className="text-gray-500">{provider.yearsInBusiness}+ years in business</span>
-                            ) : (
-                              <span className="text-blue-600 font-medium">New on platform</span>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
                         {tierInfo.badge && (
                           <span className={`px-2 py-1 ${tierInfo.color} text-xs font-medium rounded-full whitespace-nowrap ml-2`}>
@@ -234,9 +232,11 @@ export default function SlugPageClient({ topCategorySlug, subcategorySlug }: Slu
                       </div>
 
                       {/* Description */}
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                        {provider.description}
-                      </p>
+                      {provider.description && (
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                          {provider.description}
+                        </p>
+                      )}
 
                       {/* Services Preview */}
                       {provider.services.length > 0 && (

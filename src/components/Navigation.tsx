@@ -59,17 +59,18 @@ export default function Navigation() {
         { href: '/services', label: 'View All Categories...', icon: '→' },
       ]
     },
+    { href: '/weddings', label: 'Weddings' },
+    { href: '/resources', label: 'Resources' },
     { href: '/business', label: 'Get Listed' },
-    { href: '/about', label: 'About' },
   ];
 
   // Secondary nav items (shown in more dropdown on desktop, full on mobile)
   const secondaryNavItems: NavItem[] = [
-    { href: '/weddings', label: 'Weddings' },
+    { href: '/my-home', label: 'Home Tracker' },
+    { href: '/outdoor', label: 'Outdoors' },
     { href: '/dining', label: 'Dining' },
     { href: '/events', label: 'Events' },
-    { href: '/outdoor', label: 'Outdoors' },
-    { href: '/marketplace', label: 'Marketplace' },
+    { href: '/about', label: 'About' },
   ];
 
   return (

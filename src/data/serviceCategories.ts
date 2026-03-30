@@ -93,17 +93,26 @@ export const topLevelCategories: TopLevelCategory[] = [
   },
   {
     id: 'commercial',
-    name: 'Commercial',
-    slug: 'commercial',
-    description: 'Commercial and business services',
+    name: 'Business',
+    slug: 'business-services',
+    description: 'Professional services and commercial trades for businesses',
     icon: '🏢',
     color: 'bg-gray-600',
     subcategories: [
+      // Professional Services
+      { id: 'accountant', name: 'Accountants/Bookkeeping', slug: 'accountant', description: 'CPAs, bookkeepers, and tax professionals', icon: '📊', keywords: ['accountant', 'cpa', 'bookkeeper', 'tax', 'payroll', 'quickbooks'] },
+      { id: 'attorney', name: 'Business Attorneys', slug: 'attorney', description: 'Business law, contracts, and legal services', icon: '⚖️', keywords: ['attorney', 'lawyer', 'legal', 'contracts', 'business law', 'llc'] },
+      { id: 'it-support', name: 'IT Support', slug: 'it-support', description: 'Computer repair, networking, and tech support', icon: '💻', keywords: ['it', 'computer', 'tech support', 'network', 'managed it', 'computer repair'] },
+      { id: 'insurance', name: 'Business Insurance', slug: 'insurance', description: 'Commercial insurance and bonding', icon: '🛡️', keywords: ['insurance', 'commercial insurance', 'liability', 'bonding', 'workers comp'] },
+      { id: 'marketing', name: 'Marketing/Advertising', slug: 'marketing', description: 'Marketing, advertising, and digital services', icon: '📣', keywords: ['marketing', 'advertising', 'social media', 'seo', 'web design', 'branding'] },
+      { id: 'printing', name: 'Printing/Copying', slug: 'printing', description: 'Business printing, copying, and promotional items', icon: '🖨️', keywords: ['printing', 'copying', 'promotional', 'business cards', 'banners'] },
+      // Commercial Trades
       { id: 'commercial-hvac', name: 'Commercial HVAC', slug: 'commercial-hvac', description: 'Commercial heating and cooling services', icon: '❄️', keywords: ['commercial hvac', 'commercial ac', 'rooftop unit', 'commercial heating'] },
       { id: 'janitorial', name: 'Janitorial', slug: 'janitorial', description: 'Commercial cleaning and janitorial services', icon: '🧹', keywords: ['janitorial', 'office cleaning', 'commercial cleaning', 'floor care'] },
-      { id: 'parking-lot', name: 'Parking Lot Maintenance', slug: 'parking-lot', description: 'Parking lot striping, repair, and maintenance', icon: '🅿️', keywords: ['parking lot', 'striping', 'asphalt', 'sealcoating'] },
+      { id: 'parking-lot', name: 'Parking Lot', slug: 'parking-lot', description: 'Parking lot striping, repair, and maintenance', icon: '🅿️', keywords: ['parking lot', 'striping', 'asphalt', 'sealcoating'] },
       { id: 'signage', name: 'Signage', slug: 'signage', description: 'Business signs and graphics', icon: '🪧', keywords: ['sign', 'signage', 'banner', 'vehicle wrap', 'graphics'] },
       { id: 'commercial-construction', name: 'Commercial Construction', slug: 'commercial-construction', description: 'Commercial building and tenant improvements', icon: '🏗️', keywords: ['commercial construction', 'tenant improvement', 'buildout', 'commercial contractor'] },
+      { id: 'security', name: 'Security Systems', slug: 'security', description: 'Commercial security, cameras, and access control', icon: '📹', keywords: ['security', 'cameras', 'alarm', 'access control', 'cctv', 'surveillance'] },
     ],
   },
   {

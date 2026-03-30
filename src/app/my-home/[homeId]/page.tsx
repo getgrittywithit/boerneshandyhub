@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useHomeownerAuth } from '@/contexts/HomeownerAuthContext';
 import { useHomes, useTasks, useServiceRecords, useMaterials } from '@/hooks/useHomeTracker';
 import {
   systemInfo,
@@ -12,16 +13,18 @@ import {
   type Material,
   type MaterialType
 } from '@/types/homeTracker';
+import MaterialPhotoUpload from '@/components/MaterialPhotoUpload';
 
 export default function HomeDetailPage() {
   const params = useParams();
   const router = useRouter();
   const homeId = params.homeId as string;
 
+  const { user, loading: authLoading } = useHomeownerAuth();
   const { homes, isLoaded: homesLoaded, getHome, deleteHome } = useHomes();
-  const { tasks, isLoaded: tasksLoaded, getTasksForHome, completeTask, refreshTaskStatuses } = useTasks();
-  const { getRecordsForHome, addRecord } = useServiceRecords();
-  const { materials, isLoaded: materialsLoaded, getMaterialsForHome, addMaterial, deleteMaterial } = useMaterials();
+  const { tasks, loadTasksForHome, getTasksForHome, completeTask, refreshTaskStatuses } = useTasks();
+  const { loadRecordsForHome, getRecordsForHome, addRecord } = useServiceRecords();
+  const { loadMaterialsForHome, getMaterialsForHome, addMaterial, deleteMaterial } = useMaterials();
 
   const [showAllTasks, setShowAllTasks] = useState(false);
   const [showMaterials, setShowMaterials] = useState(false);
@@ -40,6 +43,7 @@ export default function HomeDetailPage() {
     purchasedFrom: '',
     quantity: '',
     notes: '',
+    photoUrl: '',
   });
 
   const home = getHome(homeId);
@@ -47,12 +51,28 @@ export default function HomeDetailPage() {
   const homeRecords = getRecordsForHome(homeId);
   const homeMaterials = getMaterialsForHome(homeId);
 
-  // Refresh task statuses
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if (tasksLoaded) {
+    if (!authLoading && !user) {
+      router.push('/my-home/login');
+    }
+  }, [authLoading, user, router]);
+
+  // Load data for this home
+  useEffect(() => {
+    if (homesLoaded && homeId) {
+      loadTasksForHome(homeId);
+      loadRecordsForHome(homeId);
+      loadMaterialsForHome(homeId);
+    }
+  }, [homesLoaded, homeId, loadTasksForHome, loadRecordsForHome, loadMaterialsForHome]);
+
+  // Refresh task statuses when tasks change
+  useEffect(() => {
+    if (homeTasks.length > 0) {
       refreshTaskStatuses();
     }
-  }, [tasksLoaded, refreshTaskStatuses]);
+  }, [homeTasks.length, refreshTaskStatuses]);
 
   // Organize tasks
   const { focusTasks, overdueTasks, laterTasks, totalCount } = useMemo(() => {
@@ -90,12 +110,12 @@ export default function HomeDetailPage() {
     return grouped;
   }, [homeMaterials]);
 
-  const handleCompleteTask = () => {
+  const handleCompleteTask = async () => {
     if (!showCompleteModal) return;
 
-    completeTask(showCompleteModal.id);
+    await completeTask(showCompleteModal.id);
 
-    addRecord({
+    await addRecord({
       homeId,
       taskId: showCompleteModal.id,
       systemType: showCompleteModal.systemType,
@@ -108,10 +128,10 @@ export default function HomeDetailPage() {
     setCompleteNotes('');
   };
 
-  const handleAddMaterial = () => {
+  const handleAddMaterial = async () => {
     if (!materialForm.name || !materialForm.room) return;
 
-    addMaterial({
+    await addMaterial({
       homeId,
       type: materialForm.type,
       name: materialForm.name,
@@ -122,6 +142,7 @@ export default function HomeDetailPage() {
       purchasedFrom: materialForm.purchasedFrom || undefined,
       quantity: materialForm.quantity || undefined,
       notes: materialForm.notes || undefined,
+      photoUrl: materialForm.photoUrl || undefined,
     });
 
     // Reset form
@@ -135,23 +156,30 @@ export default function HomeDetailPage() {
       purchasedFrom: '',
       quantity: '',
       notes: '',
+      photoUrl: '',
     });
     setShowAddMaterial(false);
   };
 
-  const handleDeleteHome = () => {
+  const handleDeleteHome = async () => {
     if (confirm('Delete this home? This cannot be undone.')) {
-      deleteHome(homeId);
+      await deleteHome(homeId);
       router.push('/my-home');
     }
   };
 
-  if (!homesLoaded || !tasksLoaded || !materialsLoaded) {
+  // Show loading while checking auth or loading data
+  if (authLoading || !homesLoaded) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-gray-500">Loading...</div>
       </div>
     );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
   }
 
   if (!home) {
@@ -294,7 +322,15 @@ export default function HomeDetailPage() {
                         {mats.map(mat => (
                           <div key={mat.id} className="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-start gap-3">
-                              <span className="text-lg">{materialTypeInfo[mat.type]?.icon}</span>
+                              {mat.photoUrl ? (
+                                <img
+                                  src={mat.photoUrl}
+                                  alt={mat.name}
+                                  className="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                                />
+                              ) : (
+                                <span className="text-lg">{materialTypeInfo[mat.type]?.icon}</span>
+                              )}
                               <div>
                                 <p className="font-medium text-gray-900">{mat.name}</p>
                                 <p className="text-sm text-gray-500">
@@ -587,6 +623,15 @@ export default function HomeDetailPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
                   />
                 </div>
+
+                {user && (
+                  <MaterialPhotoUpload
+                    userId={user.id}
+                    currentPhotoUrl={materialForm.photoUrl || undefined}
+                    onUploadComplete={(url) => setMaterialForm(prev => ({ ...prev, photoUrl: url }))}
+                    onDelete={() => setMaterialForm(prev => ({ ...prev, photoUrl: '' }))}
+                  />
+                )}
               </div>
 
               <div className="flex gap-3 mt-6">

@@ -2,20 +2,40 @@
 
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useHomeownerAuth } from '@/contexts/HomeownerAuthContext';
 import { useHomes, useTasks } from '@/hooks/useHomeTracker';
 import { getCurrentSeasonalReminders } from '@/data/boerneMaintenanceData';
 import { systemInfo } from '@/types/homeTracker';
 
 export default function MyHomeDashboard() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useHomeownerAuth();
   const { homes, isLoaded: homesLoaded } = useHomes();
-  const { tasks, isLoaded: tasksLoaded, refreshTaskStatuses } = useTasks();
+  const { tasks, loadTasksForHome, refreshTaskStatuses } = useTasks();
 
-  // Refresh task statuses on load
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if (tasksLoaded) {
+    if (!authLoading && !user) {
+      router.push('/my-home/login');
+    }
+  }, [authLoading, user, router]);
+
+  // Load tasks for all homes when homes are loaded
+  useEffect(() => {
+    if (homesLoaded && homes.length > 0) {
+      homes.forEach(home => {
+        loadTasksForHome(home.id);
+      });
+    }
+  }, [homesLoaded, homes, loadTasksForHome]);
+
+  // Refresh task statuses when tasks change
+  useEffect(() => {
+    if (tasks.length > 0) {
       refreshTaskStatuses();
     }
-  }, [tasksLoaded, refreshTaskStatuses]);
+  }, [tasks.length, refreshTaskStatuses]);
 
   // Get focus tasks (top 3 most urgent across all homes)
   const { focusTasks, overdueCount } = useMemo(() => {
@@ -39,12 +59,18 @@ export default function MyHomeDashboard() {
 
   const seasonalReminders = getCurrentSeasonalReminders();
 
-  if (!homesLoaded || !tasksLoaded) {
+  // Show loading while checking auth or loading data
+  if (authLoading || !homesLoaded) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-gray-500">Loading...</div>
       </div>
     );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!user) {
+    return null;
   }
 
   return (
