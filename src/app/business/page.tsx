@@ -68,7 +68,7 @@ export default function BusinessPage() {
     },
     {
       name: 'Featured',
-      price: '$149',
+      price: '$249',
       period: '/month',
       description: 'Maximum visibility for top providers',
       features: [
