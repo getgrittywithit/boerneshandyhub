@@ -37,10 +37,12 @@ export default function BusinessPage() {
       name: 'Starter',
       price: '$39',
       period: '/month',
-      description: 'Stand out with verified status',
+      description: 'Stand out with verified credentials',
       features: [
         'Everything in Free',
         'Verified badge',
+        'We verify your license & insurance',
+        'Display Licensed & Insured badges',
         'Edit your profile anytime',
         'Add photos (up to 5)',
         'Special offers section',
