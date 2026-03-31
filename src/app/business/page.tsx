@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { membershipTiers } from '@/data/serviceCategories';
+import PricingSection from '@/components/PricingSection';
 
 export const metadata: Metadata = {
   title: "List Your Business | Boerne's Handy Hub",
@@ -18,72 +18,6 @@ export const metadata: Metadata = {
 };
 
 export default function BusinessPage() {
-  const tiers = [
-    {
-      name: 'Free',
-      price: '$0',
-      period: 'forever',
-      description: 'Get discovered by local homeowners',
-      features: [
-        'Listed in directory',
-        'Basic business profile',
-        'Category placement',
-        'Contact info displayed',
-      ],
-      cta: 'Get Started Free',
-      highlighted: false,
-    },
-    {
-      name: 'Starter',
-      price: '$39',
-      period: '/month',
-      description: 'Stand out with verified credentials',
-      features: [
-        'Everything in Free',
-        'Verified badge',
-        'We verify your license & insurance',
-        'Display Licensed & Insured badges',
-        'Edit your profile anytime',
-        'Add photos (up to 5)',
-        'Special offers section',
-      ],
-      cta: 'Get Verified',
-      highlighted: false,
-    },
-    {
-      name: 'Professional',
-      price: '$79',
-      period: '/month',
-      description: 'Get more leads with priority placement',
-      features: [
-        'Everything in Starter',
-        'Featured in your category',
-        'Priority listing placement',
-        'Unlimited photos',
-        'Staff pick eligible',
-        'Lead notifications',
-      ],
-      cta: 'Go Professional',
-      highlighted: true,
-    },
-    {
-      name: 'Featured',
-      price: '$249',
-      period: '/month',
-      description: 'Maximum visibility for top providers',
-      features: [
-        'Everything in Professional',
-        'Homepage spotlight',
-        'Top of all listings',
-        'Analytics dashboard',
-        'Priority support',
-        'Dedicated account rep',
-      ],
-      cta: 'Get Featured',
-      highlighted: false,
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -183,59 +117,7 @@ export default function BusinessPage() {
       </div>
 
       {/* Pricing Section */}
-      <div className="bg-gray-100 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Start free and upgrade as your business grows. Cancel anytime.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tiers.map((tier) => (
-              <div
-                key={tier.name}
-                className={`bg-white rounded-xl p-6 shadow-sm ${
-                  tier.highlighted ? 'ring-2 ring-boerne-gold' : ''
-                }`}
-              >
-                {tier.highlighted && (
-                  <div className="text-xs font-semibold text-boerne-gold uppercase tracking-wide mb-2">
-                    Most Popular
-                  </div>
-                )}
-                <h3 className="text-xl font-semibold text-gray-900">{tier.name}</h3>
-                <div className="mt-2 mb-4">
-                  <span className="text-3xl font-bold text-gray-900">{tier.price}</span>
-                  <span className="text-gray-500">{tier.period}</span>
-                </div>
-                <p className="text-sm text-gray-600 mb-6">{tier.description}</p>
-                <ul className="space-y-2 mb-6">
-                  {tier.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <span className="text-green-500">✓</span>
-                      <span className="text-gray-600">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/business/register"
-                  className={`block w-full text-center px-4 py-3 rounded-lg font-semibold transition-colors ${
-                    tier.highlighted
-                      ? 'bg-boerne-gold text-boerne-navy hover:bg-boerne-gold-alt'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {tier.cta}
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <PricingSection />
 
       {/* Already Listed Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
