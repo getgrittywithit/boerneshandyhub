@@ -127,6 +127,16 @@ export default async function ProviderDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  // Get related providers server-side to avoid shipping full JSON to client
+  const relatedProviders = serviceProvidersData.providers
+    .filter(p => p.category === slug && p.id !== providerId)
+    .slice(0, 3)
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      yearsInBusiness: (p as unknown as ServiceProvider).yearsInBusiness
+    }));
+
   const canonicalUrl = `https://boerneshandyhub.com/services/${category}/${slug}/${providerId}`;
 
   // Generate BreadcrumbList schema using utility
@@ -178,6 +188,7 @@ export default async function ProviderDetailPage({ params }: PageProps) {
         subcategorySlug={slug}
         providerId={providerId}
         provider={provider}
+        relatedProviders={relatedProviders}
       />
     </>
   );

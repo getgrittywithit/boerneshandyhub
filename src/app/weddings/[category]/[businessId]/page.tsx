@@ -1,9 +1,8 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import weddingVendorsData from '@/data/weddingVendors.json';
+import WeddingVendorActions from './WeddingVendorActions';
 
 interface WeddingVendor {
   id: string;
@@ -35,91 +34,78 @@ interface WeddingVendor {
   };
 }
 
-export default function BusinessDetailPage() {
-  const params = useParams();
-  const { category, businessId } = params;
-  const [vendor, setVendor] = useState<WeddingVendor | null>(null);
-  const [loading, setLoading] = useState(true);
+interface PageProps {
+  params: Promise<{ category: string; businessId: string }>;
+}
 
-  useEffect(() => {
-    // Find the vendor in the appropriate category
-    const categoryKey = category as keyof typeof weddingVendorsData;
-    const vendors = weddingVendorsData[categoryKey] || [];
-    const foundVendor = vendors.find((v: { id: string }) => v.id === businessId);
-    
-    if (foundVendor) {
-      setVendor(foundVendor as WeddingVendor);
+function getVendor(category: string, businessId: string): WeddingVendor | undefined {
+  const categoryKey = category as keyof typeof weddingVendorsData;
+  const vendors = weddingVendorsData[categoryKey] || [];
+  return vendors.find((v: { id: string }) => v.id === businessId) as WeddingVendor | undefined;
+}
+
+export async function generateStaticParams() {
+  const params: { category: string; businessId: string }[] = [];
+
+  for (const [category, vendors] of Object.entries(weddingVendorsData)) {
+    for (const vendor of vendors as { id: string }[]) {
+      params.push({
+        category,
+        businessId: vendor.id,
+      });
     }
-    setLoading(false);
-  }, [category, businessId]);
-
-  if (loading) {
-    return (
-      <div className="bg-boerne-light-gray min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-boerne-gold mx-auto"></div>
-          <p className="mt-4 text-boerne-dark-gray">Loading vendor details...</p>
-        </div>
-      </div>
-    );
   }
+
+  return params;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { category, businessId } = await params;
+  const vendor = getVendor(category, businessId);
 
   if (!vendor) {
-    return (
-      <div className="bg-boerne-light-gray min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-boerne-navy mb-4">Vendor Not Found</h1>
-          <Link 
-            href="/weddings"
-            className="text-boerne-gold hover:text-boerne-gold-alt"
-          >
-            ← Return to Wedding Directory
-          </Link>
-        </div>
-      </div>
-    );
+    return { title: 'Vendor Not Found' };
   }
 
-  const getTierBadge = (tier: string) => {
-    switch (tier) {
-      case 'basic':
-        return <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">Basic Listing</span>;
-      case 'verified':
-        return <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">✓ Verified</span>;
-      case 'premium':
-        return <span className="bg-boerne-gold text-boerne-navy text-xs font-medium px-2 py-1 rounded-full">⭐ Premium</span>;
-      case 'elite':
-        return <span className="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-1 rounded-full">👑 Elite</span>;
-      default:
-        return null;
-    }
-  };
+  const title = `${vendor.name} | Wedding ${vendor.subcategory} in Boerne TX`;
+  const description = `${vendor.description.slice(0, 150)}... Book ${vendor.name} for your Boerne wedding.`;
 
-  const getClaimButton = () => {
-    if (vendor.claimStatus === 'unclaimed') {
-      return (
-        <Link
-          href={`/weddings/${category}/${businessId}/claim`}
-          className="w-full sm:w-auto px-6 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors text-center"
-        >
-          🏢 Claim This Business
-        </Link>
-      );
-    } else if (vendor.claimStatus === 'pending') {
-      return (
-        <span className="w-full sm:w-auto px-6 py-3 bg-yellow-100 text-yellow-700 font-semibold rounded-lg text-center">
-          📋 Claim Pending Review
-        </span>
-      );
-    } else if (vendor.claimStatus === 'verified') {
-      return (
-        <span className="w-full sm:w-auto px-6 py-3 bg-green-100 text-green-700 font-semibold rounded-lg text-center">
-          ✅ Verified Business
-        </span>
-      );
-    }
-    return null;
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+    },
+    alternates: {
+      canonical: `/weddings/${category}/${businessId}`,
+    },
   };
+}
+
+function getTierBadge(tier: string) {
+  switch (tier) {
+    case 'basic':
+      return <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">Basic Listing</span>;
+    case 'verified':
+      return <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">✓ Verified</span>;
+    case 'premium':
+      return <span className="bg-boerne-gold text-boerne-navy text-xs font-medium px-2 py-1 rounded-full">⭐ Premium</span>;
+    case 'elite':
+      return <span className="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-1 rounded-full">👑 Elite</span>;
+    default:
+      return null;
+  }
+}
+
+export default async function BusinessDetailPage({ params }: PageProps) {
+  const { category, businessId } = await params;
+  const vendor = getVendor(category, businessId);
+
+  if (!vendor) {
+    notFound();
+  }
 
   return (
     <div className="bg-boerne-light-gray min-h-screen">
@@ -169,7 +155,7 @@ export default function BusinessDetailPage() {
                       <div className="text-2xl">⭐</div>
                       <div>
                         <h4 className="font-semibold text-boerne-navy mb-1">Why We Recommend:</h4>
-                        <p className="text-boerne-dark-gray italic">"{vendor.bernieRecommendation}"</p>
+                        <p className="text-boerne-dark-gray italic">&quot;{vendor.bernieRecommendation}&quot;</p>
                       </div>
                     </div>
                   </div>
@@ -244,7 +230,7 @@ export default function BusinessDetailPage() {
             {/* Contact Info */}
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h3 className="text-lg font-semibold text-boerne-navy mb-4">Contact Information</h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <span className="text-boerne-gold text-lg">📍</span>
@@ -252,7 +238,7 @@ export default function BusinessDetailPage() {
                     <div className="font-medium text-boerne-dark-gray">{vendor.address}</div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <span className="text-boerne-gold text-lg">📞</span>
                   <a
@@ -278,15 +264,7 @@ export default function BusinessDetailPage() {
                 )}
               </div>
 
-              <div className="mt-6 space-y-3">
-                <button className="w-full px-4 py-2 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors">
-                  📧 Send Message
-                </button>
-                
-                <button className="w-full px-4 py-2 border border-boerne-gold text-boerne-gold font-semibold rounded-lg hover:bg-boerne-gold hover:text-boerne-navy transition-colors">
-                  📅 Request Quote
-                </button>
-              </div>
+              <WeddingVendorActions />
             </div>
 
             {/* Claim Business */}
@@ -296,7 +274,12 @@ export default function BusinessDetailPage() {
                 <p className="text-boerne-navy mb-4 text-sm">
                   Claim your listing to manage your information, respond to reviews, and unlock premium features.
                 </p>
-                {getClaimButton()}
+                <Link
+                  href={`/weddings/${category}/${businessId}/claim`}
+                  className="inline-block w-full px-6 py-3 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors text-center"
+                >
+                  🏢 Claim This Business
+                </Link>
               </div>
             )}
 

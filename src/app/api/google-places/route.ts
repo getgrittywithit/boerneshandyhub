@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const FETCH_TIMEOUT = 10000; // 10 second timeout
+
+async function fetchWithTimeout(url: string, timeout: number = FETCH_TIMEOUT): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { location, radius, categories, maxResults } = await request.json();
@@ -39,7 +55,18 @@ export async function POST(request: NextRequest) {
 
     // First get coordinates for the location
     const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${apiKey}`;
-    const geocodeResponse = await fetch(geocodeUrl);
+    let geocodeResponse: Response;
+    try {
+      geocodeResponse = await fetchWithTimeout(geocodeUrl);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return NextResponse.json(
+          { error: 'Geocoding request timed out' },
+          { status: 504 }
+        );
+      }
+      throw error;
+    }
     const geocodeData = await geocodeResponse.json();
 
     if (geocodeData.status !== 'OK') {
@@ -85,9 +112,9 @@ export async function POST(request: NextRequest) {
 
       for (const type of categoryTypes) {
         const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&key=${apiKey}`;
-        
+
         try {
-          const response = await fetch(placesUrl);
+          const response = await fetchWithTimeout(placesUrl);
           const data = await response.json();
 
           if (data.status === 'OK') {
@@ -125,7 +152,12 @@ export async function POST(request: NextRequest) {
             results.push(...businesses);
           }
         } catch (error) {
-          console.error(`Error searching for ${type}:`, error);
+          if (error instanceof Error && error.name === 'AbortError') {
+            console.warn(`Timeout searching for ${type}, skipping`);
+          } else {
+            console.error(`Error searching for ${type}:`, error);
+          }
+          // Continue to next type instead of failing entire request
         }
 
         // Rate limiting - wait 100ms between requests

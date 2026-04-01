@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { getTopLevelCategory, getSubcategory, membershipTiers, type MembershipTier } from '@/data/serviceCategories';
+import { getTopLevelCategory, getSubcategory, type MembershipTier } from '@/data/serviceCategories';
 import QuoteRequestForm from '@/components/QuoteRequestForm';
 import ProviderSEOContent from '@/components/ProviderSEOContent';
-import serviceProvidersData from '@/data/serviceProviders.json';
 
 interface ServiceProvider {
   id: string;
@@ -35,18 +34,26 @@ interface ServiceProvider {
   updatedAt: string;
 }
 
+interface RelatedProvider {
+  id: string;
+  name: string;
+  yearsInBusiness?: number;
+}
+
 interface ProviderPageClientProps {
   topCategorySlug: string;
   subcategorySlug: string;
   providerId: string;
   provider: ServiceProvider;
+  relatedProviders: RelatedProvider[];
 }
 
 export default function ProviderPageClient({
   topCategorySlug,
   subcategorySlug,
   providerId,
-  provider
+  provider,
+  relatedProviders
 }: ProviderPageClientProps) {
   const [showQuoteForm, setShowQuoteForm] = useState(false);
 
@@ -67,11 +74,6 @@ export default function ProviderPageClient({
         return null;
     }
   };
-
-  // Get related providers in the same subcategory
-  const relatedProviders = (serviceProvidersData.providers as ServiceProvider[])
-    .filter(p => p.category === subcategorySlug && p.id !== providerId)
-    .slice(0, 3);
 
   return (
     <div className="bg-gray-50 min-h-screen">

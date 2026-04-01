@@ -5,6 +5,7 @@ import { generateEventContextForAI } from '@/data/currentEvents';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  timeout: 15000, // 15 second timeout
 });
 
 const BERNIE_SYSTEM_PROMPT = `${berniePersonality}
@@ -59,6 +60,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ response });
   } catch (error) {
     console.error('Chat API error:', error);
+
+    // Check for timeout error
+    if (error instanceof Error && error.message.includes('timeout')) {
+      return NextResponse.json(
+        { error: 'Chat request timed out' },
+        { status: 504 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to process chat request' },
       { status: 500 }

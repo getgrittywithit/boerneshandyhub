@@ -82,6 +82,12 @@ export default async function SubcategoryPage({ params }: PageProps) {
     notFound();
   }
 
+  // Filter providers server-side to avoid shipping full JSON to client
+  // Cast to match the client component's expected type
+  const filteredProviders = serviceProvidersData.providers.filter(
+    p => p.category === slug
+  ) as unknown as Parameters<typeof SlugPageClient>[0]['initialProviders'];
+
   // BreadcrumbList JSON-LD Schema
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -147,6 +153,7 @@ export default async function SubcategoryPage({ params }: PageProps) {
       <SlugPageClient
         topCategorySlug={category}
         subcategorySlug={slug}
+        initialProviders={filteredProviders}
       />
     </>
   );

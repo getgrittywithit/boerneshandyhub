@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import serviceProvidersData from '@/data/serviceProviders.json';
-import { getTopLevelCategory, getSubcategory, topLevelCategories, membershipTiers, type MembershipTier } from '@/data/serviceCategories';
+import { getTopLevelCategory, getSubcategory, membershipTiers, type MembershipTier } from '@/data/serviceCategories';
 
 interface ServiceProvider {
   id: string;
@@ -36,25 +35,19 @@ interface ServiceProvider {
 interface SlugPageClientProps {
   topCategorySlug: string;
   subcategorySlug: string;
+  initialProviders: ServiceProvider[];
 }
 
-export default function SlugPageClient({ topCategorySlug, subcategorySlug }: SlugPageClientProps) {
+export default function SlugPageClient({ topCategorySlug, subcategorySlug, initialProviders }: SlugPageClientProps) {
   const [sortBy, setSortBy] = useState('rating');
   const [filterTier, setFilterTier] = useState('all');
 
   const topCategory = getTopLevelCategory(topCategorySlug);
   const subcategory = getSubcategory(topCategorySlug, subcategorySlug);
 
-  // Filter providers by subcategory slug (providers have category field like "plumbing")
-  const allProviders = useMemo(() => {
-    return serviceProvidersData.providers.filter(
-      p => p.category === subcategorySlug
-    ) as ServiceProvider[];
-  }, [subcategorySlug]);
-
-  // Apply sorting and filtering
+  // Apply sorting and filtering to server-provided providers
   const providers = useMemo(() => {
-    let filtered = [...allProviders];
+    let filtered = [...initialProviders];
 
     // Filter by tier
     if (filterTier !== 'all') {
@@ -81,7 +74,7 @@ export default function SlugPageClient({ topCategorySlug, subcategorySlug }: Slu
     });
 
     return filtered;
-  }, [allProviders, sortBy, filterTier]);
+  }, [initialProviders, sortBy, filterTier]);
 
   if (!topCategory || !subcategory) {
     return (

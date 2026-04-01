@@ -22,10 +22,27 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch current weather
+    // Fetch current weather with timeout
     const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
-    const weatherResponse = await fetch(weatherUrl);
-    
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    let weatherResponse: Response;
+    try {
+      weatherResponse = await fetch(weatherUrl, { signal: controller.signal });
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        return NextResponse.json(
+          { error: 'Weather API request timed out' },
+          { status: 504 }
+        );
+      }
+      throw error;
+    }
+    clearTimeout(timeoutId);
+
     if (!weatherResponse.ok) {
       throw new Error(`Weather API responded with status: ${weatherResponse.status}`);
     }
