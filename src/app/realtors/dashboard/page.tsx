@@ -14,13 +14,51 @@ interface Client {
   city: string;
   closeDate: string;
   welcomePacketSent: boolean;
+  welcomePacketSentAt?: string;
   createdAt: string;
 }
+
+// Demo clients for demonstration
+const demoClients: Client[] = [
+  {
+    id: 'demo-1',
+    name: 'John & Jane Smith',
+    email: 'smiths@email.com',
+    phone: '(830) 555-1234',
+    address: '123 Oak Valley Drive',
+    city: 'Boerne',
+    closeDate: '2024-03-15',
+    welcomePacketSent: true,
+    welcomePacketSentAt: '2024-03-16',
+    createdAt: '2024-03-10',
+  },
+  {
+    id: 'demo-2',
+    name: 'Michael Johnson',
+    email: 'mjohnson@email.com',
+    address: '456 Hill Country Lane',
+    city: 'Fair Oaks Ranch',
+    closeDate: '2024-03-22',
+    welcomePacketSent: false,
+    createdAt: '2024-03-18',
+  },
+  {
+    id: 'demo-3',
+    name: 'The Garcia Family',
+    email: 'garcias@email.com',
+    phone: '(210) 555-9876',
+    address: '789 Cascade Caverns Rd',
+    city: 'Boerne',
+    closeDate: '2024-04-01',
+    welcomePacketSent: false,
+    createdAt: '2024-03-20',
+  },
+];
 
 export default function RealtorDashboard() {
   const router = useRouter();
   const { user, profile, loading: authLoading, signOut } = useRealtorAuth();
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<Client[]>(demoClients);
   const [showAddClient, setShowAddClient] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -186,25 +224,36 @@ export default function RealtorDashboard() {
                     </div>
                     <div className="flex items-center gap-3">
                       {client.welcomePacketSent ? (
-                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                          Packet Sent
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <div className="text-right">
+                            <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                              Packet Sent
+                            </span>
+                            {client.welcomePacketSentAt && (
+                              <p className="text-xs text-gray-400 mt-1">
+                                {new Date(client.welcomePacketSentAt).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <Link
+                            href={`/welcome/${client.id}`}
+                            target="_blank"
+                            className="p-2 text-gray-400 hover:text-boerne-gold transition-colors"
+                            title="View Packet"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </Link>
+                        </div>
                       ) : (
                         <Link
                           href={`/realtors/dashboard/clients/${client.id}/packet`}
-                          className="px-3 py-1 bg-boerne-gold text-boerne-navy text-xs font-medium rounded-full hover:bg-boerne-gold-alt"
+                          className="px-4 py-2 bg-boerne-gold text-boerne-navy text-sm font-medium rounded-lg hover:bg-boerne-gold-alt transition-colors"
                         >
                           Create Packet
                         </Link>
                       )}
-                      <Link
-                        href={`/realtors/dashboard/clients/${client.id}`}
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </Link>
                     </div>
                   </div>
                 </div>
@@ -290,6 +339,7 @@ function AddClientModal({
       city,
       closeDate,
       welcomePacketSent: false,
+      welcomePacketSentAt: undefined,
       createdAt: new Date().toISOString(),
     };
 
