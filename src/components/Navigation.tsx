@@ -59,14 +59,12 @@ export default function Navigation() {
       ]
     },
     { href: '/weddings', label: 'Weddings' },
-    { href: '/resources', label: 'Resources' },
+    { href: '/my-home', label: 'Home Tracker' },
     { href: '/business', label: 'Get Listed' },
   ];
 
   // Secondary nav items (shown in more dropdown on desktop, full on mobile)
   const secondaryNavItems: NavItem[] = [
-    { href: '/my-home', label: 'Home Tracker' },
-    { href: '/outdoor', label: 'Outdoors' },
     { href: '/dining', label: 'Dining' },
     { href: '/events', label: 'Events' },
     { href: '/about', label: 'About' },

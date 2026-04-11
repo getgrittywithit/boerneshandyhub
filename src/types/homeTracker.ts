@@ -74,25 +74,46 @@ export function getSystemCategory(systemType: HomeSystemType): SystemCategory {
   return 'interior'; // fallback
 }
 
-// System display info
-export const systemInfo: Record<HomeSystemType, { name: string; icon: string; category: string }> = {
-  hvac: { name: 'HVAC / Air Conditioning', icon: '❄️', category: 'hvac' },
-  plumbing: { name: 'Plumbing', icon: '🔧', category: 'plumbing' },
-  electrical: { name: 'Electrical', icon: '⚡', category: 'electrical' },
-  roof: { name: 'Roof', icon: '🏠', category: 'roofing' },
-  waterHeater: { name: 'Water Heater', icon: '🔥', category: 'plumbing' },
-  foundation: { name: 'Foundation', icon: '🧱', category: 'foundation' },
-  gutters: { name: 'Gutters', icon: '🌧️', category: 'gutters' },
-  septic: { name: 'Septic System', icon: '🚽', category: 'septic' },
-  well: { name: 'Well / Water System', icon: '💧', category: 'plumbing' },
-  pool: { name: 'Pool / Spa', icon: '🏊', category: 'pool' },
-  sprinkler: { name: 'Sprinkler / Irrigation', icon: '💦', category: 'landscaping' },
-  garage: { name: 'Garage Door', icon: '🚗', category: 'garage-doors' },
-  appliances: { name: 'Major Appliances', icon: '🍳', category: 'appliances' },
-  exterior: { name: 'Exterior / Siding', icon: '🏡', category: 'exterior' },
-  windows: { name: 'Windows & Doors', icon: '🪟', category: 'windows' },
-  fireplace: { name: 'Fireplace / Chimney', icon: '🔥', category: 'chimney' },
+// System display info with service directory mapping
+export const systemInfo: Record<HomeSystemType, {
+  name: string;
+  icon: string;
+  serviceSlug: string;  // Maps to service subcategory slug
+  parentCategory: string;  // Maps to top-level category
+}> = {
+  hvac: { name: 'HVAC / Air Conditioning', icon: '❄️', serviceSlug: 'hvac', parentCategory: 'home' },
+  plumbing: { name: 'Plumbing', icon: '🔧', serviceSlug: 'plumbing', parentCategory: 'home' },
+  electrical: { name: 'Electrical', icon: '⚡', serviceSlug: 'electrical', parentCategory: 'home' },
+  roof: { name: 'Roof', icon: '🏠', serviceSlug: 'roofing', parentCategory: 'home' },
+  waterHeater: { name: 'Water Heater', icon: '🔥', serviceSlug: 'plumbing', parentCategory: 'home' },
+  foundation: { name: 'Foundation', icon: '🧱', serviceSlug: 'foundation-repair', parentCategory: 'home' },
+  gutters: { name: 'Gutters', icon: '🌧️', serviceSlug: 'gutters', parentCategory: 'home' },
+  septic: { name: 'Septic System', icon: '🚽', serviceSlug: 'septic', parentCategory: 'home' },
+  well: { name: 'Well / Water System', icon: '💧', serviceSlug: 'well-drilling', parentCategory: 'outdoor' },
+  pool: { name: 'Pool / Spa', icon: '🏊', serviceSlug: 'pool-service', parentCategory: 'home' },
+  sprinkler: { name: 'Sprinkler / Irrigation', icon: '💦', serviceSlug: 'landscaping', parentCategory: 'home' },
+  garage: { name: 'Garage Door', icon: '🚗', serviceSlug: 'garage-doors', parentCategory: 'home' },
+  appliances: { name: 'Major Appliances', icon: '🍳', serviceSlug: 'handyman', parentCategory: 'home' },
+  exterior: { name: 'Exterior / Siding', icon: '🏡', serviceSlug: 'painting', parentCategory: 'home' },
+  windows: { name: 'Windows & Doors', icon: '🪟', serviceSlug: 'remodeling', parentCategory: 'home' },
+  fireplace: { name: 'Fireplace / Chimney', icon: '🔥', serviceSlug: 'handyman', parentCategory: 'home' },
 };
+
+// Get the service directory URL for a system type
+export function getServiceUrl(systemType: HomeSystemType): string {
+  const info = systemInfo[systemType];
+  return `/services/${info.parentCategory}/${info.serviceSlug}`;
+}
+
+// Get the service name for display
+export function getServiceName(systemType: HomeSystemType): string {
+  const info = systemInfo[systemType];
+  // Format slug to display name (e.g., 'pool-service' -> 'Pool Service')
+  return info.serviceSlug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
 // ============================================
 // MATERIAL TYPES & CATEGORIES

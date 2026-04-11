@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useHomeownerAuth } from '@/contexts/HomeownerAuthContext';
 import { useHomes, useTasks } from '@/hooks/useHomeTracker';
 import { getCurrentSeasonalReminders } from '@/data/boerneMaintenanceData';
-import { systemInfo } from '@/types/homeTracker';
+import { systemInfo, getServiceUrl, getServiceName } from '@/types/homeTracker';
 
 export default function MyHomeDashboard() {
   const router = useRouter();
@@ -226,26 +226,45 @@ export default function MyHomeDashboard() {
                   {focusTasks.map(task => {
                     const home = homes.find(h => h.id === task.homeId);
                     const daysUntilDue = Math.ceil((new Date(task.nextDue).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                    const serviceUrl = getServiceUrl(task.systemType);
+                    const serviceName = getServiceName(task.systemType);
 
                     return (
-                      <Link
+                      <div
                         key={task.id}
-                        href={`/my-home/${task.homeId}`}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="p-3 bg-gray-50 rounded-lg"
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl">{systemInfo[task.systemType]?.icon}</span>
-                          <div>
-                            <p className="font-medium text-gray-900">{task.title}</p>
-                            <p className="text-sm text-gray-500">{home?.name}</p>
+                        <div className="flex items-center justify-between">
+                          <Link
+                            href={`/my-home/${task.homeId}`}
+                            className="flex items-center gap-3 flex-1 hover:opacity-80 transition-opacity"
+                          >
+                            <span className="text-xl">{systemInfo[task.systemType]?.icon}</span>
+                            <div>
+                              <p className="font-medium text-gray-900">{task.title}</p>
+                              <p className="text-sm text-gray-500">{home?.name}</p>
+                            </div>
+                          </Link>
+                          <div className="flex items-center gap-3">
+                            <span className={`text-sm ${
+                              daysUntilDue <= 7 ? 'text-orange-600' : 'text-gray-500'
+                            }`}>
+                              {daysUntilDue} days
+                            </span>
                           </div>
                         </div>
-                        <span className={`text-sm ${
-                          daysUntilDue <= 7 ? 'text-orange-600' : 'text-gray-500'
-                        }`}>
-                          {daysUntilDue} days
-                        </span>
-                      </Link>
+                        <div className="mt-2 ml-9">
+                          <Link
+                            href={serviceUrl}
+                            className="inline-flex items-center gap-1 text-sm text-boerne-gold hover:text-boerne-gold-alt"
+                          >
+                            Find {serviceName} pros
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>

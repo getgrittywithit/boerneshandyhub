@@ -331,13 +331,13 @@ export default function Home() {
               </div>
             </Link>
             <Link
-              href="/outdoor"
+              href="/my-home"
               className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
             >
-              <span className="text-2xl">🌳</span>
+              <span className="text-2xl">🏠</span>
               <div>
-                <h3 className="font-medium text-gray-900">Outdoors</h3>
-                <p className="text-sm text-gray-500">Parks & trails</p>
+                <h3 className="font-medium text-gray-900">Home Tracker</h3>
+                <p className="text-sm text-gray-500">Manage maintenance</p>
               </div>
             </Link>
           </div>

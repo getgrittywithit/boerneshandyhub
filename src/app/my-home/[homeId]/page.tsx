@@ -9,6 +9,8 @@ import {
   systemInfo,
   materialTypeInfo,
   commonRooms,
+  getServiceUrl,
+  getServiceName,
   type MaintenanceTask,
   type Material,
   type MaterialType
@@ -452,35 +454,27 @@ export default function HomeDetailPage() {
           )}
         </div>
 
-        {/* Find Pros */}
+        {/* Find Pros - Dynamic based on home systems */}
         <div className="bg-gradient-to-r from-boerne-navy to-boerne-dark-gray rounded-xl p-6 text-white">
           <h3 className="font-semibold mb-2">Need help with a task?</h3>
-          <p className="text-white/70 text-sm mb-4">Find trusted local pros in Boerne</p>
+          <p className="text-white/70 text-sm mb-4">Find trusted local pros in Boerne for your home's systems</p>
           <div className="flex flex-wrap gap-2">
-            <Link
-              href="/services/home/hvac"
-              className="px-3 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors"
-            >
-              HVAC
-            </Link>
-            <Link
-              href="/services/home/plumbing"
-              className="px-3 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors"
-            >
-              Plumbing
-            </Link>
-            <Link
-              href="/services/home/electrical"
-              className="px-3 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors"
-            >
-              Electrical
-            </Link>
-            <Link
-              href="/services/home/roofing"
-              className="px-3 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors"
-            >
-              Roofing
-            </Link>
+            {/* Show unique service categories based on home's systems */}
+            {home.systems && [...new Set(home.systems.map(s => {
+              const info = systemInfo[s.type];
+              return JSON.stringify({ slug: info.serviceSlug, parent: info.parentCategory, name: info.name.split('/')[0].trim() });
+            }))].slice(0, 5).map(jsonStr => {
+              const { slug, parent, name } = JSON.parse(jsonStr);
+              return (
+                <Link
+                  key={slug}
+                  href={`/services/${parent}/${slug}`}
+                  className="px-3 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors"
+                >
+                  {name}
+                </Link>
+              );
+            })}
             <Link
               href="/services/home"
               className="px-3 py-2 bg-boerne-gold text-boerne-navy rounded-lg text-sm font-medium hover:bg-boerne-gold-alt transition-colors"
@@ -532,12 +526,16 @@ export default function HomeDetailPage() {
                 </button>
               </div>
 
-              <div className="mt-4 pt-4 border-t">
+              <div className="mt-4 pt-4 border-t bg-gray-50 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
+                <p className="text-sm text-gray-600 mb-2">Need help with this task?</p>
                 <Link
-                  href={`/services/home/${systemInfo[showCompleteModal.systemType]?.category || 'handyman'}`}
-                  className="text-sm text-boerne-gold hover:text-boerne-gold-alt"
+                  href={getServiceUrl(showCompleteModal.systemType)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-boerne-gold text-boerne-navy text-sm font-medium rounded-lg hover:bg-boerne-gold-alt transition-colors"
                 >
-                  Need a pro? Find {systemInfo[showCompleteModal.systemType]?.name} services →
+                  Find {getServiceName(showCompleteModal.systemType)} Pros
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
                 </Link>
               </div>
             </div>
@@ -706,9 +704,11 @@ export default function HomeDetailPage() {
   );
 }
 
-// Focus Task Card
+// Focus Task Card with Find a Pro integration
 function FocusTaskCard({ task, onComplete }: { task: MaintenanceTask; onComplete: () => void }) {
   const daysUntilDue = Math.ceil((new Date(task.nextDue).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+  const serviceUrl = getServiceUrl(task.systemType);
+  const serviceName = getServiceName(task.systemType);
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
@@ -723,9 +723,19 @@ function FocusTaskCard({ task, onComplete }: { task: MaintenanceTask; onComplete
                 💡 {task.localTip}
               </p>
             )}
+            {/* Find a Pro link */}
+            <Link
+              href={serviceUrl}
+              className="inline-flex items-center gap-1 mt-2 text-sm text-boerne-gold hover:text-boerne-gold-alt"
+            >
+              Find {serviceName} pros
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
-        <div className="text-right ml-4">
+        <div className="text-right ml-4 flex flex-col items-end gap-2">
           <span className={`text-sm font-medium ${
             daysUntilDue <= 7 ? 'text-orange-600' : 'text-gray-500'
           }`}>
@@ -733,7 +743,7 @@ function FocusTaskCard({ task, onComplete }: { task: MaintenanceTask; onComplete
           </span>
           <button
             onClick={onComplete}
-            className="mt-2 block px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded hover:bg-green-200"
+            className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded hover:bg-green-200"
           >
             Done
           </button>
@@ -743,17 +753,24 @@ function FocusTaskCard({ task, onComplete }: { task: MaintenanceTask; onComplete
   );
 }
 
-// Simple Task Row
+// Simple Task Row with Find Pro link
 function SimpleTaskRow({ task, onComplete }: { task: MaintenanceTask; onComplete: () => void }) {
   const daysUntilDue = Math.ceil((new Date(task.nextDue).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+  const serviceUrl = getServiceUrl(task.systemType);
 
   return (
-    <div className="p-3 flex items-center justify-between hover:bg-gray-50">
+    <div className="p-3 flex items-center justify-between hover:bg-gray-50 group">
       <div className="flex items-center gap-3">
         <span className="text-lg">{systemInfo[task.systemType]?.icon}</span>
         <span className="text-gray-700">{task.title}</span>
       </div>
       <div className="flex items-center gap-3">
+        <Link
+          href={serviceUrl}
+          className="px-2 py-1 text-boerne-gold text-xs hover:bg-boerne-gold/10 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          Find Pro
+        </Link>
         <span className={`text-xs ${
           task.status === 'overdue' ? 'text-red-600' :
           task.status === 'due-soon' ? 'text-orange-500' :
