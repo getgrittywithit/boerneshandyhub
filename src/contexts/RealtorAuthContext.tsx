@@ -55,7 +55,15 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
         return;
       }
-      const { data: { user } } = await supabase.auth.getUser();
+
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise<null>((_, reject) => {
+        setTimeout(() => reject(new Error('Auth check timeout')), 10000);
+      });
+
+      const authPromise = supabase.auth.getUser().then(({ data }) => data.user);
+      const user = await Promise.race([authPromise, timeoutPromise]);
+
       if (user) {
         // Check if this is a realtor account
         const { data: realtorProfile } = await supabase
@@ -79,6 +87,9 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Auth check error:', error);
+      // Don't set error for timeout - just proceed without auth
+      setUser(null);
+      setProfile(null);
     } finally {
       setLoading(false);
     }

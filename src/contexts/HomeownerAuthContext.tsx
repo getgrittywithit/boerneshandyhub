@@ -61,11 +61,19 @@ export function HomeownerAuthProvider({ children }: HomeownerAuthProviderProps) 
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise<null>((_, reject) => {
+        setTimeout(() => reject(new Error('Auth check timeout')), 10000);
+      });
+
+      const authPromise = supabase.auth.getUser().then(({ data }) => data.user);
+
+      const user = await Promise.race([authPromise, timeoutPromise]);
       setUser(user);
     } catch (err) {
       console.error('Auth check failed:', err);
-      setError('Failed to check authentication');
+      // Don't set error for timeout - just proceed without auth
+      setUser(null);
     } finally {
       setLoading(false);
     }

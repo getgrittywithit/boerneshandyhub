@@ -25,6 +25,9 @@ export function useHomes() {
 
   // Load homes from Supabase
   useEffect(() => {
+    let mounted = true;
+    let timeoutId: NodeJS.Timeout;
+
     if (!user) {
       setHomes([]);
       setIsLoaded(true);
@@ -34,17 +37,40 @@ export function useHomes() {
     const loadHomes = async () => {
       try {
         const data = await homesApi.list(user.id);
-        setHomes(data);
-        setError(null);
+        if (mounted) {
+          setHomes(data);
+          setError(null);
+        }
       } catch (err) {
         console.error('Failed to load homes:', err);
-        setError('Failed to load homes');
+        if (mounted) {
+          // Set empty homes on error to allow page to render
+          setHomes([]);
+          setError('Failed to load homes');
+        }
       } finally {
-        setIsLoaded(true);
+        if (mounted) {
+          setIsLoaded(true);
+          clearTimeout(timeoutId);
+        }
       }
     };
 
+    // Add timeout to prevent infinite loading
+    timeoutId = setTimeout(() => {
+      if (mounted) {
+        console.warn('Homes loading timed out');
+        setHomes([]);
+        setIsLoaded(true);
+      }
+    }, 15000);
+
     loadHomes();
+
+    return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
+    };
   }, [user]);
 
   const addHome = useCallback(async (
