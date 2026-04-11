@@ -4,6 +4,7 @@ import "./globals.css";
 import "./boerne-colors.css";
 import Navigation from "@/components/Navigation";
 import { HomeownerAuthProvider } from "@/contexts/HomeownerAuthContext";
+import { RealtorAuthProvider } from "@/contexts/RealtorAuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -91,8 +92,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <HomeownerAuthProvider>
-          <Navigation />
-          {children}
+          <RealtorAuthProvider>
+            <Navigation />
+            {children}
+          </RealtorAuthProvider>
         </HomeownerAuthProvider>
       </body>
     </html>

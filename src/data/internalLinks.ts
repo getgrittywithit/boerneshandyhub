@@ -15,16 +15,20 @@ export interface RelatedCategory {
 
 // Maps service categories to relevant guides
 export const categoryToGuides: Record<string, string[]> = {
-  'plumbing': ['emergency-plumber-boerne', 'hiring-contractor-texas', 'home-maintenance-schedule', 'handyman-vs-contractor'],
-  'hvac': ['hvac-maintenance-checklist', 'home-maintenance-schedule', 'hiring-contractor-texas', 'diy-vs-professional'],
-  'electrical': ['hiring-contractor-texas', 'home-maintenance-schedule', 'diy-vs-professional', 'handyman-vs-contractor'],
-  'roofing': ['roof-inspection-guide', 'hiring-contractor-texas', 'diy-vs-professional'],
-  'landscaping': ['pest-prevention-tips', 'pool-winterization', 'home-maintenance-schedule'],
-  'pest-control': ['pest-prevention-tips', 'home-maintenance-schedule'],
-  'pool-spa': ['pool-winterization', 'home-maintenance-schedule'],
-  'handyman': ['handyman-vs-contractor', 'diy-vs-professional', 'home-maintenance-schedule', 'hiring-contractor-texas'],
-  'contractors': ['hiring-contractor-texas', 'handyman-vs-contractor', 'diy-vs-professional', 'roof-inspection-guide'],
-  'cleaning': ['home-maintenance-schedule'],
+  'plumbing': ['emergency-plumber-boerne', 'home-repair-costs-boerne', 'hiring-contractor-texas', 'home-maintenance-schedule'],
+  'hvac': ['hvac-maintenance-checklist', 'replace-vs-repair-guide', 'home-repair-costs-boerne', 'home-maintenance-schedule'],
+  'electrical': ['electrical-panel-upgrade-guide', 'hiring-contractor-texas', 'home-repair-costs-boerne', 'diy-vs-professional'],
+  'roofing': ['roof-inspection-guide', 'storm-damage-repair-guide', 'replace-vs-repair-guide', 'home-repair-costs-boerne'],
+  'landscaping': ['pest-prevention-tips', 'pool-winterization', 'home-maintenance-schedule', 'home-selling-preparation-checklist'],
+  'pest-control': ['pest-prevention-tips', 'home-maintenance-schedule', 'new-homeowner-checklist'],
+  'pool-spa': ['pool-winterization', 'home-maintenance-schedule', 'home-repair-costs-boerne'],
+  'handyman': ['handyman-vs-contractor', 'diy-vs-professional', 'home-repair-costs-boerne', 'new-homeowner-checklist'],
+  'contractors': ['hiring-contractor-texas', 'storm-damage-repair-guide', 'home-repair-costs-boerne', 'home-selling-preparation-checklist'],
+  'cleaning': ['home-maintenance-schedule', 'home-selling-preparation-checklist', 'new-homeowner-checklist'],
+  'foundation-repair': ['foundation-problems-texas', 'home-repair-costs-boerne', 'hiring-contractor-texas'],
+  'septic': ['septic-system-maintenance', 'home-maintenance-schedule', 'new-homeowner-checklist'],
+  'gutters': ['storm-damage-repair-guide', 'home-maintenance-schedule', 'roof-inspection-guide'],
+  'painting': ['home-selling-preparation-checklist', 'diy-vs-professional', 'home-maintenance-schedule'],
   'auto-repair': [],
   'auto-detailing': [],
   'veterinarians': ['choosing-veterinarian'],
@@ -33,44 +37,56 @@ export const categoryToGuides: Record<string, string[]> = {
   'pet-sitting': ['choosing-veterinarian'],
   'it-services': [],
   'accounting': [],
-  'remodeling': ['hiring-contractor-texas', 'handyman-vs-contractor', 'diy-vs-professional'],
+  'remodeling': ['hiring-contractor-texas', 'home-selling-preparation-checklist', 'home-repair-costs-boerne', 'diy-vs-professional'],
+  'locksmith': ['new-homeowner-checklist', 'home-maintenance-schedule'],
+  'garage-doors': ['replace-vs-repair-guide', 'home-maintenance-schedule', 'diy-vs-professional'],
+  'well-drilling': ['septic-system-maintenance', 'new-homeowner-checklist'],
 };
 
 // Maps guides to related guides (for "You might also like" sections)
 export const guideToRelatedGuides: Record<string, string[]> = {
-  'emergency-plumber-boerne': ['hiring-contractor-texas', 'home-maintenance-schedule', 'diy-vs-professional'],
-  'hvac-maintenance-checklist': ['home-maintenance-schedule', 'hiring-contractor-texas', 'diy-vs-professional'],
-  'hiring-contractor-texas': ['handyman-vs-contractor', 'diy-vs-professional', 'roof-inspection-guide'],
-  'roof-inspection-guide': ['hiring-contractor-texas', 'home-maintenance-schedule', 'diy-vs-professional'],
-  'pest-prevention-tips': ['home-maintenance-schedule', 'pool-winterization'],
-  'pool-winterization': ['home-maintenance-schedule', 'pest-prevention-tips'],
-  'choosing-veterinarian': [],
-  'home-maintenance-schedule': ['hvac-maintenance-checklist', 'pest-prevention-tips', 'roof-inspection-guide'],
-  'handyman-vs-contractor': ['diy-vs-professional', 'hiring-contractor-texas'],
-  'diy-vs-professional': ['handyman-vs-contractor', 'hiring-contractor-texas', 'home-maintenance-schedule'],
+  'emergency-plumber-boerne': ['home-repair-costs-boerne', 'hiring-contractor-texas', 'home-maintenance-schedule'],
+  'hvac-maintenance-checklist': ['replace-vs-repair-guide', 'home-maintenance-schedule', 'home-repair-costs-boerne'],
+  'hiring-contractor-texas': ['handyman-vs-contractor', 'storm-damage-repair-guide', 'home-repair-costs-boerne'],
+  'roof-inspection-guide': ['storm-damage-repair-guide', 'replace-vs-repair-guide', 'hiring-contractor-texas'],
+  'pest-prevention-tips': ['home-maintenance-schedule', 'new-homeowner-checklist', 'pool-winterization'],
+  'pool-winterization': ['home-maintenance-schedule', 'pest-prevention-tips', 'home-repair-costs-boerne'],
+  'choosing-veterinarian': ['new-homeowner-checklist'],
+  'home-maintenance-schedule': ['new-homeowner-checklist', 'hvac-maintenance-checklist', 'pest-prevention-tips'],
+  'handyman-vs-contractor': ['diy-vs-professional', 'hiring-contractor-texas', 'home-repair-costs-boerne'],
+  'diy-vs-professional': ['handyman-vs-contractor', 'home-repair-costs-boerne', 'home-maintenance-schedule'],
+  // New guides
+  'home-repair-costs-boerne': ['hiring-contractor-texas', 'replace-vs-repair-guide', 'diy-vs-professional'],
+  'storm-damage-repair-guide': ['roof-inspection-guide', 'hiring-contractor-texas', 'home-repair-costs-boerne'],
+  'replace-vs-repair-guide': ['home-repair-costs-boerne', 'hvac-maintenance-checklist', 'electrical-panel-upgrade-guide'],
+  'new-homeowner-checklist': ['home-maintenance-schedule', 'hiring-contractor-texas', 'pest-prevention-tips'],
+  'foundation-problems-texas': ['home-repair-costs-boerne', 'hiring-contractor-texas', 'new-homeowner-checklist'],
+  'electrical-panel-upgrade-guide': ['replace-vs-repair-guide', 'hiring-contractor-texas', 'home-repair-costs-boerne'],
+  'septic-system-maintenance': ['home-maintenance-schedule', 'new-homeowner-checklist', 'foundation-problems-texas'],
+  'home-selling-preparation-checklist': ['home-repair-costs-boerne', 'hiring-contractor-texas', 'roof-inspection-guide'],
 };
 
 // Maps aggregate pages to related categories and guides
 export const aggregatePageLinks: Record<string, { categories: string[]; guides: string[] }> = {
   'emergency-services': {
     categories: ['plumbing', 'electrical', 'hvac', 'roofing'],
-    guides: ['emergency-plumber-boerne', 'home-maintenance-schedule'],
+    guides: ['emergency-plumber-boerne', 'storm-damage-repair-guide', 'home-repair-costs-boerne'],
   },
   'licensed-contractors': {
     categories: ['contractors', 'roofing', 'electrical', 'plumbing', 'hvac'],
-    guides: ['hiring-contractor-texas', 'handyman-vs-contractor', 'diy-vs-professional'],
+    guides: ['hiring-contractor-texas', 'home-repair-costs-boerne', 'storm-damage-repair-guide'],
   },
   'top-rated': {
     categories: ['plumbing', 'hvac', 'electrical', 'handyman', 'landscaping'],
-    guides: ['hiring-contractor-texas'],
+    guides: ['hiring-contractor-texas', 'home-repair-costs-boerne'],
   },
   'new-homeowner': {
-    categories: ['handyman', 'hvac', 'plumbing', 'landscaping', 'pest-control'],
-    guides: ['home-maintenance-schedule', 'hvac-maintenance-checklist', 'pest-prevention-tips', 'choosing-veterinarian'],
+    categories: ['handyman', 'hvac', 'plumbing', 'landscaping', 'pest-control', 'locksmith'],
+    guides: ['new-homeowner-checklist', 'home-maintenance-schedule', 'pest-prevention-tips', 'hvac-maintenance-checklist'],
   },
   'senior-services': {
     categories: ['handyman', 'hvac', 'plumbing', 'cleaning', 'landscaping'],
-    guides: ['home-maintenance-schedule', 'hiring-contractor-texas'],
+    guides: ['home-maintenance-schedule', 'home-repair-costs-boerne', 'hiring-contractor-texas'],
   },
 };
 
