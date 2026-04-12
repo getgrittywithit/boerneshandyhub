@@ -311,16 +311,6 @@ export default function Home() {
               </div>
             </Link>
             <Link
-              href="/weddings"
-              className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
-            >
-              <span className="text-2xl">💍</span>
-              <div>
-                <h3 className="font-medium text-gray-900">Weddings</h3>
-                <p className="text-sm text-gray-500">Event vendors</p>
-              </div>
-            </Link>
-            <Link
               href="/events"
               className="flex items-center gap-3 p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
             >

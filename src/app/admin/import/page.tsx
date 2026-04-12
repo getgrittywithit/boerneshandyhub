@@ -21,14 +21,17 @@ interface ImportPreview {
   category: string;
 }
 
-const WEDDING_CATEGORIES = [
-  { id: 'wedding_venue', label: 'Wedding Venues', types: ['wedding_venue', 'banquet_hall', 'event_venue'] },
-  { id: 'photographer', label: 'Photographers', types: ['photographer', 'wedding_photographer'] },
-  { id: 'florist', label: 'Florists', types: ['florist', 'flower_shop'] },
-  { id: 'restaurant', label: 'Catering/Restaurants', types: ['restaurant', 'meal_takeaway', 'catering'] },
-  { id: 'beauty_salon', label: 'Beauty Services', types: ['beauty_salon', 'hair_care', 'spa'] },
-  { id: 'jewelry_store', label: 'Jewelry Stores', types: ['jewelry_store'] },
-  { id: 'clothing_store', label: 'Bridal Shops', types: ['clothing_store', 'bridal_shop'] }
+const IMPORT_CATEGORIES = [
+  { id: 'plumber', label: 'Plumbers', types: ['plumber'] },
+  { id: 'electrician', label: 'Electricians', types: ['electrician'] },
+  { id: 'hvac', label: 'HVAC Contractors', types: ['hvac_contractor'] },
+  { id: 'roofing', label: 'Roofing Contractors', types: ['roofing_contractor'] },
+  { id: 'locksmith', label: 'Locksmiths', types: ['locksmith'] },
+  { id: 'landscaping', label: 'Landscapers', types: ['landscaper', 'lawn_care_service'] },
+  { id: 'pest_control', label: 'Pest Control', types: ['pest_control'] },
+  { id: 'painter', label: 'Painters', types: ['painter'] },
+  { id: 'general_contractor', label: 'General Contractors', types: ['general_contractor'] },
+  { id: 'moving', label: 'Moving Companies', types: ['moving_company'] },
 ];
 
 export default function ImportBusinesses() {
@@ -138,7 +141,7 @@ export default function ImportBusinesses() {
   };
 
   const getCategoryName = (categoryId: string) => {
-    const category = WEDDING_CATEGORIES.find(c => c.id === categoryId);
+    const category = IMPORT_CATEGORIES.find(c => c.id === categoryId);
     return category?.label || categoryId;
   };
 
@@ -235,7 +238,7 @@ export default function ImportBusinesses() {
                   Business Categories
                 </label>
                 <div className="space-y-2">
-                  {WEDDING_CATEGORIES.map((category) => (
+                  {IMPORT_CATEGORIES.map((category) => (
                     <label key={category.id} className="flex items-center">
                       <input
                         type="checkbox"

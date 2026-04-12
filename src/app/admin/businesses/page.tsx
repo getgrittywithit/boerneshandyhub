@@ -271,7 +271,7 @@ export default function BusinessesManagement() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <a
-                      href={`/weddings/${business.category.toLowerCase()}/${business.id}`}
+                      href={`/services/${business.category.toLowerCase()}/${business.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-500"

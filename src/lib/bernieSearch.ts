@@ -72,15 +72,14 @@ export function extractSearchKeywords(userQuery: string): string[] {
 // Suggest keywords for businesses based on their category
 export function suggestKeywords(category: string): string[] {
   const keywordSuggestions: { [key: string]: string[] } = {
-    'venues': ['wedding venue', 'reception', 'ceremony', 'outdoor', 'indoor', 'rustic', 'elegant', 'garden', 'barn', 'historic'],
-    'photography': ['wedding photographer', 'engagement photos', 'bridal portraits', 'candid', 'romantic', 'outdoor', 'studio'],
-    'catering': ['wedding catering', 'reception food', 'appetizers', 'dinner', 'buffet', 'plated', 'BBQ', 'elegant'],
-    'flowers': ['wedding flowers', 'bridal bouquet', 'centerpieces', 'ceremony flowers', 'floral arrangements', 'seasonal'],
-    'music': ['wedding DJ', 'live band', 'ceremony music', 'reception music', 'dancing', 'country', 'classic'],
-    'beauty': ['bridal makeup', 'wedding hair', 'bridal styling', 'mobile', 'trial', 'airbrush'],
-    'transportation': ['wedding transportation', 'limo', 'party bus', 'vintage car', 'shuttle'],
-    'planning': ['wedding planner', 'day coordinator', 'full planning', 'partial planning', 'destination'],
-    'specialty': ['officiant', 'photo booth', 'wedding cake', 'calligraphy', 'favors', 'unique']
+    'plumbing': ['plumber', 'drain cleaning', 'water heater', 'leak repair', 'emergency', 'licensed', 'residential', 'commercial'],
+    'electrical': ['electrician', 'wiring', 'panel upgrade', 'lighting', 'emergency', 'licensed', 'residential', 'commercial'],
+    'hvac': ['air conditioning', 'heating', 'AC repair', 'furnace', 'installation', 'maintenance', 'licensed', 'emergency'],
+    'landscaping': ['lawn care', 'mowing', 'tree trimming', 'irrigation', 'design', 'maintenance', 'xeriscaping', 'native plants'],
+    'handyman': ['repairs', 'maintenance', 'carpentry', 'drywall', 'painting', 'assembly', 'honey-do list', 'odd jobs'],
+    'roofing': ['roof repair', 'replacement', 'inspection', 'shingles', 'metal roof', 'storm damage', 'licensed', 'insured'],
+    'pest-control': ['exterminator', 'termites', 'ants', 'rodents', 'mosquitoes', 'scorpions', 'prevention', 'treatment'],
+    'cleaning': ['house cleaning', 'deep clean', 'move-out', 'recurring', 'commercial', 'residential', 'eco-friendly'],
   };
 
   return keywordSuggestions[category.toLowerCase()] || [];

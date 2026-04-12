@@ -12,7 +12,7 @@ export default function FloatingChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Howdy! I\'m Bernie, your AI guide to Boerne. Ask me about restaurants, events, trails, weddings, or anything else!'
+      content: 'Howdy! I\'m Bernie, your AI guide to Boerne. Ask me about local services, home maintenance, restaurants, or anything else!'
     }
   ]);
   const [input, setInput] = useState('');

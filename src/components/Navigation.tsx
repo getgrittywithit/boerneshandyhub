@@ -58,7 +58,6 @@ export default function Navigation() {
         ...servicesDropdown, // Show all 5 top-level categories
       ]
     },
-    { href: '/weddings', label: 'Weddings' },
     { href: '/my-home', label: 'Home Tracker' },
     { href: '/business', label: 'Get Listed' },
   ];

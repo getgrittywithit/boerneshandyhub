@@ -43,14 +43,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Category mapping for Google Places API
-    const WEDDING_CATEGORIES = {
-      'wedding_venue': ['wedding_venue', 'banquet_hall', 'event_venue'],
-      'photographer': ['photographer'],
-      'florist': ['florist', 'flower_shop'],
-      'restaurant': ['restaurant', 'meal_takeaway', 'catering'],
-      'beauty_salon': ['beauty_salon', 'hair_care', 'spa'],
-      'jewelry_store': ['jewelry_store'],
-      'bridal_shop': ['clothing_store']
+    const IMPORT_CATEGORIES = {
+      'plumber': ['plumber'],
+      'electrician': ['electrician'],
+      'hvac': ['hvac_contractor'],
+      'roofing': ['roofing_contractor'],
+      'locksmith': ['locksmith'],
+      'landscaping': ['landscaper', 'lawn_care_service'],
+      'pest_control': ['pest_control'],
+      'painter': ['painter'],
+      'general_contractor': ['general_contractor'],
+      'moving': ['moving_company'],
     };
 
     // First get coordinates for the location
@@ -107,7 +110,7 @@ export async function POST(request: NextRequest) {
 
     // Search for each category
     for (const categoryId of categories) {
-      const categoryTypes = WEDDING_CATEGORIES[categoryId as keyof typeof WEDDING_CATEGORIES];
+      const categoryTypes = IMPORT_CATEGORIES[categoryId as keyof typeof IMPORT_CATEGORIES];
       if (!categoryTypes) continue;
 
       for (const type of categoryTypes) {
