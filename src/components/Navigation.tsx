@@ -65,6 +65,7 @@ export default function Navigation() {
   // Secondary nav items (shown in more dropdown on desktop, full on mobile)
   const secondaryNavItems: NavItem[] = [
     { href: '/realtors', label: 'For Realtors' },
+    { href: '/weather', label: 'Weather' },
     { href: '/dining', label: 'Dining' },
     { href: '/events', label: 'Events' },
     { href: '/about', label: 'About' },
