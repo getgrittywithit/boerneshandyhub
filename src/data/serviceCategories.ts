@@ -53,6 +53,7 @@ export const topLevelCategories: TopLevelCategory[] = [
       { id: 'gutters', name: 'Gutters', slug: 'gutters', description: 'Gutter installation, cleaning, and repair', icon: '🌧️', keywords: ['gutter', 'downspout', 'gutter guard', 'gutter cleaning'] },
       { id: 'pressure-washing', name: 'Pressure Washing', slug: 'pressure-washing', description: 'Power washing for homes and driveways', icon: '💦', keywords: ['pressure wash', 'power wash', 'driveway', 'deck cleaning'] },
       { id: 'locksmith', name: 'Locksmith', slug: 'locksmith', description: 'Residential locksmith services', icon: '🔐', keywords: ['locksmith', 'lock', 'key', 'lockout', 'rekey'] },
+      { id: 'home-inspections', name: 'Home Inspections', slug: 'home-inspections', description: 'Professional home inspection services for buyers and sellers', icon: '🔍', keywords: ['home inspection', 'buyer inspection', 'pre-listing inspection', 'radon testing', 'mold inspection'] },
     ],
   },
   {

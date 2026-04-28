@@ -57,6 +57,16 @@ export const packetCategories = [
 // Guides to include in welcome packets
 export const packetGuides: WelcomePacketGuide[] = [
   {
+    slug: 'boerne-utility-setup-guide',
+    title: 'Utility Setup Guide',
+    description: 'CPS Energy, GVTC, water, trash - get connected fast'
+  },
+  {
+    slug: 'texas-homeowner-tips',
+    title: 'Texas Homeowner Tips',
+    description: 'Homestead exemption, property taxes, and money-saving tips'
+  },
+  {
     slug: 'new-homeowner-checklist',
     title: 'New Homeowner Checklist: First 30 Days',
     description: 'Essential tasks for your first month in your new home'

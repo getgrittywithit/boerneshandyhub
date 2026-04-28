@@ -64,6 +64,7 @@ export default function Navigation() {
 
   // Secondary nav items (shown in more dropdown on desktop, full on mobile)
   const secondaryNavItems: NavItem[] = [
+    { href: '/moving-to-boerne', label: 'Moving to Boerne', new: true },
     { href: '/realtors', label: 'For Realtors' },
     { href: '/weather', label: 'Weather' },
     { href: '/dining', label: 'Dining' },
@@ -173,10 +174,15 @@ export default function Navigation() {
                         <Link
                           key={item.href}
                           href={item.href!}
-                          className="block px-4 py-2 text-sm text-boerne-navy hover:bg-boerne-light-gray transition-colors"
+                          className="flex items-center justify-between px-4 py-2 text-sm text-boerne-navy hover:bg-boerne-light-gray transition-colors"
                           onClick={() => setOpenDropdown(null)}
                         >
                           {item.label}
+                          {item.new && (
+                            <span className="px-1.5 py-0.5 bg-boerne-gold text-boerne-navy text-xs font-semibold rounded">
+                              NEW
+                            </span>
+                          )}
                         </Link>
                       ))}
                     </div>
@@ -274,10 +280,15 @@ export default function Navigation() {
                   <Link
                     key={item.href}
                     href={item.href!}
-                    className="block px-3 py-2 text-sm text-white/70 hover:text-boerne-gold"
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-white/70 hover:text-boerne-gold"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.label}
+                    {item.new && (
+                      <span className="px-1.5 py-0.5 bg-boerne-gold text-boerne-navy text-xs font-semibold rounded">
+                        NEW
+                      </span>
+                    )}
                   </Link>
                 ))}
               </div>

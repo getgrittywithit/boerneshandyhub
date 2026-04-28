@@ -635,6 +635,189 @@ export const guides: Guide[] = [
     ],
     relatedCategories: ['handyman', 'painting', 'landscaping', 'cleaning', 'contractors', 'roofing'],
     lastUpdated: '2025-04-01'
+  },
+  // =============================================================================
+  // MOVING TO BOERNE GUIDES - For new residents relocating to the area
+  // =============================================================================
+  {
+    slug: 'boerne-utility-setup-guide',
+    title: 'Complete Utility Setup Guide for Boerne, TX',
+    metaTitle: 'Boerne Utility Setup Guide | Electric, Water, Internet, Gas',
+    metaDescription: 'Moving to Boerne? Complete guide to setting up utilities including CPS Energy, GVTC internet, city water, trash service, and more. Contact info and timelines included.',
+    heroSubtitle: 'Everything you need to get connected in your new Boerne home',
+    introduction: 'Setting up utilities is one of the first tasks when moving to a new home, and Boerne has some unique considerations compared to larger cities. From choosing between internet providers to understanding which water district serves your property, this guide covers every utility you will need to establish service with and provides realistic timelines for getting connected.',
+    sections: [
+      {
+        heading: 'Electric Service: CPS Energy',
+        content: 'CPS Energy is the primary electric provider for Boerne and most of Kendall County. Contact them at least 3 business days before your move-in date to establish service. Call (210) 353-2222 or visit cpsenergy.com to start service. You will need your new address, move-in date, Social Security number, and government ID. Unlike deregulated areas of Texas, you cannot choose your electric provider here, but CPS Energy rates are competitive and the service is reliable. For rural properties west of Boerne, Bandera Electric Cooperative may be your provider instead.'
+      },
+      {
+        heading: 'Internet: GVTC vs Spectrum',
+        content: 'For internet service, GVTC (Hill Country Communications) is the local favorite offering fiber internet with speeds up to 1 Gbps in many areas. They are locally owned and known for excellent customer service. Call (800) 367-4882 or visit gvtc.com. Spectrum cable internet is available in some neighborhoods and offers competitive pricing. For remote workers, GVTC fiber is the clear winner for reliability and speed. Schedule installation at least 1 week before you need service, as appointments fill quickly during busy moving seasons.'
+      },
+      {
+        heading: 'Water Service',
+        content: 'Water service depends on your location. Within Boerne city limits, contact City of Boerne Utilities at (830) 249-9511 or visit City Hall at 402 E. Blanco Rd. Bring government ID, lease or deed, and be prepared to pay a deposit. Service can usually start within 1-2 business days. Outside city limits, you may have a private well or be served by a water supply corporation. Check your closing documents or ask your realtor which applies to your property. If you have a well, contact Cow Creek Groundwater Conservation District for permit information.'
+      },
+      {
+        heading: 'Natural Gas: CenterPoint Energy',
+        content: 'Natural gas service from CenterPoint Energy is available in some Boerne areas but not all. Many homes use propane or all-electric systems instead. If your home has gas, call CenterPoint at (800) 752-8036 or visit centerpointenergy.com to start service. You will need 2-3 business days notice. If your home uses propane, you will need to establish an account with a local propane supplier such as Blossman Gas or Ferrellgas. Propane tanks are typically leased from the supplier.'
+      },
+      {
+        heading: 'Trash and Recycling',
+        content: 'Inside Boerne city limits, trash and recycling service is provided by the city and included in your utility bill. Contact City of Boerne at (830) 249-9511. Curbside pickup is weekly with recycling available. Outside city limits, you will need to arrange private trash service. Republic Services at (830) 249-8681 is a common choice. Expect to pay $25-40 per month for weekly pickup. Some rural residents opt for self-haul to the Kendall County transfer station instead.'
+      },
+      {
+        heading: 'Utility Setup Timeline',
+        content: 'For a smooth move, follow this timeline: 2 weeks before, contact CPS Energy and GVTC to schedule start dates. 1 week before, contact city water or verify well status and confirm internet installation appointment. 3 days before, confirm all services are scheduled to be active on your move-in date. Day of move, verify electricity, water, and HVAC are working before movers arrive. Having utilities ready prevents delays and ensures your family is comfortable from day one.'
+      }
+    ],
+    relatedCategories: ['hvac', 'plumbing', 'electrical', 'handyman'],
+    lastUpdated: '2025-04-01'
+  },
+  {
+    slug: 'boerne-isd-school-guide',
+    title: 'Boerne ISD School Guide: Everything Parents Need to Know',
+    metaTitle: 'Boerne ISD Schools Guide | Elementary, Middle, High Schools',
+    metaDescription: 'Complete guide to Boerne ISD schools. Learn about elementary, middle, and high schools, enrollment process, school zones, and what makes Boerne schools exceptional.',
+    heroSubtitle: 'Understanding Boerne Independent School District for your family',
+    introduction: 'Boerne ISD is one of the top-rated school districts in Texas and a major reason families choose to move to the Hill Country. With excellent academic programs, championship athletics, and strong community support, BISD provides an exceptional educational experience. This guide covers everything parents need to know about enrolling their children and choosing the right schools.',
+    sections: [
+      {
+        heading: 'District Overview',
+        content: 'Boerne Independent School District serves approximately 10,000 students across 14 campuses. The district consistently earns A ratings from the Texas Education Agency and ranks among the top districts in the San Antonio region. BISD is known for strong academics, excellent fine arts programs, and competitive athletics including state championship teams. The district covers the City of Boerne, Fair Oaks Ranch, and surrounding areas of Kendall and Bexar counties.'
+      },
+      {
+        heading: 'Elementary Schools',
+        content: 'BISD operates six elementary schools serving grades K-5: Boerne Elementary near downtown, Fabra Elementary, Herff Elementary, Kendall Elementary, Van Raub Elementary in Fair Oaks Ranch, and Currey Creek Elementary. Each campus offers full-day kindergarten, specials including art, music, and PE, and various enrichment programs. Class sizes are typically 18-22 students. Your assigned school depends on your home address. Check the BISD website zone finder to determine your schools.'
+      },
+      {
+        heading: 'Middle Schools',
+        content: 'Two middle schools serve grades 6-8: Boerne Middle School North on River Road and Boerne Middle School South on IH-10. Both offer similar programs including athletics, band, choir, theater, and various electives. The transition from elementary includes more independence and departmentalized classes. Both campuses have competitive athletics and strong UIL academic programs. Middle school feeder patterns align with high school zones.'
+      },
+      {
+        heading: 'High Schools',
+        content: 'Boerne High School, home of the Greyhounds, serves the northern portion of the district while Samuel V. Champion High School, home of the Chargers, serves the southern portion. Both are comprehensive high schools offering AP courses, dual credit programs with local colleges, career and technical education pathways, and competitive extracurriculars. Boerne High School has historic state championships in football and track. Champion is newer with state-of-the-art facilities and growing programs.'
+      },
+      {
+        heading: 'Enrollment Process',
+        content: 'To enroll, you will need proof of residency such as utility bill or lease, student birth certificate, immunization records, previous school records, and parent identification. New student registration can be started online at boerneisd.net. The district offers registration events before each school year and accepts new students year-round. For transfers from out of state, Texas requires certain immunizations that your current state may not, so check requirements early.'
+      },
+      {
+        heading: 'Private School Options',
+        content: 'For families considering private education, Boerne offers several options. St. Helena Catholic School provides PreK-8 education with a faith-based curriculum. Geneva School of Boerne offers classical Christian education for K-12. Nearby San Antonio has additional private school options including highly-rated college preparatory schools. Many families in Fair Oaks Ranch and southern Boerne commute to North San Antonio private schools.'
+      }
+    ],
+    relatedCategories: ['handyman', 'landscaping', 'cleaning'],
+    lastUpdated: '2025-04-01'
+  },
+  {
+    slug: 'texas-homeowner-tips',
+    title: 'Texas Homeowner Tips: Property Taxes, Insurance & More',
+    metaTitle: 'Texas Homeowner Tips | Homestead Exemption, Property Taxes, Insurance',
+    metaDescription: 'Essential tips for Texas homeowners. Learn how to file homestead exemption, protest property taxes, understand insurance requirements, and save money on your Texas home.',
+    heroSubtitle: 'Navigate Texas homeownership like a pro and save thousands',
+    introduction: 'Owning a home in Texas comes with unique opportunities and requirements that differ from other states. From the homestead exemption that can save you thousands annually to understanding our property tax system and insurance requirements, knowing the Texas-specific rules is essential. This guide covers the most important things every new Texas homeowner needs to know.',
+    sections: [
+      {
+        heading: 'Homestead Exemption: Your Biggest Tax Savings',
+        content: 'The homestead exemption is the single most important tax benefit for Texas homeowners. Filing removes $100,000 or more from your taxable value for school district taxes, plus additional exemptions for other taxing entities. You must file with the Kendall County Appraisal District by April 30th of the year following your purchase, though filing late is allowed with some limitations. Visit the KCAD website or office at 421 E. Blanco Rd in Boerne. You will need your driver\'s license with the property address and either the deed or closing documents. This one form can save $2,000 or more annually.'
+      },
+      {
+        heading: 'Understanding Texas Property Taxes',
+        content: 'Texas has no state income tax, but property taxes are higher than the national average. Your property tax bill comes from multiple taxing entities: Kendall County, Boerne ISD, City of Boerne if applicable, and various special districts. The total rate in Boerne city limits is approximately 2.2% of taxable value. Bills arrive in October and are due January 31st. You can pay in full or set up installment plans. Many mortgage companies escrow property taxes, collecting monthly and paying on your behalf.'
+      },
+      {
+        heading: 'Protesting Your Property Valuation',
+        content: 'You have the right to protest your property\'s appraised value each year. The appraisal district mails notices in spring showing your proposed value. If you disagree, file a protest by May 15th or within 30 days of the notice. You can protest online, by mail, or in person. Gather evidence including comparable sales in your neighborhood, photos of property condition issues, and any professional appraisals. Many Boerne homeowners successfully reduce their valuations by 5-15% through the protest process. Consider hiring a property tax consultant who works on contingency if you prefer professional help.'
+      },
+      {
+        heading: 'Texas Homeowners Insurance',
+        content: 'Homeowners insurance in Texas is among the most expensive in the nation due to hail, wind, and severe weather risks. Annual premiums of $2,500-5,000 are common for Hill Country homes. Shop multiple carriers and ask about discounts for new roofs, security systems, and bundling with auto insurance. Understand your hail and wind deductibles, which are often 1-2% of coverage amount rather than flat dollar amounts. Consider flood insurance even if not required, as flash flooding can occur in the Hill Country.'
+      },
+      {
+        heading: 'Texas Driver License and Vehicle Registration',
+        content: 'Texas requires new residents to obtain a Texas driver\'s license within 90 days and register vehicles within 30 days of establishing residency. Visit the Kendall County Tax Office at 201 E. San Antonio Ave, Suite 251 in Boerne for vehicle registration. For driver\'s licenses, make an appointment at a DPS office in San Antonio. Bring your out-of-state license, proof of Texas residency, Social Security card, and passport or birth certificate. Vehicle registration requires the title, proof of insurance, and a passing vehicle inspection from a certified station.'
+      },
+      {
+        heading: 'Additional Texas Homeowner Considerations',
+        content: 'Other important items for Texas homeowners: verify your property boundaries with a survey before building fences, understand that HOA rules are legally binding in Texas, check if your property is in a MUD or other special district with additional fees, and know that Texas is a community property state affecting ownership and inheritance. For wells and septic systems common in rural Boerne, schedule regular maintenance and keep records. Finally, establish relationships with trusted local contractors before emergencies occur, as finding good help during busy seasons can be challenging.'
+      }
+    ],
+    relatedCategories: ['handyman', 'roofing', 'hvac', 'foundation-repair'],
+    lastUpdated: '2025-04-01'
+  },
+  {
+    slug: 'hill-country-wildlife-guide',
+    title: 'Hill Country Wildlife Guide: Living with Local Animals',
+    metaTitle: 'Hill Country Wildlife Guide | Deer, Snakes, Scorpions in Boerne',
+    metaDescription: 'Guide to Hill Country wildlife for Boerne homeowners. Learn about white-tailed deer, venomous snakes, scorpions, and how to wildlife-proof your property.',
+    heroSubtitle: 'Coexisting with the wildlife that makes the Hill Country special',
+    introduction: 'The Texas Hill Country is home to diverse wildlife, from the iconic white-tailed deer that roam freely to the less welcome scorpions that may find their way indoors. Understanding local wildlife helps you appreciate the natural beauty while protecting your property, family, and pets. This guide covers the animals you will encounter and practical tips for peaceful coexistence.',
+    sections: [
+      {
+        heading: 'White-Tailed Deer',
+        content: 'Deer are everywhere in the Hill Country, and Boerne is no exception. They are beautiful to watch but create challenges for homeowners. Deer eat landscaping, cause vehicle collisions especially at dawn and dusk, and carry ticks that spread disease. Protect gardens with 8-foot deer fencing or choose deer-resistant plants like Texas sage, rosemary, and lantana. Drive carefully on rural roads, particularly during the October-November rut when deer behavior is unpredictable. Many neighborhoods have resident deer populations that become quite tame.'
+      },
+      {
+        heading: 'Venomous Snakes',
+        content: 'Four venomous snake species live in the Hill Country: Western Diamondback Rattlesnake, Coral Snake, Copperhead, and Cottonmouth. While encounters are uncommon in developed areas, they do occur especially on rural properties. Keep grass short near your home, remove rock piles and debris where snakes shelter, and watch where you step in tall grass. Most snakes you see will be non-venomous and beneficial rat snakes or coach whips. Learn to identify venomous species by their triangular heads and thick bodies. If bitten, seek emergency medical care immediately, do not apply ice or tourniquets.'
+      },
+      {
+        heading: 'Scorpions',
+        content: 'The striped bark scorpion is common throughout the Hill Country and may enter homes seeking cool, dark spaces during hot weather. While their sting is painful similar to a bee sting, it is rarely dangerous to healthy adults. Shake out shoes and clothing stored in garages, check bedding before climbing in, and wear shoes when walking outside at night. Reduce scorpion entry by sealing cracks, fixing screens, and weatherstripping doors. Professional pest control can treat perimeter areas. Inside, sticky traps near entry points help monitor activity.'
+      },
+      {
+        heading: 'Wild Hogs',
+        content: 'Feral hogs are an invasive species causing significant damage throughout Texas, including the Hill Country. They root up lawns, damage crops, and compete with native wildlife. Hogs are primarily active at night and early morning. If you have acreage, you may see hog damage including torn-up turf and wallows near water. Hog hunting is legal year-round with landowner permission and no bag limits. For severe problems, contact a wildlife management professional or the Texas Parks and Wildlife Department for guidance.'
+      },
+      {
+        heading: 'Other Wildlife Encounters',
+        content: 'Other animals you may encounter include coyotes which are common but rarely a threat to humans though they will prey on small pets, armadillos which dig in lawns searching for grubs, raccoons and opossums which get into trash and pet food, and various birds including wild turkeys and roadrunners. Keep pet food indoors, secure trash cans, and supervise small pets when outside at dawn and dusk when predators are most active. Mountain lion sightings occasionally occur in rural areas but attacks are extremely rare.'
+      },
+      {
+        heading: 'Wildlife-Proofing Your Property',
+        content: 'To minimize wildlife conflicts: remove food sources by securing trash, not feeding pets outside, and harvesting fruit from trees. Seal entry points to your home including foundation gaps, roof vents, and chimney openings. Trim tree branches away from your roof. Install motion-activated lights to deter nocturnal visitors. For properties with livestock or chickens, invest in predator-proof enclosures. Consider native landscaping that provides habitat for beneficial wildlife while discouraging pests. Living in the Hill Country means accepting wildlife neighbors while taking reasonable precautions.'
+      }
+    ],
+    relatedCategories: ['pest-control', 'landscaping', 'wildlife-management', 'fencing'],
+    lastUpdated: '2025-04-01'
+  },
+  {
+    slug: 'boerne-neighborhoods-guide',
+    title: 'Boerne Neighborhoods Guide: Finding Your Perfect Area',
+    metaTitle: 'Boerne Neighborhoods Guide | Fair Oaks Ranch, Cordillera Ranch, Downtown',
+    metaDescription: 'Comprehensive guide to Boerne neighborhoods and communities. Compare Fair Oaks Ranch, Cordillera Ranch, downtown Boerne, and more to find your ideal Texas Hill Country home.',
+    heroSubtitle: 'Discover the diverse communities that make up greater Boerne',
+    introduction: 'The greater Boerne area offers a remarkable variety of neighborhoods to suit different lifestyles and budgets. From the walkable historic charm of downtown to the resort-style amenities of golf course communities, each area has its own character. This guide explores the major neighborhoods and communities to help you find the perfect fit for your family.',
+    sections: [
+      {
+        heading: 'Downtown Boerne',
+        content: 'Downtown Boerne offers historic Hill Country charm with walkability to Main Street shops, restaurants, and Cibolo Creek. Homes here range from restored historic properties to newer construction on infill lots, typically priced from $400K to $800K and up. The area is perfect for those who want to walk to dinner, browse antique shops, and participate in community events like Market Days. Trade-offs include smaller lot sizes, older home systems that may need updating, and limited new construction inventory. Schools within walking distance add family appeal.'
+      },
+      {
+        heading: 'Fair Oaks Ranch',
+        content: 'Fair Oaks Ranch is an established master-planned community known for excellent schools, low crime, and resort-style amenities. Two 18-hole golf courses, community pools, tennis courts, and a fitness center serve residents. Homes range from $450K to over $1.5M across various sections including gated areas. The community has a strong HOA maintaining common areas and enforcing standards. Fair Oaks Ranch residents have Boerne ISD schools including top-rated Van Raub Elementary. The location provides easy access to both Boerne and San Antonio.'
+      },
+      {
+        heading: 'Cordillera Ranch',
+        content: 'For luxury Hill Country living, Cordillera Ranch is the premier choice. This master-planned community features a Jack Nicklaus Signature Golf Course, The Clubs of Cordillera Ranch with swimming, tennis, and fitness facilities, and stunning homes from $700K to over $5 million. Many homes sit on larger lots with panoramic Hill Country views. The community is gated with security. While amenities require club membership fees, the lifestyle rivals resort destinations. Cordillera is ideal for golf enthusiasts, empty nesters seeking amenities, and those wanting estate-style living.'
+      },
+      {
+        heading: 'Tapatio Springs',
+        content: 'Tapatio Springs offers golf course community living at more accessible price points. Homes range from $350K to $1M including garden homes, patio homes, and custom estates. The mature landscaping, Frederick Creek setting, and relaxed atmosphere appeal to many buyers. The Tapatio Springs Resort provides additional dining and recreation options. Location along Johns Road provides good access to IH-10 and Boerne. This community works well for retirees, young families wanting community amenities, and those seeking value in a golf community.'
+      },
+      {
+        heading: 'Newer Communities: Esperanza and Beyond',
+        content: 'Several newer master-planned communities offer modern construction and growing amenities. Esperanza on the southwest side features homes from $400K to $900K with community pools, parks, and trails. These communities feed to Champion High School. Builders include national names like Lennar, KB Home, and local custom builders. Newer communities offer the latest in energy efficiency and home design but may still be developing amenities and landscaping. They often provide the best value for new construction with warranties.'
+      },
+      {
+        heading: 'Rural and Acreage Properties',
+        content: 'For those seeking space and privacy, the greater Boerne area offers numerous opportunities for acreage living. Properties along River Road, Kendalia Road, and throughout Kendall County range from 5 to 100+ acres. Expect to pay $400K to several million depending on acreage, improvements, and views. Rural properties often have wells, septic systems, and may require propane. While you sacrifice neighborhood amenities, you gain unmatched privacy, wildlife viewing, and true Hill Country living. Consider distance to schools, shopping, and emergency services when evaluating rural properties.'
+      }
+    ],
+    relatedCategories: ['landscaping', 'fencing', 'well-drilling', 'septic', 'handyman'],
+    lastUpdated: '2025-04-01'
   }
 ];
 

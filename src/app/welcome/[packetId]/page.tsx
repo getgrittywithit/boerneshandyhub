@@ -187,6 +187,32 @@ export default function PublicWelcomePacketPage() {
               </div>
             </div>
 
+            {/* Resource Center CTA */}
+            <div className="mb-12">
+              <Link
+                href="/moving-to-boerne"
+                className="block bg-gradient-to-r from-boerne-gold/20 to-boerne-gold/10 rounded-xl p-6 hover:from-boerne-gold/30 hover:to-boerne-gold/20 transition-all border-2 border-boerne-gold/30 group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-boerne-gold/20 rounded-full flex items-center justify-center text-3xl flex-shrink-0">
+                    🏠
+                  </div>
+                  <div className="flex-1">
+                    <span className="inline-block px-2 py-0.5 bg-boerne-gold text-boerne-navy text-xs font-semibold rounded mb-2">
+                      COMPLETE GUIDE
+                    </span>
+                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-boerne-gold transition-colors">
+                      Moving to Boerne Resource Center
+                    </h3>
+                    <p className="text-gray-600 mt-1">
+                      Everything you need: utilities, schools, neighborhoods, and local tips
+                    </p>
+                  </div>
+                  <span className="text-2xl text-boerne-gold">→</span>
+                </div>
+              </Link>
+            </div>
+
             {/* Guides Section */}
             <div className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">
