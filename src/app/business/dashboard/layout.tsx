@@ -43,13 +43,44 @@ export default function BusinessDashboardLayout({ children }: { children: React.
   }, []);
 
   const checkAuth = async () => {
+    // Check for dev mode bypass
+    if (typeof window !== 'undefined' && sessionStorage.getItem('dev_business_mode') === 'true') {
+      setUser({ id: 'dev-user', email: 'demo@business.com' } as User);
+      setBusiness({
+        id: 'demo-business',
+        name: 'Hill Country Plumbing',
+        category: 'plumbing',
+        subcategories: ['plumbing', 'water-heater', 'drain-cleaning'],
+        active_subcategories: ['plumbing'],
+        description: 'Professional plumbing services for Boerne and the Hill Country. Licensed, insured, and locally owned since 2015.',
+        phone: '(830) 555-1234',
+        email: 'info@hillcountryplumbing.com',
+        website: 'https://hillcountryplumbing.com',
+        address: '123 Main St, Boerne, TX 78006',
+        membership_tier: 'verified',
+        claim_status: 'verified',
+        owner_id: 'dev-user',
+        photos: [],
+        rating: 4.8,
+        review_count: 47,
+      } as unknown as Business);
+      setLoading(false);
+      return;
+    }
+
     try {
       if (!supabase) {
         router.push('/business/login');
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Auth timeout')), 5000)
+      );
+
+      const authPromise = supabase.auth.getUser();
+      const { data: { user } } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
 
       if (!user) {
         router.push('/business/login');

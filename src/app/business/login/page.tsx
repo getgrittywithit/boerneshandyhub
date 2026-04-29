@@ -163,7 +163,7 @@ export default function BusinessLoginPage() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  New to Boerne's Handy Hub?
+                  New to Boerne&apos;s Handy Hub?
                 </span>
               </div>
             </div>
@@ -176,6 +176,20 @@ export default function BusinessLoginPage() {
                 Register your business
               </Link>
             </div>
+          </div>
+
+          {/* Development Mode */}
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-700 mb-3">Development Mode</p>
+            <button
+              onClick={() => {
+                sessionStorage.setItem('dev_business_mode', 'true');
+                router.push('/business/dashboard');
+              }}
+              className="w-full px-4 py-2 bg-yellow-600 text-white font-medium rounded-lg hover:bg-yellow-700 transition-colors"
+            >
+              Preview Demo Dashboard
+            </button>
           </div>
         </div>
 
