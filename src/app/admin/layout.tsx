@@ -42,12 +42,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, []);
 
   const checkAuth = async () => {
+    // Skip auth check entirely if Supabase is not configured
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    // Add timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Auth check timeout')), 5000)
+    );
+
     try {
-      if (!supabase) {
-        setLoading(false);
-        return;
-      }
-      const { data: { user } } = await supabase.auth.getUser();
+      const authPromise = supabase.auth.getUser();
+      const { data: { user } } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
       setUser(user);
 
       if (user) {
@@ -60,7 +68,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setIsAdmin(profile?.role === 'admin');
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('Auth check error:', error);
+      // On timeout or error, just show the dev login option
     } finally {
       setLoading(false);
     }
