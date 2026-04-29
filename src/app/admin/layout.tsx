@@ -24,6 +24,7 @@ const navItems = [
   { href: '/admin', icon: '📊', label: 'Dashboard', exact: true },
   { href: '/admin/providers', icon: '🏢', label: 'Providers' },
   { href: '/admin/categories', icon: '📁', label: 'Categories' },
+  { href: '/admin/newsletters', icon: '📧', label: 'Newsletters' },
   { href: '/admin/quotes', icon: '📩', label: 'Quotes' },
   { href: '/admin/claims', icon: '✅', label: 'Claims' },
   { href: '/admin/settings', icon: '⚙️', label: 'Settings' },

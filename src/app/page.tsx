@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import FloatingChat from "@/components/FloatingChat";
+import SubscribeForm from "@/components/SubscribeForm";
 import { topLevelCategories, getSeasonalSubcategories, serviceCategories } from '@/data/serviceCategories';
 import serviceProvidersData from '@/data/serviceProviders.json';
 
@@ -334,6 +335,50 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Newsletter Signup Section */}
+      <section className="py-16 bg-gradient-to-br from-boerne-gold/10 to-boerne-gold/5">
+        <div className="max-w-4xl mx-auto px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8 lg:p-12">
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <span className="text-4xl">&#128231;</span>
+                <h2 className="text-2xl font-bold text-gray-900 mt-4">
+                  Get Monthly Home Tips
+                </h2>
+                <p className="text-gray-600 mt-2">
+                  Join Boerne homeowners getting seasonal maintenance reminders,
+                  trusted provider recommendations, and Hill Country living tips.
+                </p>
+                <ul className="mt-4 space-y-2">
+                  <li className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="text-green-500">&#10003;</span>
+                    Seasonal maintenance checklists
+                  </li>
+                  <li className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="text-green-500">&#10003;</span>
+                    Local weather alerts & tips
+                  </li>
+                  <li className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="text-green-500">&#10003;</span>
+                    New provider spotlights
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <SubscribeForm
+                  source="homepage"
+                  variant="card"
+                  headline=""
+                  description=""
+                  showNameField={false}
+                  buttonText="Subscribe - It's Free"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 bg-boerne-navy">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
@@ -363,9 +408,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer spacing for floating chat */}
-      <div className="h-20" />
 
       {/* Floating Chat */}
       <FloatingChat />

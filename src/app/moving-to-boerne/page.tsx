@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import MovingGuideNewsletter from '@/components/MovingGuideNewsletter';
 import {
   utilityProviders,
   boerneISDSchools,
@@ -483,6 +484,9 @@ export default function MovingToBoernePage() {
           </div>
         </div>
       </section>
+
+      {/* Newsletter Signup */}
+      <MovingGuideNewsletter />
 
       {/* Home Tracker CTA */}
       <section className="py-16 bg-gray-50">

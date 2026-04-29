@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./boerne-colors.css";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { HomeownerAuthProvider } from "@/contexts/HomeownerAuthContext";
 import { RealtorAuthProvider } from "@/contexts/RealtorAuthContext";
 
@@ -94,7 +95,10 @@ export default function RootLayout({
         <HomeownerAuthProvider>
           <RealtorAuthProvider>
             <Navigation />
-            {children}
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
           </RealtorAuthProvider>
         </HomeownerAuthProvider>
       </body>
