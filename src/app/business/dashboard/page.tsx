@@ -10,6 +10,7 @@ interface DashboardStats {
   totalLeads: number;
   newLeadsThisMonth: number;
   profileCompletion: number;
+  viewsChange: number;
 }
 
 interface QuoteRequest {
@@ -30,6 +31,7 @@ export default function BusinessDashboardPage() {
     totalLeads: 0,
     newLeadsThisMonth: 0,
     profileCompletion: 0,
+    viewsChange: 0,
   });
   const [recentLeads, setRecentLeads] = useState<QuoteRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,11 +85,26 @@ export default function BusinessDashboardPage() {
       newLeadsThisMonth = monthlyCount || 0;
     }
 
+    // Fetch analytics data
+    let totalViews = 0;
+    let viewsChange = 0;
+    try {
+      const analyticsRes = await fetch(`/api/analytics/business?business_id=${business.id}&period=30`);
+      if (analyticsRes.ok) {
+        const analyticsData = await analyticsRes.json();
+        totalViews = analyticsData.total_views || 0;
+        viewsChange = analyticsData.views_change_percent || 0;
+      }
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+    }
+
     setStats({
-      totalViews: 0, // Would need analytics tracking
+      totalViews,
       totalLeads,
       newLeadsThisMonth,
       profileCompletion,
+      viewsChange,
     });
   };
 
@@ -221,7 +238,9 @@ export default function BusinessDashboardPage() {
               👁️
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-2">Coming soon</p>
+          <p className={`text-xs mt-2 ${stats.viewsChange > 0 ? 'text-green-600' : stats.viewsChange < 0 ? 'text-red-600' : 'text-gray-400'}`}>
+            {stats.viewsChange > 0 ? '↑' : stats.viewsChange < 0 ? '↓' : ''} {Math.abs(stats.viewsChange)}% vs last month
+          </p>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-sm">

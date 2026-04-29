@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getTopLevelCategory, getSubcategory, type MembershipTier } from '@/data/serviceCategories';
 import QuoteRequestForm from '@/components/QuoteRequestForm';
 import ProviderSEOContent from '@/components/ProviderSEOContent';
+import { trackProfileView, trackPhoneClick, trackWebsiteClick } from '@/lib/analytics';
 
 interface ServiceProvider {
   id: string;
@@ -59,6 +60,11 @@ export default function ProviderPageClient({
 
   const topCategory = getTopLevelCategory(topCategorySlug);
   const subcategory = getSubcategory(topCategorySlug, subcategorySlug);
+
+  // Track page view on mount
+  useEffect(() => {
+    trackProfileView(providerId, subcategorySlug);
+  }, [providerId, subcategorySlug]);
 
   const getTierBadge = (tier: MembershipTier) => {
     switch (tier) {
@@ -244,6 +250,7 @@ export default function ProviderPageClient({
                     <span className="text-gray-400">📞</span>
                     <a
                       href={`tel:${provider.phone}`}
+                      onClick={() => trackPhoneClick(providerId)}
                       className="text-boerne-navy hover:text-boerne-gold transition-colors font-medium"
                     >
                       {provider.phone}
@@ -270,6 +277,7 @@ export default function ProviderPageClient({
                       href={provider.website}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => trackWebsiteClick(providerId)}
                       className="text-boerne-navy hover:text-boerne-gold transition-colors"
                     >
                       Visit Website
@@ -282,6 +290,7 @@ export default function ProviderPageClient({
                 {provider.phone && (
                   <a
                     href={`tel:${provider.phone}`}
+                    onClick={() => trackPhoneClick(providerId)}
                     className="block w-full px-4 py-3 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors text-center"
                   >
                     Call Now

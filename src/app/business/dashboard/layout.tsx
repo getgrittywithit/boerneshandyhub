@@ -25,6 +25,7 @@ export const useBusinessDashboard = () => useContext(BusinessDashboardContext);
 
 const navItems = [
   { href: '/business/dashboard', icon: '📊', label: 'Dashboard', exact: true },
+  { href: '/business/dashboard/analytics', icon: '📈', label: 'Analytics' },
   { href: '/business/dashboard/profile', icon: '🏢', label: 'My Listing' },
   { href: '/business/dashboard/leads', icon: '📩', label: 'Leads & Quotes' },
   { href: '/business/dashboard/settings', icon: '⚙️', label: 'Settings' },
