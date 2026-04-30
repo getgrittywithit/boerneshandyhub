@@ -109,9 +109,25 @@ export default function RadarWidget() {
     );
   }
 
-  const currentFrameData = allFrames[currentFrame];
-  const isPast = currentFrame < radarData.radar.past.length;
-  const tileUrl = `${radarData.host}${currentFrameData.path}/256/{z}/{x}/{y}/2/1_1.png`;
+  // Ensure currentFrame is within bounds
+  const safeCurrentFrame = Math.min(currentFrame, allFrames.length - 1);
+  const currentFrameData = allFrames[safeCurrentFrame];
+
+  // Extra safety check
+  if (!currentFrameData) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-semibold text-boerne-navy mb-4">
+          Weather Radar
+        </h3>
+        <div className="text-center text-gray-500 py-8">
+          <p>Loading radar data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const isPast = safeCurrentFrame < radarData.radar.past.length;
 
   // Generate static map URL using OpenStreetMap tiles with radar overlay
   // We'll use a simple approach: show the radar tile directly
@@ -184,7 +200,7 @@ export default function RadarWidget() {
             type="range"
             min={0}
             max={allFrames.length - 1}
-            value={currentFrame}
+            value={safeCurrentFrame}
             onChange={(e) => {
               setIsPlaying(false);
               setCurrentFrame(parseInt(e.target.value));
@@ -194,7 +210,7 @@ export default function RadarWidget() {
         </div>
 
         <span className="text-xs text-gray-500">
-          {currentFrame + 1}/{allFrames.length}
+          {safeCurrentFrame + 1}/{allFrames.length}
         </span>
       </div>
 
