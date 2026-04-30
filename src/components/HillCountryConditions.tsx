@@ -144,13 +144,13 @@ export default function HillCountryConditions() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium opacity-75">Cibolo Creek at Boerne</p>
-              {data?.ciboloCreek?.stageHeight ? (
+              {data?.ciboloCreek?.stageHeight?.value != null ? (
                 <>
                   <p className="text-3xl font-bold mt-1">
                     {data.ciboloCreek.stageHeight.value.toFixed(2)} ft
                   </p>
                   <p className="text-sm mt-1">{data.ciboloCreek.statusMessage}</p>
-                  {data.ciboloCreek.discharge && (
+                  {data.ciboloCreek.discharge?.value != null && (
                     <p className="text-xs opacity-75 mt-1">
                       Flow: {data.ciboloCreek.discharge.value.toFixed(0)} cfs
                     </p>
@@ -198,7 +198,7 @@ export default function HillCountryConditions() {
                     {data.drought.level === 'None' ? 'None' : data.drought.level}
                   </p>
                   <p className="text-sm mt-1">{data.drought.description}</p>
-                  {data.drought.level !== 'Unknown' && data.drought.percentArea > 0 && (
+                  {data.drought.level !== 'Unknown' && data.drought.percentArea != null && data.drought.percentArea > 0 && (
                     <p className="text-xs opacity-75 mt-1">
                       {data.drought.percentArea.toFixed(0)}% of county affected
                     </p>

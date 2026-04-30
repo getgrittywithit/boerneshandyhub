@@ -37,7 +37,7 @@ export default function CiboloCreekWidget() {
   }, []);
 
   // Don't show anything if loading or no data
-  if (loading || !data?.ciboloCreek?.stageHeight) {
+  if (loading || !data?.ciboloCreek?.stageHeight?.value) {
     return null;
   }
 

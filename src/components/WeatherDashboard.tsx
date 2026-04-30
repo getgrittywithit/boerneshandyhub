@@ -239,10 +239,10 @@ export default function WeatherDashboard() {
 
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-500 text-sm">UV Index</p>
-              <p className={`text-xl font-semibold ${getUVLabel(data.current.uvIndex).color}`}>
-                {data.current.uvIndex.toFixed(1)}
+              <p className={`text-xl font-semibold ${getUVLabel(data.current.uvIndex ?? 0).color}`}>
+                {data.current.uvIndex != null ? data.current.uvIndex.toFixed(1) : '--'}
               </p>
-              <p className="text-sm text-gray-600">{getUVLabel(data.current.uvIndex).label}</p>
+              <p className="text-sm text-gray-600">{getUVLabel(data.current.uvIndex ?? 0).label}</p>
             </div>
 
             <div className="text-center p-4 bg-gray-50 rounded-lg">
