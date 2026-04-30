@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { topLevelCategories, getAllSubcategories, membershipTiers } from '@/data/serviceCategories';
+import { topLevelCategories, getAllSubcategories } from '@/data/serviceCategories';
+import { pricingTiers } from '@/data/pricingTiers';
 import { locations } from '@/data/locations';
+import RankedCategoryPicker from './RankedCategoryPicker';
 
 // Registration allows selecting up to 5 categories (for upsell data)
 const MAX_SELECTABLE_CATEGORIES = 5;
-// But only 1 is active on Basic tier
-const BASIC_ACTIVE_CATEGORIES = membershipTiers.basic.categoryLimit;
+// But only 1 is active on Claimed/Free tier
+const BASIC_ACTIVE_CATEGORIES = pricingTiers.claimed.categoryLimit;
 
 // Trades that require state licenses in Texas
 const LICENSED_TRADES: Record<string, { board: string; name: string; verifyUrl: string }> = {
@@ -299,20 +301,7 @@ export default function BusinessRegistrationForm() {
     }
   };
 
-  const toggleSubcategory = (slug: string) => {
-    if (formData.subcategories.includes(slug)) {
-      // Always allow deselection
-      updateField('subcategories', formData.subcategories.filter(s => s !== slug));
-    } else {
-      // Allow selection up to max (5 categories for upsell data)
-      if (formData.subcategories.length < MAX_SELECTABLE_CATEGORIES) {
-        updateField('subcategories', [...formData.subcategories, slug]);
-      }
-    }
-  };
-
-  const isAtMaxSelection = formData.subcategories.length >= MAX_SELECTABLE_CATEGORIES;
-  const hasExtraCategories = formData.subcategories.length > BASIC_ACTIVE_CATEGORIES;
+  // Category selection is handled by RankedCategoryPicker component
 
   const handleSubmit = async () => {
     if (!validateStep(5)) return;
@@ -433,69 +422,16 @@ export default function BusinessRegistrationForm() {
             {formData.topCategory && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Service Types * <span className="font-normal text-gray-500">(select up to {MAX_SELECTABLE_CATEGORIES})</span>
+                  Service Types * <span className="font-normal text-gray-500">(rank up to {MAX_SELECTABLE_CATEGORIES} by priority)</span>
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {availableSubcategories.map((sub, index) => {
-                    const isSelected = formData.subcategories.includes(sub.slug);
-                    const selectionIndex = formData.subcategories.indexOf(sub.slug);
-                    const isFirstSelection = selectionIndex === 0;
-                    const isLocked = !isSelected && isAtMaxSelection;
-
-                    return (
-                      <label
-                        key={sub.slug}
-                        className={`flex items-center gap-2 p-3 border rounded-lg transition-colors ${
-                          isSelected
-                            ? isFirstSelection
-                              ? 'border-green-500 bg-green-50 cursor-pointer'
-                              : 'border-boerne-gold bg-boerne-gold/10 cursor-pointer'
-                            : isLocked
-                            ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
-                            : 'border-gray-200 hover:border-gray-300 cursor-pointer'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleSubcategory(sub.slug)}
-                          disabled={isLocked}
-                          className="sr-only"
-                        />
-                        <span>{sub.icon}</span>
-                        <span className="text-sm">{sub.name}</span>
-                        {isSelected && isFirstSelection && (
-                          <span className="ml-auto text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">Active</span>
-                        )}
-                        {isSelected && !isFirstSelection && (
-                          <span className="ml-auto text-xs bg-gray-300 text-gray-600 px-2 py-0.5 rounded-full">Upgrade</span>
-                        )}
-                        {isLocked && <span className="ml-auto text-gray-400">🔒</span>}
-                      </label>
-                    );
-                  })}
-                </div>
-                {errors.subcategories && <p className="text-red-500 text-sm mt-1">{errors.subcategories}</p>}
-
-                {/* Info about active vs upgrade categories */}
-                {formData.subcategories.length > 0 && (
-                  <div className={`mt-4 p-4 rounded-lg ${hasExtraCategories ? 'bg-boerne-gold/10 border border-boerne-gold/20' : 'bg-green-50 border border-green-200'}`}>
-                    {hasExtraCategories ? (
-                      <div className="text-sm text-boerne-navy">
-                        <p className="font-semibold mb-1">
-                          Your listing will appear in: <span className="text-green-600">{formData.subcategories[0]}</span>
-                        </p>
-                        <p className="text-gray-600">
-                          Upgrade after registration to also appear in: {formData.subcategories.slice(1).join(', ')}
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-green-700">
-                        Your listing will appear in <strong>{formData.subcategories[0]}</strong>. Select more categories above if you offer additional services.
-                      </p>
-                    )}
-                  </div>
-                )}
+                <RankedCategoryPicker
+                  topCategory={formData.topCategory}
+                  rankedCategories={formData.subcategories}
+                  onChange={(ranked) => updateField('subcategories', ranked)}
+                  maxCategories={MAX_SELECTABLE_CATEGORIES}
+                  tierKey="claimed"
+                  error={errors.subcategories}
+                />
               </div>
             )}
 
