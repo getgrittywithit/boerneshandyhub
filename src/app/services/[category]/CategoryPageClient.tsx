@@ -1,10 +1,30 @@
 'use client';
 
 import Link from 'next/link';
-import { getTopLevelCategory, topLevelCategories } from '@/data/serviceCategories';
+import { getTopLevelCategory, topLevelCategories, ServiceCategory, getSubcategoriesWithCrossListings } from '@/data/serviceCategories';
 
 interface CategoryPageClientProps {
   categorySlug: string;
+}
+
+// Helper to group subcategories by section and sort alphabetically within each section
+function groupBySection(subcategories: ServiceCategory[]): Map<string, ServiceCategory[]> {
+  const grouped = new Map<string, ServiceCategory[]>();
+
+  subcategories.forEach(sub => {
+    const section = sub.section || 'Other';
+    if (!grouped.has(section)) {
+      grouped.set(section, []);
+    }
+    grouped.get(section)!.push(sub);
+  });
+
+  // Sort each section alphabetically by name
+  grouped.forEach((subs, section) => {
+    grouped.set(section, subs.sort((a, b) => a.name.localeCompare(b.name)));
+  });
+
+  return grouped;
 }
 
 export default function CategoryPageClient({ categorySlug }: CategoryPageClientProps) {
@@ -22,6 +42,9 @@ export default function CategoryPageClient({ categorySlug }: CategoryPageClientP
       </div>
     );
   }
+
+  // Get subcategories including cross-listed items
+  const subcategoriesWithCrossListings = getSubcategoriesWithCrossListings(categorySlug);
 
   return (
     <div className="bg-white min-h-screen">
@@ -52,7 +75,7 @@ export default function CategoryPageClient({ categorySlug }: CategoryPageClientP
               {category.description}
             </p>
             <p className="mt-4 text-boerne-gold font-medium">
-              {category.subcategories.length} service types available
+              {subcategoriesWithCrossListings.length} service types available
             </p>
           </div>
         </div>
@@ -87,38 +110,47 @@ export default function CategoryPageClient({ categorySlug }: CategoryPageClientP
         </div>
       </div>
 
-      {/* Subcategories Grid */}
+      {/* Subcategories Grid - Grouped by Section */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {category.subcategories.map((sub) => (
-              <Link
-                key={sub.id}
-                href={`/services/${categorySlug}/${sub.slug}`}
-                className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-boerne-gold hover:shadow-lg transition-all duration-300"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="text-3xl flex-shrink-0">{sub.icon}</div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 group-hover:text-boerne-navy transition-colors">
-                      {sub.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">
-                      {sub.description}
-                    </p>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-gray-400 group-hover:text-boerne-gold group-hover:translate-x-1 transition-all flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+          {Array.from(groupBySection(subcategoriesWithCrossListings)).map(([section, subs]) => (
+            <div key={section} className="mb-10 last:mb-0">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <span className="h-px flex-1 bg-gray-200 max-w-[40px]" />
+                {section}
+                <span className="h-px flex-1 bg-gray-200" />
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {subs.map((sub) => (
+                  <Link
+                    key={sub.id}
+                    href={`/services/${categorySlug}/${sub.slug}`}
+                    className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-boerne-gold hover:shadow-lg transition-all duration-300"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
-            ))}
-          </div>
+                    <div className="flex items-start gap-4">
+                      <div className="text-3xl flex-shrink-0">{sub.icon}</div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 group-hover:text-boerne-navy transition-colors">
+                          {sub.name}
+                        </h3>
+                        <p className="mt-1 text-sm text-gray-500 line-clamp-2">
+                          {sub.description}
+                        </p>
+                      </div>
+                      <svg
+                        className="w-5 h-5 text-gray-400 group-hover:text-boerne-gold group-hover:translate-x-1 transition-all flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
