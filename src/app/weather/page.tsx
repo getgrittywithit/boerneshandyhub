@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import WeatherDashboard from '@/components/WeatherDashboard';
+import CiboloCreekWidget from '@/components/CiboloCreekWidget';
 import RainfallTracker from '@/components/RainfallTracker';
 import HillCountryConditions from '@/components/HillCountryConditions';
 import Link from 'next/link';
@@ -43,6 +44,9 @@ export default function WeatherPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Current Conditions & Forecast */}
         <WeatherDashboard />
+
+        {/* Cibolo Creek Alert - only shows when elevated */}
+        <CiboloCreekWidget />
 
         {/* Divider */}
         <div className="my-12 flex items-center gap-4">
@@ -127,6 +131,24 @@ export default function WeatherPage() {
             The area is prone to intense thunderstorms that can drop several inches of rain in hours,
             leading to flash flooding along Cibolo Creek and low-water crossings.
           </p>
+        </div>
+
+        {/* Why This Page Exists */}
+        <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-boerne-gold/20 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-lg">📍</span>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-1">The Boerne Weather Page</h3>
+              <p className="text-gray-600 text-sm">
+                Weather.com doesn't show Cibolo Creek levels. The local paper doesn't show
+                drought stage with service recommendations. This page combines 10-day forecasts,
+                live creek data, burn ban status, and rainfall tracking in one place — built
+                specifically for Hill Country homeowners.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* CTA Section */}

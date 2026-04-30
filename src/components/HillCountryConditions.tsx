@@ -267,7 +267,7 @@ export default function HillCountryConditions() {
           {weatherContext.isDrought && (
             <>
               <Link
-                href="/services/outdoor/tree-services"
+                href="/services/home/tree-service"
                 className="flex items-center gap-3 p-4 bg-white rounded-lg border border-amber-200 hover:border-amber-400 hover:shadow-md transition-all group"
               >
                 <span className="text-2xl">🌳</span>
@@ -277,7 +277,7 @@ export default function HillCountryConditions() {
                 </div>
               </Link>
               <Link
-                href="/services/home/foundation"
+                href="/services/home/foundation-repair"
                 className="flex items-center gap-3 p-4 bg-white rounded-lg border border-amber-200 hover:border-amber-400 hover:shadow-md transition-all group"
               >
                 <span className="text-2xl">🏗️</span>
@@ -293,7 +293,7 @@ export default function HillCountryConditions() {
           {!weatherContext.isDrought && (
             <>
               <Link
-                href="/services/home/gutters-downspouts"
+                href="/services/home/gutters"
                 className="flex items-center gap-3 p-4 bg-white rounded-lg border border-blue-200 hover:border-blue-400 hover:shadow-md transition-all group"
               >
                 <span className="text-2xl">🪣</span>
