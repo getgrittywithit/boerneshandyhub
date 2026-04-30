@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { User } from '@supabase/supabase-js';
+import type { User, Session } from '@supabase/supabase-js';
 
 interface RealtorProfile {
   id: string;
@@ -22,6 +22,7 @@ interface RealtorProfile {
 
 interface RealtorAuthContextType {
   user: User | null;
+  session: Session | null;
   profile: RealtorProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
@@ -34,6 +35,7 @@ const RealtorAuthContext = createContext<RealtorAuthContextType | undefined>(und
 
 export function RealtorAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<RealtorProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,13 +43,17 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
 
     if (supabase) {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          setUser(session.user);
-          await loadProfile(session.user.id);
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+        if (event === 'SIGNED_IN' && newSession?.user) {
+          setUser(newSession.user);
+          setSession(newSession);
+          await loadProfile(newSession.user.id);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
+          setSession(null);
           setProfile(null);
+        } else if (event === 'TOKEN_REFRESHED' && newSession) {
+          setSession(newSession);
         }
       });
 
@@ -67,19 +73,20 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
         setTimeout(() => reject(new Error('Auth check timeout')), 10000);
       });
 
-      const authPromise = supabase.auth.getUser().then(({ data }) => data.user);
-      const user = await Promise.race([authPromise, timeoutPromise]);
+      const authPromise = supabase.auth.getSession().then(({ data }) => data.session);
+      const currentSession = await Promise.race([authPromise, timeoutPromise]);
 
-      if (user) {
+      if (currentSession?.user) {
+        setSession(currentSession);
         // Check if this is a realtor account
         const { data: realtorProfile } = await supabase
           .from('realtor_profiles')
           .select('*')
-          .eq('id', user.id)
+          .eq('id', currentSession.user.id)
           .single();
 
         if (realtorProfile) {
-          setUser(user);
+          setUser(currentSession.user);
           setProfile({
             id: realtorProfile.id,
             name: realtorProfile.name,
@@ -100,6 +107,7 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
       console.error('Auth check error:', error);
       // Don't set error for timeout - just proceed without auth
       setUser(null);
+      setSession(null);
       setProfile(null);
     } finally {
       setLoading(false);
@@ -176,6 +184,7 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return;
     await supabase.auth.signOut();
     setUser(null);
+    setSession(null);
     setProfile(null);
   };
 
@@ -206,7 +215,7 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <RealtorAuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile }}>
+    <RealtorAuthContext.Provider value={{ user, session, profile, loading, signIn, signUp, signOut, updateProfile }}>
       {children}
     </RealtorAuthContext.Provider>
   );

@@ -18,6 +18,33 @@ interface Client {
   createdAt: string;
 }
 
+interface PacketAnalytics {
+  packetId: string;
+  clientName: string;
+  address: string;
+  viewCount: number;
+  firstViewedAt: string | null;
+  lastViewedAt: string | null;
+  totalClicks: number;
+  topClickedProviders: { name: string; category: string; clicks: number }[];
+  guideClicks: number;
+  homeTrackerClicks: number;
+}
+
+interface AnalyticsData {
+  overall: {
+    totalPacketsSent: number;
+    totalViews: number;
+    totalProviderClicks: number;
+    totalGuideClicks: number;
+    totalHomeTrackerClicks: number;
+    avgViewsPerPacket: number;
+    packetsViewed: number;
+    viewRate: number;
+  };
+  packets: PacketAnalytics[];
+}
+
 // Demo clients for demonstration
 const demoClients: Client[] = [
   {
@@ -57,10 +84,13 @@ const demoClients: Client[] = [
 
 export default function RealtorDashboard() {
   const router = useRouter();
-  const { user, profile, loading: authLoading, signOut } = useRealtorAuth();
+  const { user, profile, loading: authLoading, signOut, session } = useRealtorAuth();
   const [clients, setClients] = useState<Client[]>(demoClients);
   const [showAddClient, setShowAddClient] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+  const [showAnalyticsDetail, setShowAnalyticsDetail] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -68,6 +98,50 @@ export default function RealtorDashboard() {
       router.push('/realtors/login');
     }
   }, [authLoading, user, router]);
+
+  // Fetch analytics
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      if (!session?.access_token) {
+        // Use demo data
+        setAnalytics({
+          overall: {
+            totalPacketsSent: 3,
+            totalViews: 12,
+            totalProviderClicks: 8,
+            totalGuideClicks: 5,
+            totalHomeTrackerClicks: 2,
+            avgViewsPerPacket: 4,
+            packetsViewed: 2,
+            viewRate: 67,
+          },
+          packets: [],
+        });
+        setAnalyticsLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/realtors/analytics', {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setAnalytics(data);
+        }
+      } catch (error) {
+        console.error('Error fetching analytics:', error);
+      } finally {
+        setAnalyticsLoading(false);
+      }
+    };
+
+    if (!authLoading) {
+      fetchAnalytics();
+    }
+  }, [session?.access_token, authLoading]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -163,7 +237,7 @@ export default function RealtorDashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="text-3xl font-bold text-gray-900">{clients.length}</div>
             <div className="text-sm text-gray-500">Total Clients</div>
@@ -172,15 +246,131 @@ export default function RealtorDashboard() {
             <div className="text-3xl font-bold text-boerne-gold">
               {clients.filter(c => c.welcomePacketSent).length}
             </div>
-            <div className="text-sm text-gray-500">Welcome Packets Sent</div>
+            <div className="text-sm text-gray-500">Packets Sent</div>
           </div>
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="text-3xl font-bold text-gray-900">
-              {clients.filter(c => !c.welcomePacketSent).length}
+              {analyticsLoading ? '...' : analytics?.overall.totalViews || 0}
             </div>
-            <div className="text-sm text-gray-500">Pending Packets</div>
+            <div className="text-sm text-gray-500">Total Views</div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="text-3xl font-bold text-green-600">
+              {analyticsLoading ? '...' : `${analytics?.overall.viewRate || 0}%`}
+            </div>
+            <div className="text-sm text-gray-500">View Rate</div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="text-3xl font-bold text-blue-600">
+              {analyticsLoading ? '...' : analytics?.overall.totalProviderClicks || 0}
+            </div>
+            <div className="text-sm text-gray-500">Provider Clicks</div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="text-3xl font-bold text-purple-600">
+              {analyticsLoading ? '...' : analytics?.overall.totalHomeTrackerClicks || 0}
+            </div>
+            <div className="text-sm text-gray-500">Home Tracker</div>
           </div>
         </div>
+
+        {/* Packet Engagement Analytics */}
+        {analytics && analytics.packets.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm mb-8">
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Packet Engagement</h2>
+                  <p className="text-sm text-gray-500">See how clients are interacting with their welcome packets</p>
+                </div>
+                <button
+                  onClick={() => setShowAnalyticsDetail(!showAnalyticsDetail)}
+                  className="text-sm text-boerne-gold hover:text-boerne-gold-alt font-medium"
+                >
+                  {showAnalyticsDetail ? 'Show Less' : 'View Details'}
+                </button>
+              </div>
+            </div>
+
+            {showAnalyticsDetail ? (
+              <div className="divide-y divide-gray-100">
+                {analytics.packets.map((packet) => (
+                  <div key={packet.packetId} className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-medium text-gray-900">{packet.clientName}</h3>
+                        <p className="text-sm text-gray-500">{packet.address}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-gray-900">{packet.viewCount} views</div>
+                        {packet.lastViewedAt && (
+                          <p className="text-xs text-gray-400">
+                            Last viewed {new Date(packet.lastViewedAt).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span className="text-gray-600">{packet.totalClicks} total clicks</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span className="text-gray-600">{packet.guideClicks} guide views</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                        <span className="text-gray-600">{packet.homeTrackerClicks} Home Tracker</span>
+                      </div>
+                    </div>
+
+                    {packet.topClickedProviders.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <p className="text-xs text-gray-500 mb-2">Top Clicked Providers:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {packet.topClickedProviders.map((provider, i) => (
+                            <span
+                              key={i}
+                              className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
+                            >
+                              {provider.name}
+                              <span className="ml-1.5 text-gray-400">({provider.clicks})</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6">
+                <div className="grid sm:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">
+                      {analytics.overall.avgViewsPerPacket}
+                    </div>
+                    <div className="text-sm text-gray-500">Avg views per packet</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">
+                      {analytics.overall.totalGuideClicks}
+                    </div>
+                    <div className="text-sm text-gray-500">Guide clicks</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">
+                      {analytics.overall.packetsViewed}
+                    </div>
+                    <div className="text-sm text-gray-500">Packets viewed</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Clients Section */}
         <div className="bg-white rounded-xl shadow-sm">
