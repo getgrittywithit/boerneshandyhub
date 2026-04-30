@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
 import WeatherDashboard from '@/components/WeatherDashboard';
 import RainfallTracker from '@/components/RainfallTracker';
+import HillCountryConditions from '@/components/HillCountryConditions';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Boerne Weather & Rainfall Tracker | 10-Day Forecast | Hill Country Weather',
-  description: 'Live Boerne, TX weather with 10-day forecast, NWS alerts, and rainfall tracking. Compare year-to-date precipitation against historical averages for the Texas Hill Country.',
-  keywords: 'Boerne weather, Boerne TX forecast, Texas Hill Country weather, Kendall County precipitation, Boerne 10 day forecast, Boerne rain totals, NWS alerts Boerne',
+  title: 'Boerne Weather | 10-Day Forecast, Cibolo Creek Level, Burn Ban Status',
+  description: 'Boerne TX weather with 10-day forecast, Cibolo Creek water level, drought stage, burn ban status, and rainfall tracking. The complete Hill Country weather resource.',
+  keywords: 'Boerne weather, Boerne TX forecast, Cibolo Creek level, Kendall County burn ban, Texas drought monitor, Hill Country weather, Boerne rain totals, NWS alerts Boerne, flash flood warning',
   openGraph: {
-    title: 'Boerne Weather & Rainfall Tracker | 10-Day Forecast',
-    description: 'Live weather conditions, 10-day forecast, NWS alerts, and rainfall tracking for Boerne, TX.',
+    title: 'Boerne Weather | Forecast, Creek Level, Burn Ban',
+    description: 'Live weather, 10-day forecast, Cibolo Creek gauge, drought status, and burn ban for Boerne, TX.',
     type: 'website',
     locale: 'en_US',
   },
@@ -30,10 +31,10 @@ export default function WeatherPage() {
             <span>Weather</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Boerne Weather & Forecast
+            Boerne Weather & Hill Country Conditions
           </h1>
           <p className="text-xl md:text-2xl max-w-3xl opacity-90">
-            Live conditions, 10-day forecast, NWS alerts, and rainfall tracking for the Texas Hill Country.
+            10-day forecast, Cibolo Creek level, drought stage, burn ban status, and rainfall tracking.
           </p>
         </div>
       </div>
@@ -52,6 +53,11 @@ export default function WeatherPage() {
 
         {/* Rainfall Tracker */}
         <RainfallTracker />
+
+        {/* Hill Country Conditions - Cibolo Creek, Drought, Burn Ban */}
+        <div className="mt-12">
+          <HillCountryConditions />
+        </div>
 
         {/* Why Rainfall Matters Section */}
         <div className="mt-12 bg-white rounded-xl shadow-lg p-8">
@@ -121,61 +127,6 @@ export default function WeatherPage() {
             The area is prone to intense thunderstorms that can drop several inches of rain in hours,
             leading to flash flooding along Cibolo Creek and low-water crossings.
           </p>
-        </div>
-
-        {/* Weather-Related Services */}
-        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link
-            href="/services/home/gutters-downspouts"
-            className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🪣</span>
-              <div>
-                <p className="font-semibold text-gray-900 group-hover:text-boerne-navy">Gutter Services</p>
-                <p className="text-sm text-gray-500">Clean & repair</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/services/home/foundation"
-            className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🏗️</span>
-              <div>
-                <p className="font-semibold text-gray-900 group-hover:text-boerne-navy">Foundation Repair</p>
-                <p className="text-sm text-gray-500">Inspection & repair</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/services/home/drainage"
-            className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">💧</span>
-              <div>
-                <p className="font-semibold text-gray-900 group-hover:text-boerne-navy">Drainage Systems</p>
-                <p className="text-sm text-gray-500">French drains & more</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/services/outdoor/tree-services"
-            className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🌳</span>
-              <div>
-                <p className="font-semibold text-gray-900 group-hover:text-boerne-navy">Tree Services</p>
-                <p className="text-sm text-gray-500">Trimming & removal</p>
-              </div>
-            </div>
-          </Link>
         </div>
 
         {/* CTA Section */}
