@@ -244,49 +244,78 @@ export const getSeasonalSubcategories = (): Array<ServiceCategory & { topCategor
 };
 
 // =============================================================================
-// MEMBERSHIP TIERS (unchanged)
+// MEMBERSHIP TIERS - Re-exported from pricingTiers.ts (single source of truth)
 // =============================================================================
 
+import {
+  pricingTiers,
+  type TierKey,
+  getTier,
+  getCategoryLimit,
+  getTierSortPriority,
+} from './pricingTiers';
+
+// Re-export for convenience
+export { pricingTiers, getTier, getCategoryLimit, getTierSortPriority };
+export type { TierKey };
+
+// Legacy compatibility: map old tier names to new ones
+// Old: basic, verified, premium, elite
+// New: unclaimed, claimed, verified, verifiedPlus, partner
+const legacyTierMapping: Record<string, TierKey> = {
+  basic: 'claimed',
+  verified: 'verified',
+  premium: 'verifiedPlus',
+  elite: 'partner',
+};
+
+// Legacy membershipTiers object for backward compatibility
+// DEPRECATED: Use pricingTiers from '@/data/pricingTiers' instead
 export const membershipTiers = {
   basic: {
-    name: 'Basic',
+    name: pricingTiers.claimed.displayName,
     price: 'Free',
-    badge: null,
-    color: 'bg-gray-100 text-gray-600',
-    features: ['Listed in directory', 'Basic profile', '1 category'],
-    categoryLimit: 1,
-    priority: 0,
+    badge: pricingTiers.claimed.badge,
+    color: pricingTiers.claimed.badgeColor,
+    features: pricingTiers.claimed.features.slice(0, 3),
+    categoryLimit: pricingTiers.claimed.categoryLimit,
+    priority: pricingTiers.claimed.sortPriority,
   },
   verified: {
-    name: 'Verified',
-    price: '$29/mo',
-    badge: '✅',
-    color: 'bg-green-100 text-green-700',
-    features: ['Verified badge', 'Claim listing', 'Edit profile', 'Contact info displayed', '2 categories'],
-    categoryLimit: 2,
-    priority: 1,
+    name: pricingTiers.verified.displayName,
+    price: `$${pricingTiers.verified.monthlyPrice}/mo`,
+    badge: pricingTiers.verified.badge,
+    color: pricingTiers.verified.badgeColor,
+    features: pricingTiers.verified.features.slice(0, 5),
+    categoryLimit: pricingTiers.verified.categoryLimit,
+    priority: pricingTiers.verified.sortPriority,
   },
   premium: {
-    name: 'Premium',
-    price: '$79/mo',
-    badge: '⭐',
-    color: 'bg-boerne-gold/20 text-boerne-gold-dark',
-    features: ['Featured in category', 'Staff pick eligible', 'Special offers', 'Priority support', '5 categories'],
-    categoryLimit: 5,
-    priority: 2,
+    name: pricingTiers.verifiedPlus.displayName,
+    price: `$${pricingTiers.verifiedPlus.monthlyPrice}/mo`,
+    badge: pricingTiers.verifiedPlus.badge,
+    color: pricingTiers.verifiedPlus.badgeColor,
+    features: pricingTiers.verifiedPlus.features.slice(0, 5),
+    categoryLimit: pricingTiers.verifiedPlus.categoryLimit,
+    priority: pricingTiers.verifiedPlus.sortPriority,
   },
   elite: {
-    name: 'Elite',
-    price: '$199/mo',
-    badge: '💎',
-    color: 'bg-purple-100 text-purple-700',
-    features: ['Homepage featured', 'Top of listings', 'Priority support', 'Analytics dashboard', 'Unlimited categories'],
-    categoryLimit: Infinity,
-    priority: 3,
+    name: pricingTiers.partner.displayName,
+    price: `$${pricingTiers.partner.monthlyPrice}/mo`,
+    badge: pricingTiers.partner.badge,
+    color: pricingTiers.partner.badgeColor,
+    features: pricingTiers.partner.features.slice(0, 5),
+    categoryLimit: pricingTiers.partner.categoryLimit,
+    priority: pricingTiers.partner.sortPriority,
   },
 };
 
 export type MembershipTier = keyof typeof membershipTiers;
+
+// Helper to convert legacy tier name to new tier key
+export const getLegacyTierKey = (legacyName: string): TierKey => {
+  return legacyTierMapping[legacyName] || 'claimed';
+};
 
 // =============================================================================
 // LEGACY COMPATIBILITY (to avoid breaking existing code during migration)
