@@ -209,6 +209,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result, {
       headers: {
         'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+        'CDN-Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+        'Vercel-CDN-Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
       },
     });
 
@@ -278,6 +280,8 @@ function returnEstimatedData() {
   return NextResponse.json(result, {
     headers: {
       'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+      'CDN-Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+      'Vercel-CDN-Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
     },
   });
 }
