@@ -5,20 +5,21 @@ const BOERNE_LAT = 29.7947;
 const BOERNE_LON = -98.7320;
 
 // Historical average monthly rainfall for Boerne, TX (in inches)
-// Source: NOAA/NWS data for Kendall County
+// Source: NOAA 1991-2020 Climate Normals for Kendall County
+// Reference: US Climate Data / NCEI
 const MONTHLY_AVERAGES_INCHES = {
-  1: 1.89,   // January
-  2: 2.01,   // February
-  3: 2.76,   // March
-  4: 2.95,   // April
-  5: 4.33,   // May
-  6: 4.72,   // June
-  7: 2.28,   // July
-  8: 2.48,   // August
-  9: 3.39,   // September
-  10: 3.94,  // October
-  11: 2.68,  // November
-  12: 2.36,  // December
+  1: 2.28,   // January
+  2: 2.22,   // February
+  3: 2.79,   // March
+  4: 2.52,   // April
+  5: 5.28,   // May (wettest - spring peak)
+  6: 3.78,   // June
+  7: 2.83,   // July
+  8: 2.80,   // August
+  9: 3.90,   // September (fall peak)
+  10: 3.88,  // October (fall peak)
+  11: 2.92,  // November
+  12: 2.32,  // December (driest)
 };
 
 // Calculate expected YTD rainfall up to a given date

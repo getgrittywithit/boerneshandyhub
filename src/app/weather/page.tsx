@@ -1,14 +1,15 @@
 import type { Metadata } from 'next';
+import WeatherDashboard from '@/components/WeatherDashboard';
 import RainfallTracker from '@/components/RainfallTracker';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Boerne Weather & Rainfall Tracker | Hill Country Weather Data',
-  description: 'Track rainfall in Boerne, Texas with our live weather tracker. Compare year-to-date precipitation against historical averages for the Texas Hill Country.',
-  keywords: 'Boerne weather, Boerne rainfall, Texas Hill Country weather, Kendall County precipitation, Boerne TX rain totals',
+  title: 'Boerne Weather & Rainfall Tracker | 10-Day Forecast | Hill Country Weather',
+  description: 'Live Boerne, TX weather with 10-day forecast, NWS alerts, and rainfall tracking. Compare year-to-date precipitation against historical averages for the Texas Hill Country.',
+  keywords: 'Boerne weather, Boerne TX forecast, Texas Hill Country weather, Kendall County precipitation, Boerne 10 day forecast, Boerne rain totals, NWS alerts Boerne',
   openGraph: {
-    title: 'Boerne Weather & Rainfall Tracker',
-    description: 'Live rainfall tracking for Boerne, TX. See how this year compares to historical averages.',
+    title: 'Boerne Weather & Rainfall Tracker | 10-Day Forecast',
+    description: 'Live weather conditions, 10-day forecast, NWS alerts, and rainfall tracking for Boerne, TX.',
     type: 'website',
     locale: 'en_US',
   },
@@ -29,16 +30,27 @@ export default function WeatherPage() {
             <span>Weather</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Boerne Rainfall Tracker
+            Boerne Weather & Forecast
           </h1>
           <p className="text-xl md:text-2xl max-w-3xl opacity-90">
-            Track precipitation in the Texas Hill Country and see how this year compares to historical averages.
+            Live conditions, 10-day forecast, NWS alerts, and rainfall tracking for the Texas Hill Country.
           </p>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Current Conditions & Forecast */}
+        <WeatherDashboard />
+
+        {/* Divider */}
+        <div className="my-12 flex items-center gap-4">
+          <div className="flex-1 h-px bg-gray-300"></div>
+          <span className="text-gray-500 font-medium">Rainfall Tracking</span>
+          <div className="flex-1 h-px bg-gray-300"></div>
+        </div>
+
+        {/* Rainfall Tracker */}
         <RainfallTracker />
 
         {/* Why Rainfall Matters Section */}
@@ -87,15 +99,15 @@ export default function WeatherPage() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <p className="text-3xl font-bold text-boerne-navy">32"</p>
+              <p className="text-3xl font-bold text-boerne-navy">34"</p>
               <p className="text-sm text-gray-600">Average Annual Rainfall</p>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <p className="text-3xl font-bold text-boerne-navy">May-Jun</p>
+              <p className="text-3xl font-bold text-boerne-navy">May & Oct</p>
               <p className="text-sm text-gray-600">Wettest Months</p>
             </div>
             <div className="text-center p-4 bg-amber-50 rounded-lg">
-              <p className="text-3xl font-bold text-boerne-navy">Jul-Aug</p>
+              <p className="text-3xl font-bold text-boerne-navy">Dec-Feb</p>
               <p className="text-sm text-gray-600">Driest Months</p>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
@@ -104,11 +116,66 @@ export default function WeatherPage() {
             </div>
           </div>
           <p className="mt-6 text-gray-600">
-            Boerne sits at the intersection of humid subtropical and semi-arid climates, making
-            rainfall patterns variable. The area is prone to intense thunderstorms that can drop
-            several inches of rain in hours, leading to flash flooding along Cibolo Creek and
-            low-water crossings.
+            Boerne sits at the intersection of humid subtropical and semi-arid climates, creating
+            a distinctive bimodal rainfall pattern with peaks in spring (May) and fall (September-October).
+            The area is prone to intense thunderstorms that can drop several inches of rain in hours,
+            leading to flash flooding along Cibolo Creek and low-water crossings.
           </p>
+        </div>
+
+        {/* Weather-Related Services */}
+        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link
+            href="/services/home/gutters-downspouts"
+            className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🪣</span>
+              <div>
+                <p className="font-semibold text-gray-900 group-hover:text-boerne-navy">Gutter Services</p>
+                <p className="text-sm text-gray-500">Clean & repair</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/services/home/foundation"
+            className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🏗️</span>
+              <div>
+                <p className="font-semibold text-gray-900 group-hover:text-boerne-navy">Foundation Repair</p>
+                <p className="text-sm text-gray-500">Inspection & repair</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/services/home/drainage"
+            className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">💧</span>
+              <div>
+                <p className="font-semibold text-gray-900 group-hover:text-boerne-navy">Drainage Systems</p>
+                <p className="text-sm text-gray-500">French drains & more</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/services/outdoor/tree-services"
+            className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🌳</span>
+              <div>
+                <p className="font-semibold text-gray-900 group-hover:text-boerne-navy">Tree Services</p>
+                <p className="text-sm text-gray-500">Trimming & removal</p>
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* CTA Section */}

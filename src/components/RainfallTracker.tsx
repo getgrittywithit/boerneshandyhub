@@ -295,9 +295,18 @@ export default function RainfallTracker() {
         </div>
       </div>
 
-      {/* Last Updated */}
+      {/* Last Updated - CC-BY 4.0 attribution */}
       <p className="text-center text-sm text-gray-500">
-        Data from Open-Meteo Historical Weather API. Last updated: {formatDate(data.lastUpdated)}
+        Rainfall data by{' '}
+        <a
+          href="https://open-meteo.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-boerne-navy hover:underline"
+        >
+          Open-Meteo.com
+        </a>
+        . Last updated: {formatDate(data.lastUpdated)}
       </p>
     </div>
   );
