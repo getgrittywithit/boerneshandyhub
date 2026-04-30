@@ -27,10 +27,10 @@ export default function RealtorsLandingPage() {
                 Join the Partner Program
               </Link>
               <Link
-                href="#how-it-works"
+                href="#resources"
                 className="px-8 py-4 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors text-lg"
               >
-                See How It Works
+                Free Resources to Share
               </Link>
             </div>
           </div>
@@ -183,6 +183,207 @@ export default function RealtorsLandingPage() {
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Free Resources Section */}
+      <div id="resources" className="py-16 bg-gradient-to-br from-boerne-gold/10 to-boerne-gold/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-1 bg-boerne-gold/20 text-boerne-gold-dark text-sm font-medium rounded-full mb-4">
+              FREE RESOURCES
+            </span>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Share These With Your Clients
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Professional resources you can share immediately—no signup required.
+              Make yourself the go-to resource for Boerne home buyers.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {/* Moving to Boerne Guide */}
+            <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-boerne-gold/20 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">📍</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Moving to Boerne Guide
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Complete relocation guide with utilities, schools, neighborhoods, and local tips.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/moving-to-boerne"
+                  className="text-boerne-gold hover:text-boerne-gold-alt font-medium text-sm"
+                >
+                  View Guide →
+                </Link>
+                <button
+                  onClick={() => navigator.clipboard.writeText('https://boerneshandyhub.com/moving-to-boerne')}
+                  className="text-gray-500 hover:text-gray-700 text-sm text-left"
+                >
+                  📋 Copy Link
+                </button>
+              </div>
+            </div>
+
+            {/* New Homeowner Checklist */}
+            <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">✅</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                30-Day Homeowner Checklist
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Essential tasks for the first month in a new home. Print-friendly format.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/guides/new-homeowner-checklist"
+                  className="text-boerne-gold hover:text-boerne-gold-alt font-medium text-sm"
+                >
+                  View Checklist →
+                </Link>
+                <button
+                  onClick={() => navigator.clipboard.writeText('https://boerneshandyhub.com/guides/new-homeowner-checklist')}
+                  className="text-gray-500 hover:text-gray-700 text-sm text-left"
+                >
+                  📋 Copy Link
+                </button>
+              </div>
+            </div>
+
+            {/* Texas Homeowner Tips */}
+            <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">💰</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Texas Homeowner Tips
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Homestead exemption, property tax tips, insurance advice. Save thousands.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/guides/texas-homeowner-tips"
+                  className="text-boerne-gold hover:text-boerne-gold-alt font-medium text-sm"
+                >
+                  View Guide →
+                </Link>
+                <button
+                  onClick={() => navigator.clipboard.writeText('https://boerneshandyhub.com/guides/texas-homeowner-tips')}
+                  className="text-gray-500 hover:text-gray-700 text-sm text-left"
+                >
+                  📋 Copy Link
+                </button>
+              </div>
+            </div>
+
+            {/* Utility Setup Guide */}
+            <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">⚡</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Utility Setup Guide
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                CPS Energy, GVTC, city water, trash—all the contact info in one place.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/guides/boerne-utility-setup-guide"
+                  className="text-boerne-gold hover:text-boerne-gold-alt font-medium text-sm"
+                >
+                  View Guide →
+                </Link>
+                <button
+                  onClick={() => navigator.clipboard.writeText('https://boerneshandyhub.com/guides/boerne-utility-setup-guide')}
+                  className="text-gray-500 hover:text-gray-700 text-sm text-left"
+                >
+                  📋 Copy Link
+                </button>
+              </div>
+            </div>
+
+            {/* Weather & Rainfall */}
+            <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">🌧️</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Boerne Weather & Rainfall
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Local weather conditions, rainfall tracker, and Hill Country climate info.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/weather"
+                  className="text-boerne-gold hover:text-boerne-gold-alt font-medium text-sm"
+                >
+                  View Weather →
+                </Link>
+                <button
+                  onClick={() => navigator.clipboard.writeText('https://boerneshandyhub.com/weather')}
+                  className="text-gray-500 hover:text-gray-700 text-sm text-left"
+                >
+                  📋 Copy Link
+                </button>
+              </div>
+            </div>
+
+            {/* Home Tracker */}
+            <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">🏠</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Home Tracker
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Free tool for your clients to track maintenance and get seasonal reminders.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/my-home"
+                  className="text-boerne-gold hover:text-boerne-gold-alt font-medium text-sm"
+                >
+                  View Tool →
+                </Link>
+                <button
+                  onClick={() => navigator.clipboard.writeText('https://boerneshandyhub.com/my-home')}
+                  className="text-gray-500 hover:text-gray-700 text-sm text-left"
+                >
+                  📋 Copy Link
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Share All */}
+          <div className="bg-white rounded-xl p-6 max-w-2xl mx-auto text-center">
+            <h4 className="font-semibold text-gray-900 mb-2">Quick Share All Resources</h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Send your clients to our Resource Center - everything they need in one link
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <code className="px-4 py-2 bg-gray-100 rounded-lg text-sm text-gray-700">
+                boerneshandyhub.com/moving-to-boerne
+              </code>
+              <button
+                onClick={() => navigator.clipboard.writeText('https://boerneshandyhub.com/moving-to-boerne')}
+                className="px-4 py-2 bg-boerne-gold text-boerne-navy font-medium rounded-lg hover:bg-boerne-gold-alt transition-colors text-sm"
+              >
+                Copy Link
+              </button>
             </div>
           </div>
         </div>
