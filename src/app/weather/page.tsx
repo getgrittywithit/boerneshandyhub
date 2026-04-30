@@ -174,6 +174,24 @@ export default function WeatherPage() {
             </Link>
           </div>
         </div>
+
+        {/* Data Sources Attribution */}
+        <div className="mt-8 text-center text-xs text-gray-400">
+          <p>
+            Data:{' '}
+            <a href="https://www.weather.gov/" target="_blank" rel="noopener noreferrer" className="hover:underline">NWS</a>
+            {' · '}
+            <a href="https://www.rainviewer.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">RainViewer</a>
+            {' · '}
+            <a href="https://www.ncei.noaa.gov/" target="_blank" rel="noopener noreferrer" className="hover:underline">NOAA NCEI</a>
+            {' · '}
+            <a href="https://waterdata.usgs.gov/" target="_blank" rel="noopener noreferrer" className="hover:underline">USGS</a>
+            {' · '}
+            <a href="https://droughtmonitor.unl.edu/" target="_blank" rel="noopener noreferrer" className="hover:underline">US Drought Monitor</a>
+            {' · '}
+            <a href="https://tfsweb.tamu.edu/" target="_blank" rel="noopener noreferrer" className="hover:underline">Texas A&M Forest Service</a>
+          </p>
+        </div>
       </div>
     </div>
   );

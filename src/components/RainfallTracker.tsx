@@ -295,18 +295,18 @@ export default function RainfallTracker() {
         </div>
       </div>
 
-      {/* Last Updated - CC-BY 4.0 attribution */}
+      {/* Last Updated */}
       <p className="text-center text-sm text-gray-500">
-        Historical rainfall from{' '}
+        Rainfall data from{' '}
         <a
-          href="https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
+          href="https://www.ncei.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USC00410902/detail"
           target="_blank"
           rel="noopener noreferrer"
           className="text-boerne-navy hover:underline"
         >
-          ERA5/Copernicus
+          NOAA NCEI
         </a>
-        . Normals from NOAA 1991-2020. Last updated: {formatDate(data.lastUpdated)}
+        {' '}(Boerne 1 station). Normals from NOAA 1991-2020. Last updated: {formatDate(data.lastUpdated)}
       </p>
     </div>
   );
