@@ -251,35 +251,125 @@ export default function CreateWelcomePacketPage() {
 
       {/* Send Confirmation Modal */}
       {showSentConfirmation && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
-            <div className="text-center">
+        <SendPacketModal
+          client={client}
+          profile={profile}
+          customMessage={customMessage}
+          selectedCategories={selectedCategories}
+          onClose={() => setShowSentConfirmation(false)}
+          onSent={() => router.push('/realtors/dashboard')}
+        />
+      )}
+    </div>
+  );
+}
+
+interface SendPacketModalProps {
+  client: {
+    id: string;
+    name: string;
+    email: string;
+    address: string;
+    city: string;
+  };
+  profile: {
+    id: string;
+    name: string;
+    company: string;
+  } | null;
+  customMessage: string;
+  selectedCategories: string[];
+  onClose: () => void;
+  onSent: () => void;
+}
+
+function SendPacketModal({
+  client,
+  profile,
+  customMessage,
+  selectedCategories,
+  onClose,
+  onSent,
+}: SendPacketModalProps) {
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [packetUrl, setPacketUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleSendEmail = async () => {
+    if (!profile) return;
+
+    setSending(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/packets/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          realtor_id: profile.id,
+          client_id: client.id,
+          client_email: client.email,
+          client_name: client.name,
+          client_address: client.address,
+          client_city: client.city,
+          welcome_message: customMessage || undefined,
+          selected_categories: selectedCategories,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSent(true);
+        setPacketUrl(data.packet_url);
+      } else {
+        setError(data.error || 'Failed to send packet');
+      }
+    } catch (err) {
+      setError('Failed to send packet. Please try again.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (packetUrl) {
+      navigator.clipboard.writeText(packetUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl max-w-md w-full p-6">
+        <div className="text-center">
+          {sent ? (
+            <>
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Share Welcome Packet
+                Packet Sent Successfully!
               </h3>
               <p className="text-gray-600 mb-6">
-                Copy the link below to share with {client.name}:
+                We've sent an email to {client.name} at {client.email} with their welcome packet.
               </p>
 
-              <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                <code className="text-sm text-gray-700 break-all">
-                  {typeof window !== 'undefined' ? `${window.location.origin}/welcome/${clientId}` : ''}
-                </code>
-              </div>
+              {packetUrl && (
+                <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                  <p className="text-xs text-gray-500 mb-1">Packet Link:</p>
+                  <code className="text-sm text-gray-700 break-all">{packetUrl}</code>
+                </div>
+              )}
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => {
-                    const shareUrl = `${window.location.origin}/welcome/${clientId}`;
-                    navigator.clipboard.writeText(shareUrl);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                  }}
+                  onClick={handleCopyLink}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2"
                 >
                   {copied ? (
@@ -299,41 +389,72 @@ export default function CreateWelcomePacketPage() {
                   )}
                 </button>
                 <button
-                  onClick={() => {
-                    // In production, this would actually send an email via an API
-                    // For now, we'll open the user's email client
-                    const shareUrl = `${window.location.origin}/welcome/${clientId}`;
-                    const subject = encodeURIComponent(`Welcome to Your New Home - ${client.address}`);
-                    const body = encodeURIComponent(
-                      `Dear ${client.name},\n\n` +
-                      `Congratulations on your new home! I've put together a special welcome packet with trusted local service providers and helpful resources for your new home.\n\n` +
-                      `View your welcome packet here:\n${shareUrl}\n\n` +
-                      `Best regards,\n${profile?.name}\n${profile?.company}`
-                    );
-                    window.location.href = `mailto:${client.email}?subject=${subject}&body=${body}`;
-                  }}
-                  className="flex-1 px-4 py-2 bg-boerne-gold text-boerne-navy font-medium rounded-lg hover:bg-boerne-gold-alt flex items-center justify-center gap-2"
+                  onClick={onSent}
+                  className="flex-1 px-4 py-2 bg-boerne-gold text-boerne-navy font-medium rounded-lg hover:bg-boerne-gold-alt"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  Open Email
+                  Done
                 </button>
               </div>
+            </>
+          ) : (
+            <>
+              <div className="w-16 h-16 bg-boerne-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-boerne-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Send Welcome Packet
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Send this welcome packet directly to {client.name} at:
+              </p>
 
-              <button
-                onClick={() => {
-                  setShowSentConfirmation(false);
-                  router.push('/realtors/dashboard');
-                }}
-                className="mt-4 text-sm text-gray-500 hover:text-gray-700"
-              >
-                Done — Return to Dashboard
-              </button>
-            </div>
-          </div>
+              <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                <p className="text-gray-700 font-medium">{client.email}</p>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={onClose}
+                  disabled={sending}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSendEmail}
+                  disabled={sending}
+                  className="flex-1 px-4 py-2 bg-boerne-gold text-boerne-navy font-medium rounded-lg hover:bg-boerne-gold-alt disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {sending ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                      Send Email
+                    </>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

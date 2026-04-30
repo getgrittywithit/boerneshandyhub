@@ -11,6 +11,12 @@ interface RealtorProfile {
   company: string;
   phone?: string;
   licenseNumber?: string;
+  // Branding fields
+  photoUrl?: string;
+  logoUrl?: string;
+  brandColor?: string;
+  tagline?: string;
+  bio?: string;
   createdAt: string;
 }
 
@@ -81,6 +87,11 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
             company: realtorProfile.company,
             phone: realtorProfile.phone,
             licenseNumber: realtorProfile.license_number,
+            photoUrl: realtorProfile.photo_url,
+            logoUrl: realtorProfile.logo_url,
+            brandColor: realtorProfile.brand_color,
+            tagline: realtorProfile.tagline,
+            bio: realtorProfile.bio,
             createdAt: realtorProfile.created_at,
           });
         }
@@ -112,6 +123,11 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
         company: data.company,
         phone: data.phone,
         licenseNumber: data.license_number,
+        photoUrl: data.photo_url,
+        logoUrl: data.logo_url,
+        brandColor: data.brand_color,
+        tagline: data.tagline,
+        bio: data.bio,
         createdAt: data.created_at,
       });
     }
@@ -167,10 +183,15 @@ export function RealtorAuthProvider({ children }: { children: ReactNode }) {
     if (!supabase || !user) return { error: 'Not authenticated' };
 
     const dbUpdates: Record<string, unknown> = {};
-    if (updates.name) dbUpdates.name = updates.name;
-    if (updates.company) dbUpdates.company = updates.company;
-    if (updates.phone) dbUpdates.phone = updates.phone;
-    if (updates.licenseNumber) dbUpdates.license_number = updates.licenseNumber;
+    if (updates.name !== undefined) dbUpdates.name = updates.name;
+    if (updates.company !== undefined) dbUpdates.company = updates.company;
+    if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
+    if (updates.licenseNumber !== undefined) dbUpdates.license_number = updates.licenseNumber;
+    if (updates.photoUrl !== undefined) dbUpdates.photo_url = updates.photoUrl;
+    if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
+    if (updates.brandColor !== undefined) dbUpdates.brand_color = updates.brandColor;
+    if (updates.tagline !== undefined) dbUpdates.tagline = updates.tagline;
+    if (updates.bio !== undefined) dbUpdates.bio = updates.bio;
 
     const { error } = await supabase
       .from('realtor_profiles')

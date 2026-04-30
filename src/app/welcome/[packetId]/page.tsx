@@ -1,35 +1,127 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import {
   generateWelcomePacket,
   type WelcomePacketData
 } from '@/lib/welcomePacket';
+import {
+  trackPacketView,
+  trackProviderClick,
+  trackGuideClick,
+  trackPhoneClick,
+  trackWebsiteClick,
+  trackHomeTrackerClick,
+  trackResourceClick,
+} from '@/lib/packetAnalytics';
+
+interface RealtorBranding {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  phone?: string;
+  photo_url?: string;
+  logo_url?: string;
+  brand_color?: string;
+  tagline?: string;
+  bio?: string;
+}
+
+interface ClientInfo {
+  name: string;
+  address: string;
+  city: string;
+}
 
 export default function PublicWelcomePacketPage() {
   const params = useParams();
   const packetId = params.packetId as string;
   const [packet, setPacket] = useState<WelcomePacketData | null>(null);
+  const [realtor, setRealtor] = useState<RealtorBranding | null>(null);
   const [loading, setLoading] = useState(true);
+  const hasTrackedView = useRef(false);
 
   useEffect(() => {
-    // In production, this would fetch from Supabase using the packetId
-    // For now, we'll generate a demo packet
-    const demoPacket = generateWelcomePacket(
-      'John & Jane Smith',
-      '123 Oak Valley Drive',
-      'Boerne',
-      'Sarah Johnson',
-      'Hill Country Realty',
-      undefined,
-      ['hvac', 'plumbing', 'electrical', 'handyman', 'landscaping', 'pest-control']
-    );
+    async function loadPacket() {
+      try {
+        // Try to fetch real packet data from API
+        const response = await fetch(`/api/packets/${packetId}`);
+        const data = await response.json();
 
-    setPacket(demoPacket);
-    setLoading(false);
+        if (data.packet && data.realtor && data.client) {
+          // Real packet from database
+          setRealtor(data.realtor);
+
+          // Generate packet data with real info
+          const packetData = generateWelcomePacket(
+            data.client.name,
+            data.client.address,
+            data.client.city || 'Boerne',
+            data.realtor.name,
+            data.realtor.company,
+            data.packet.welcome_message,
+            data.packet.selected_categories || ['hvac', 'plumbing', 'electrical', 'handyman', 'landscaping', 'pest-control']
+          );
+
+          setPacket(packetData);
+        } else {
+          // Demo packet for development
+          const demoPacket = generateWelcomePacket(
+            'John & Jane Smith',
+            '123 Oak Valley Drive',
+            'Boerne',
+            'Sarah Johnson',
+            'Hill Country Realty',
+            undefined,
+            ['hvac', 'plumbing', 'electrical', 'handyman', 'landscaping', 'pest-control']
+          );
+          setPacket(demoPacket);
+
+          // Demo realtor branding
+          setRealtor({
+            id: 'demo',
+            name: 'Sarah Johnson',
+            email: 'sarah@hillcountryrealty.com',
+            company: 'Hill Country Realty',
+            phone: '(830) 555-1234',
+            tagline: 'Your Hill Country Home Expert',
+            brand_color: '#1e3a5f',
+          });
+        }
+      } catch (error) {
+        console.error('Error loading packet:', error);
+        // Fallback to demo
+        const demoPacket = generateWelcomePacket(
+          'John & Jane Smith',
+          '123 Oak Valley Drive',
+          'Boerne',
+          'Sarah Johnson',
+          'Hill Country Realty',
+          undefined,
+          ['hvac', 'plumbing', 'electrical', 'handyman', 'landscaping', 'pest-control']
+        );
+        setPacket(demoPacket);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadPacket();
   }, [packetId]);
+
+  // Track page view once when packet loads
+  useEffect(() => {
+    if (packet && !hasTrackedView.current) {
+      hasTrackedView.current = true;
+      trackPacketView(packetId);
+    }
+  }, [packet, packetId]);
+
+  const brandColor = realtor?.brand_color || '#1e3a5f';
 
   if (loading) {
     return (
@@ -76,11 +168,38 @@ export default function PublicWelcomePacketPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-boerne-navy to-boerne-dark-gray p-8 text-center">
-            <div className="w-20 h-20 bg-boerne-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-5xl">🏠</span>
-            </div>
+          {/* Header with Realtor Branding */}
+          <div
+            className="p-8 text-center"
+            style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%)` }}
+          >
+            {/* Realtor Logo or Photo */}
+            {realtor?.logo_url ? (
+              <div className="mb-4">
+                <Image
+                  src={realtor.logo_url}
+                  alt={`${realtor.company} logo`}
+                  width={120}
+                  height={60}
+                  className="mx-auto object-contain bg-white/10 rounded-lg p-2"
+                />
+              </div>
+            ) : realtor?.photo_url ? (
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/30">
+                <Image
+                  src={realtor.photo_url}
+                  alt={realtor.name}
+                  width={96}
+                  height={96}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            ) : (
+              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-5xl">🏠</span>
+              </div>
+            )}
+
             <h1 className="text-3xl font-bold text-white mb-2">
               Welcome to Your New Home!
             </h1>
@@ -90,9 +209,52 @@ export default function PublicWelcomePacketPage() {
             <p className="text-white/80 mt-2">
               {packet.address}, {packet.city}
             </p>
+
+            {/* Realtor tagline */}
+            {realtor?.tagline && (
+              <p className="text-white/60 text-sm mt-4 italic">
+                "{realtor.tagline}"
+              </p>
+            )}
           </div>
 
           <div className="p-8 lg:p-12">
+            {/* Realtor Info Card */}
+            {realtor && (
+              <div className="mb-10 flex items-center justify-center">
+                <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-4 pr-8">
+                  {realtor.photo_url ? (
+                    <Image
+                      src={realtor.photo_url}
+                      alt={realtor.name}
+                      width={64}
+                      height={64}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold"
+                      style={{ backgroundColor: brandColor }}
+                    >
+                      {realtor.name.charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-gray-900">{realtor.name}</p>
+                    <p className="text-sm text-gray-500">{realtor.company}</p>
+                    {realtor.phone && (
+                      <a
+                        href={`tel:${realtor.phone}`}
+                        className="text-sm text-boerne-gold hover:text-boerne-gold-alt"
+                      >
+                        {realtor.phone}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Welcome Message */}
             <div className="mb-10 text-center max-w-2xl mx-auto">
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -147,6 +309,7 @@ export default function PublicWelcomePacketPage() {
                             {provider.phone && (
                               <a
                                 href={`tel:${provider.phone}`}
+                                onClick={() => trackPhoneClick(packetId, provider.id, provider.name)}
                                 className="flex items-center gap-2 text-gray-600 hover:text-boerne-gold"
                               >
                                 <span>📞</span>
@@ -158,6 +321,7 @@ export default function PublicWelcomePacketPage() {
                                 href={provider.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onClick={() => trackWebsiteClick(packetId, provider.id, provider.name)}
                                 className="flex items-center gap-2 text-boerne-gold hover:text-boerne-gold-alt"
                               >
                                 <span>🌐</span>
@@ -167,6 +331,7 @@ export default function PublicWelcomePacketPage() {
                           </div>
                           <Link
                             href={`/services/home/${category.id}/${provider.id}`}
+                            onClick={() => trackProviderClick(packetId, provider.id, provider.name, category.name)}
                             className="block mt-3 text-sm text-center text-gray-500 hover:text-boerne-gold"
                           >
                             View Full Profile →
@@ -191,6 +356,7 @@ export default function PublicWelcomePacketPage() {
             <div className="mb-12">
               <Link
                 href="/moving-to-boerne"
+                onClick={() => trackResourceClick(packetId, 'Moving to Boerne Resource Center')}
                 className="block bg-gradient-to-r from-boerne-gold/20 to-boerne-gold/10 rounded-xl p-6 hover:from-boerne-gold/30 hover:to-boerne-gold/20 transition-all border-2 border-boerne-gold/30 group"
               >
                 <div className="flex items-center gap-4">
@@ -226,6 +392,7 @@ export default function PublicWelcomePacketPage() {
                   <Link
                     key={guide.slug}
                     href={`/guides/${guide.slug}`}
+                    onClick={() => trackGuideClick(packetId, guide.slug, guide.title)}
                     className="p-5 bg-gray-50 rounded-xl hover:bg-boerne-gold/10 transition-colors group"
                   >
                     <div className="flex items-start gap-4">
@@ -245,7 +412,10 @@ export default function PublicWelcomePacketPage() {
             </div>
 
             {/* Home Tracker CTA */}
-            <div className="bg-gradient-to-r from-boerne-navy to-boerne-dark-gray rounded-xl p-8 text-center">
+            <div
+              className="rounded-xl p-8 text-center"
+              style={{ background: `linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%)` }}
+            >
               <div className="max-w-xl mx-auto">
                 <span className="text-4xl">🏠</span>
                 <h3 className="text-xl font-bold text-white mt-4 mb-2">
@@ -257,6 +427,7 @@ export default function PublicWelcomePacketPage() {
                 </p>
                 <Link
                   href="/my-home"
+                  onClick={() => trackHomeTrackerClick(packetId)}
                   className="inline-block px-8 py-3 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors"
                 >
                   Set Up Home Tracker — Free
@@ -289,21 +460,56 @@ export default function PublicWelcomePacketPage() {
               </div>
               <Link
                 href="/emergency-services"
+                onClick={() => trackResourceClick(packetId, 'Emergency Services')}
                 className="inline-block mt-4 text-sm text-red-700 hover:text-red-800 font-medium"
               >
                 View all emergency services →
               </Link>
             </div>
 
-            {/* Footer */}
+            {/* Footer with Realtor Branding */}
             <div className="mt-12 pt-8 border-t text-center">
               <p className="text-gray-500 text-sm">
                 This welcome packet was created for you by
               </p>
-              <p className="text-gray-900 font-medium mt-1">
-                {packet.realtorName} • {packet.realtorCompany}
-              </p>
-              <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-400">
+
+              {/* Realtor branding footer */}
+              <div className="mt-4 flex flex-col items-center gap-4">
+                {realtor?.photo_url && (
+                  <Image
+                    src={realtor.photo_url}
+                    alt={realtor?.name || packet.realtorName}
+                    width={80}
+                    height={80}
+                    className="rounded-full object-cover"
+                  />
+                )}
+                <div>
+                  <p className="text-gray-900 font-semibold text-lg">
+                    {packet.realtorName}
+                  </p>
+                  <p className="text-gray-600">{packet.realtorCompany}</p>
+                  {realtor?.phone && (
+                    <a
+                      href={`tel:${realtor.phone}`}
+                      className="text-boerne-gold hover:text-boerne-gold-alt"
+                    >
+                      {realtor.phone}
+                    </a>
+                  )}
+                </div>
+                {realtor?.logo_url && (
+                  <Image
+                    src={realtor.logo_url}
+                    alt={realtor.company}
+                    width={100}
+                    height={50}
+                    className="object-contain mt-2"
+                  />
+                )}
+              </div>
+
+              <div className="mt-8 flex items-center justify-center gap-2 text-sm text-gray-400">
                 <span>Powered by</span>
                 <Link href="/" className="text-boerne-gold hover:text-boerne-gold-alt font-medium">
                   Boerne's Handy Hub
