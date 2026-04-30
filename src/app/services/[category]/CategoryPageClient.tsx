@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useCallback } from 'react';
 import { getTopLevelCategory, topLevelCategories, ServiceCategory, getSubcategoriesWithCrossListings } from '@/data/serviceCategories';
+import { SearchOverlay } from '@/components/search';
+import { useSearchShortcut } from '@/lib/search/useSearch';
 
 interface CategoryPageClientProps {
   categorySlug: string;
@@ -29,6 +32,26 @@ function groupBySection(subcategories: ServiceCategory[]): Map<string, ServiceCa
 
 export default function CategoryPageClient({ categorySlug }: CategoryPageClientProps) {
   const category = getTopLevelCategory(categorySlug);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchAllSite, setSearchAllSite] = useState(false);
+
+  const openSearch = useCallback(() => {
+    setSearchAllSite(false);
+    setIsSearchOpen(true);
+  }, []);
+
+  const openSiteSearch = useCallback(() => {
+    setSearchAllSite(true);
+    setIsSearchOpen(true);
+  }, []);
+
+  const closeSearch = useCallback(() => {
+    setIsSearchOpen(false);
+    setSearchAllSite(false);
+  }, []);
+
+  // Listen for Cmd/Ctrl+K
+  useSearchShortcut(openSearch);
 
   if (!category) {
     return (
@@ -88,10 +111,43 @@ export default function CategoryPageClient({ categorySlug }: CategoryPageClientP
         </div>
       </div>
 
-      {/* Category Tabs */}
+      {/* Sticky Search & Category Tabs */}
       <div className="bg-gray-50 border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 py-3 overflow-x-auto">
+          {/* Search Bar */}
+          <div className="py-3 flex items-center gap-3">
+            <button
+              onClick={openSearch}
+              className="flex-1 flex items-center gap-3 px-4 py-2.5 bg-white hover:bg-gray-100 border border-gray-200 rounded-lg text-gray-500 transition-colors text-left"
+            >
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <span className="flex-1">Search in {category.name}...</span>
+              <kbd className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs text-gray-400">
+                <span className="text-[10px]">&#8984;</span>K
+              </kbd>
+            </button>
+            <button
+              onClick={openSiteSearch}
+              className="text-sm text-boerne-gold hover:text-boerne-gold-alt whitespace-nowrap font-medium"
+            >
+              Search all
+            </button>
+          </div>
+
+          {/* Category Tabs */}
+          <div className="flex items-center gap-2 pb-3 overflow-x-auto">
             {topLevelCategories.map((cat) => (
               <Link
                 key={cat.id}
@@ -109,6 +165,15 @@ export default function CategoryPageClient({ categorySlug }: CategoryPageClientP
           </div>
         </div>
       </div>
+
+      {/* Search Overlay */}
+      {isSearchOpen && (
+        <SearchOverlay
+          onClose={closeSearch}
+          scope={searchAllSite ? undefined : { category_slug: categorySlug }}
+          scopeLabel={searchAllSite ? undefined : category.name}
+        />
+      )}
 
       {/* Subcategories Grid - Grouped by Section */}
       <section className="py-12">

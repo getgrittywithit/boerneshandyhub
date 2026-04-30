@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { topLevelCategories } from '@/data/serviceCategories';
+import SearchBar from '@/components/search/SearchBar';
 
 interface NavItem {
   href?: string;
@@ -203,11 +204,17 @@ export default function Navigation() {
                   ⚙️
                 </Link>
               )}
+
+              {/* Search Bar */}
+              <SearchBar className="ml-4" />
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="flex items-center lg:hidden">
+          {/* Mobile menu button and search */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {/* Mobile Search */}
+            <SearchBar className="!px-2" placeholder="" />
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-boerne-gold focus:outline-none"
