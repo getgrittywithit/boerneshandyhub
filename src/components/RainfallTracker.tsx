@@ -297,16 +297,16 @@ export default function RainfallTracker() {
 
       {/* Last Updated - CC-BY 4.0 attribution */}
       <p className="text-center text-sm text-gray-500">
-        Rainfall data by{' '}
+        Historical rainfall from{' '}
         <a
-          href="https://open-meteo.com/"
+          href="https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
           target="_blank"
           rel="noopener noreferrer"
           className="text-boerne-navy hover:underline"
         >
-          Open-Meteo.com
+          ERA5/Copernicus
         </a>
-        . Last updated: {formatDate(data.lastUpdated)}
+        . Normals from NOAA 1991-2020. Last updated: {formatDate(data.lastUpdated)}
       </p>
     </div>
   );

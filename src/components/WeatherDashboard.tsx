@@ -264,10 +264,10 @@ export default function WeatherDashboard() {
         </div>
       )}
 
-      {/* 10-Day Forecast */}
+      {/* 7-Day Forecast */}
       {data.forecast && data.forecast.length > 0 && (
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-xl font-semibold text-boerne-navy mb-4">10-Day Forecast</h3>
+          <h3 className="text-xl font-semibold text-boerne-navy mb-4">7-Day Forecast</h3>
           <div className="space-y-2">
             {data.forecast.map((day, index) => (
               <div
@@ -302,9 +302,9 @@ export default function WeatherDashboard() {
                   )}
 
                   <div className="flex items-center gap-2 w-24 justify-end">
-                    <span className="font-bold text-gray-900">{day.high}°</span>
-                    <span className="text-gray-400">/</span>
-                    <span className="text-gray-500">{day.low}°</span>
+                    {day.high !== null && <span className="font-bold text-gray-900">{day.high}°</span>}
+                    {day.high !== null && day.low !== null && <span className="text-gray-400">/</span>}
+                    {day.low !== null && <span className="text-gray-500">{day.low}°</span>}
                   </div>
                 </div>
               </div>
@@ -313,28 +313,10 @@ export default function WeatherDashboard() {
         </div>
       )}
 
-      {/* Data Source Attribution - CC-BY 4.0 required */}
+      {/* Data Source Attribution */}
       <div className="text-center text-sm text-gray-500">
         <p>
-          Weather data by{' '}
-          <a
-            href="https://open-meteo.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-boerne-navy hover:underline"
-          >
-            Open-Meteo.com
-          </a>
-          {' '}({' '}
-          <a
-            href="https://creativecommons.org/licenses/by/4.0/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            CC BY 4.0
-          </a>
-          {' '}). Alerts from{' '}
+          Weather data from{' '}
           <a
             href="https://www.weather.gov/"
             target="_blank"
@@ -343,7 +325,7 @@ export default function WeatherDashboard() {
           >
             National Weather Service
           </a>
-          .
+          {' '}(NWS Austin/San Antonio).
         </p>
         <p className="mt-1">Last updated: {formatDate(data.lastUpdated)}</p>
       </div>

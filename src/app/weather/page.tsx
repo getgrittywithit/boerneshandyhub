@@ -3,15 +3,16 @@ import WeatherDashboard from '@/components/WeatherDashboard';
 import CiboloCreekWidget from '@/components/CiboloCreekWidget';
 import RainfallTracker from '@/components/RainfallTracker';
 import HillCountryConditions from '@/components/HillCountryConditions';
+import RadarWidget from '@/components/RadarWidget';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Boerne Weather | 10-Day Forecast, Cibolo Creek Level, Burn Ban Status',
-  description: 'Boerne TX weather with 10-day forecast, Cibolo Creek water level, drought stage, burn ban status, and rainfall tracking. The complete Hill Country weather resource.',
-  keywords: 'Boerne weather, Boerne TX forecast, Cibolo Creek level, Kendall County burn ban, Texas drought monitor, Hill Country weather, Boerne rain totals, NWS alerts Boerne, flash flood warning',
+  title: 'Boerne Weather | 7-Day Forecast, Radar, Cibolo Creek Level, Burn Ban',
+  description: 'Boerne TX weather with 7-day forecast, live radar, Cibolo Creek water level, drought stage, burn ban status, and rainfall tracking. The complete Hill Country weather resource.',
+  keywords: 'Boerne weather, Boerne TX forecast, Boerne radar, Cibolo Creek level, Kendall County burn ban, Texas drought monitor, Hill Country weather, Boerne rain totals, NWS alerts Boerne, flash flood warning',
   openGraph: {
-    title: 'Boerne Weather | Forecast, Creek Level, Burn Ban',
-    description: 'Live weather, 10-day forecast, Cibolo Creek gauge, drought status, and burn ban for Boerne, TX.',
+    title: 'Boerne Weather | Forecast, Radar, Creek Level, Burn Ban',
+    description: 'Live weather, 7-day forecast, radar, Cibolo Creek gauge, drought status, and burn ban for Boerne, TX.',
     type: 'website',
     locale: 'en_US',
   },
@@ -35,7 +36,7 @@ export default function WeatherPage() {
             Boerne Weather & Hill Country Conditions
           </h1>
           <p className="text-xl md:text-2xl max-w-3xl opacity-90">
-            10-day forecast, Cibolo Creek level, drought stage, burn ban status, and rainfall tracking.
+            7-day forecast, live radar, Cibolo Creek level, drought stage, burn ban status, and rainfall tracking.
           </p>
         </div>
       </div>
@@ -47,6 +48,11 @@ export default function WeatherPage() {
 
         {/* Cibolo Creek Alert - only shows when elevated */}
         <CiboloCreekWidget />
+
+        {/* Weather Radar */}
+        <div className="mt-8">
+          <RadarWidget />
+        </div>
 
         {/* Divider */}
         <div className="my-12 flex items-center gap-4">
@@ -143,7 +149,7 @@ export default function WeatherPage() {
               <h3 className="font-semibold text-gray-900 mb-1">The Boerne Weather Page</h3>
               <p className="text-gray-600 text-sm">
                 Weather.com doesn't show Cibolo Creek levels. The local paper doesn't show
-                drought stage with service recommendations. This page combines 10-day forecasts,
+                drought stage with service recommendations. This page combines 7-day forecasts,
                 live creek data, burn ban status, and rainfall tracking in one place — built
                 specifically for Hill Country homeowners.
               </p>
