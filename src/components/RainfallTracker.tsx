@@ -78,7 +78,7 @@ export default function RainfallTracker() {
     );
   }
 
-  if (error || !data) {
+  if (error || !data || !data.ytd || !data.annual) {
     return (
       <div className="bg-white rounded-xl shadow-lg p-8">
         <div className="text-center text-red-600">
@@ -95,13 +95,14 @@ export default function RainfallTracker() {
     normal: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-300' },
   };
 
-  const statusColor = statusColors[data.ytd.status];
+  const status = data.ytd.status || 'normal';
+  const statusColor = statusColors[status];
 
   const getStatusMessage = () => {
-    const diff = Math.abs(data.ytd.difference);
-    if (data.ytd.status === 'above') {
+    const diff = Math.abs(data.ytd.difference ?? 0);
+    if (status === 'above') {
       return `${diff.toFixed(1)}" above average - watch for drainage issues`;
-    } else if (data.ytd.status === 'below') {
+    } else if (status === 'below') {
       return `${diff.toFixed(1)}" below average - monitor foundation & trees`;
     }
     return 'Right on track with historical averages';
@@ -125,14 +126,14 @@ export default function RainfallTracker() {
         {/* YTD Actual */}
         <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-boerne-navy">
           <p className="text-sm text-gray-500 uppercase tracking-wide">Year-to-Date Rainfall</p>
-          <p className="text-4xl font-bold text-boerne-navy mt-2">{data.ytd.actual}"</p>
-          <p className="text-sm text-gray-600 mt-1">Since Jan 1, {data.year}</p>
+          <p className="text-4xl font-bold text-boerne-navy mt-2">{data.ytd.actual ?? 0}"</p>
+          <p className="text-sm text-gray-600 mt-1">Since Jan 1, {data.year ?? new Date().getFullYear()}</p>
         </div>
 
         {/* Expected YTD */}
         <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-400">
           <p className="text-sm text-gray-500 uppercase tracking-wide">Historical Average YTD</p>
-          <p className="text-4xl font-bold text-gray-700 mt-2">{data.ytd.expected}"</p>
+          <p className="text-4xl font-bold text-gray-700 mt-2">{data.ytd.expected ?? 0}"</p>
           <p className="text-sm text-gray-600 mt-1">Normal for this date</p>
         </div>
 
@@ -140,7 +141,7 @@ export default function RainfallTracker() {
         <div className={`rounded-xl shadow-lg p-6 border-l-4 ${statusColor.bg} ${statusColor.border}`}>
           <p className="text-sm text-gray-500 uppercase tracking-wide">Status</p>
           <p className={`text-4xl font-bold mt-2 ${statusColor.text}`}>
-            {data.ytd.percentOfNormal.toFixed(0)}%
+            {(data.ytd.percentOfNormal ?? 100).toFixed(0)}%
           </p>
           <p className={`text-sm mt-1 ${statusColor.text}`}>{getStatusMessage()}</p>
         </div>
@@ -215,23 +216,23 @@ export default function RainfallTracker() {
               {/* Average marker */}
               <div
                 className="absolute top-0 bottom-0 w-1 bg-gray-500 z-10"
-                style={{ left: `${(data.annual.average / 40) * 100}%` }}
+                style={{ left: `${((data.annual.average ?? 34) / 40) * 100}%` }}
               />
               {/* Actual/Projected bar */}
               <div
                 className="h-full bg-gradient-to-r from-boerne-navy to-boerne-light-blue rounded-full transition-all duration-1000"
-                style={{ width: `${Math.min((data.ytd.actual / 40) * 100, 100)}%` }}
+                style={{ width: `${Math.min(((data.ytd.actual ?? 0) / 40) * 100, 100)}%` }}
               />
             </div>
             <div className="flex justify-between mt-2 text-sm text-gray-600">
               <span>0"</span>
-              <span className="font-medium">Avg: {data.annual.average}"</span>
+              <span className="font-medium">Avg: {data.annual.average ?? 34}"</span>
               <span>40"</span>
             </div>
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-500">Projected Annual Total</p>
-            <p className="text-2xl font-bold text-boerne-navy">{data.annual.projected}"</p>
+            <p className="text-2xl font-bold text-boerne-navy">{data.annual.projected ?? 34}"</p>
           </div>
         </div>
       </div>
@@ -240,7 +241,7 @@ export default function RainfallTracker() {
       <div className="bg-gradient-to-br from-boerne-navy to-boerne-dark-gray rounded-xl shadow-lg p-6 text-white">
         <h3 className="text-xl font-semibold mb-4">Hill Country Weather Tips</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {data.ytd.status === 'above' ? (
+          {status === 'above' ? (
             <>
               <div className="flex items-start gap-3">
                 <span className="text-2xl">💧</span>
@@ -257,7 +258,7 @@ export default function RainfallTracker() {
                 </div>
               </div>
             </>
-          ) : data.ytd.status === 'below' ? (
+          ) : status === 'below' ? (
             <>
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🏗️</span>
