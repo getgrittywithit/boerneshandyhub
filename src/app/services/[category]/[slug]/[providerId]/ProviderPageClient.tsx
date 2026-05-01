@@ -67,15 +67,16 @@ export default function ProviderPageClient({
   }, [providerId, subcategorySlug]);
 
   const getTierBadge = (tier: MembershipTier) => {
+    const categoryName = subcategory?.name || '';
     switch (tier) {
       case 'basic':
-        return <span className="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">Basic Listing</span>;
+        return null; // No badge for basic/claimed
       case 'verified':
-        return <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">Verified</span>;
+        return <span className="bg-green-100 text-green-700 text-xs font-medium px-3 py-1 rounded-full">✓ Verified</span>;
       case 'premium':
-        return <span className="bg-boerne-gold text-boerne-navy text-xs font-medium px-2 py-1 rounded-full">Premium</span>;
+        return <span className="bg-boerne-gold/20 text-boerne-gold-dark border border-boerne-gold/30 text-xs font-medium px-3 py-1 rounded-full">✓+ Verified Plus</span>;
       case 'elite':
-        return <span className="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-1 rounded-full">Elite</span>;
+        return <span className="bg-amber-100 text-amber-800 border border-amber-300 text-xs font-medium px-3 py-1 rounded-full">🏆 {categoryName} Partner</span>;
       default:
         return null;
     }
@@ -109,7 +110,34 @@ export default function ProviderPageClient({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Info */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            {/* Tier-specific card styling */}
+            <div className={`rounded-xl shadow-lg overflow-hidden ${
+              provider.membershipTier === 'elite'
+                ? 'bg-gradient-to-br from-amber-50 via-white to-amber-50 border-2 border-amber-400'
+                : provider.membershipTier === 'premium'
+                ? 'bg-white border-2 border-boerne-gold'
+                : provider.membershipTier === 'verified'
+                ? 'bg-white border border-green-300'
+                : 'bg-white'
+            }`}>
+              {/* Tier gradient header */}
+              {provider.membershipTier !== 'basic' && (
+                <div className={`h-2 ${
+                  provider.membershipTier === 'elite'
+                    ? 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400'
+                    : provider.membershipTier === 'premium'
+                    ? 'bg-gradient-to-r from-boerne-gold via-yellow-400 to-boerne-gold'
+                    : 'bg-gradient-to-r from-green-500 to-emerald-600'
+                }`} />
+              )}
+
+              {/* Partner ribbon */}
+              {provider.membershipTier === 'elite' && (
+                <div className="bg-amber-500 text-white text-center py-2 text-sm font-semibold">
+                  🏆 Official {subcategory?.name} Partner
+                </div>
+              )}
+
               {/* Hero Section */}
               <div className="p-6">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4">
@@ -157,6 +185,42 @@ export default function ProviderPageClient({
 
                 {provider.description && (
                   <p className="text-lg text-gray-600 mb-6">{provider.description}</p>
+                )}
+
+                {/* Photo Gallery - For claimed+ tiers with photos */}
+                {provider.photos && provider.photos.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Photos</h3>
+                    <div className={`grid gap-2 ${
+                      provider.photos.length === 1
+                        ? 'grid-cols-1'
+                        : provider.photos.length === 2
+                        ? 'grid-cols-2'
+                        : 'grid-cols-2 md:grid-cols-3'
+                    }`}>
+                      {provider.photos.slice(0, 6).map((photo, idx) => (
+                        <div
+                          key={idx}
+                          className={`relative rounded-lg overflow-hidden ${
+                            idx === 0 && provider.photos.length > 2 ? 'col-span-2 row-span-2 h-64' : 'h-32'
+                          }`}
+                        >
+                          <img
+                            src={photo}
+                            alt={`${provider.name} photo ${idx + 1}`}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                          {idx === 5 && provider.photos.length > 6 && (
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                              <span className="text-white text-lg font-semibold">
+                                +{provider.photos.length - 6} more
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {/* Staff Pick */}

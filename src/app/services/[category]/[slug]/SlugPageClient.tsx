@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { getTopLevelCategory, getSubcategory, membershipTiers, type MembershipTier } from '@/data/serviceCategories';
+import { getTopLevelCategory, getSubcategory, type MembershipTier } from '@/data/serviceCategories';
+import ProviderCard from '@/components/ProviderCard';
 
 interface ServiceProvider {
   id: string;
@@ -183,131 +184,16 @@ export default function SlugPageClient({ topCategorySlug, subcategorySlug, initi
           {/* Provider Grid */}
           {providers.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {providers.map((provider) => {
-                const tierInfo = membershipTiers[provider.membershipTier];
-                const isVerifiedTier = ['verified', 'premium', 'elite'].includes(provider.membershipTier);
-
-                // Tier-based gradient colors
-                const tierGradients: Record<string, string> = {
-                  basic: 'bg-gradient-to-r from-gray-400 to-gray-500',
-                  verified: 'bg-gradient-to-r from-green-500 to-emerald-600',
-                  premium: 'bg-gradient-to-r from-yellow-500 to-amber-500',
-                  elite: 'bg-gradient-to-r from-purple-500 to-indigo-600',
-                };
-
-                return (
-                  <div
-                    key={provider.id}
-                    className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-boerne-gold hover:shadow-xl transition-all duration-300 flex flex-col"
-                  >
-                    {/* Gradient Header */}
-                    <div className={`${tierGradients[provider.membershipTier]} h-3`} />
-
-                    <div className="p-5 flex flex-col flex-1">
-                      {/* Header */}
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-lg text-gray-900 truncate">
-                            {provider.name}
-                          </h3>
-                          {/* Meta line */}
-                          {provider.yearsInBusiness && provider.yearsInBusiness >= 1 && (
-                            <div className="flex items-center gap-2 mt-1 text-sm">
-                              <span className="text-gray-500">{provider.yearsInBusiness}+ years in business</span>
-                            </div>
-                          )}
-                        </div>
-                        {tierInfo.badge && (
-                          <span className={`px-2 py-1 ${tierInfo.color} text-xs font-medium rounded-full whitespace-nowrap ml-2`}>
-                            {tierInfo.badge} {tierInfo.name}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Description */}
-                      {provider.description && (
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                          {provider.description}
-                        </p>
-                      )}
-
-                      {/* Services Preview */}
-                      {provider.services.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-xs text-gray-500 mb-1">Services:</p>
-                          <p className="text-sm text-gray-700 line-clamp-1">
-                            {provider.services.slice(0, 3).join(', ')}
-                            {provider.services.length > 3 && ` +${provider.services.length - 3} more`}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Verified Credentials Box - Only for verified tier and above */}
-                      {isVerifiedTier && (provider.licensed || provider.insured) && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
-                          <p className="text-xs text-gray-500 mb-2 font-medium">Verified Credentials</p>
-                          <div className="flex flex-wrap gap-2">
-                            {provider.licensed && (
-                              <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
-                                ✓ Licensed
-                              </span>
-                            )}
-                            {provider.insured && (
-                              <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-medium">
-                                ✓ Insured
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Special Offer */}
-                      {provider.specialOffers && provider.specialOffers.length > 0 && (
-                        <div className="bg-yellow-50 border border-yellow-200 p-2 rounded-lg mb-4">
-                          <span className="text-yellow-700 text-xs font-medium line-clamp-1">
-                            🎉 {provider.specialOffers[0]}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Recommendation */}
-                      {provider.bernieRecommendation && (
-                        <div className="bg-gray-50 p-3 rounded-lg mb-4">
-                          <p className="text-xs text-gray-600 italic line-clamp-2">
-                            &quot;{provider.bernieRecommendation}&quot;
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Spacer */}
-                      <div className="flex-1" />
-
-                      {/* Footer with two CTAs */}
-                      <div className="pt-4 border-t border-gray-100">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-sm text-gray-500">
-                            📍 {provider.serviceArea[0]}
-                          </span>
-                        </div>
-                        <div className="flex gap-2">
-                          <a
-                            href={`tel:${provider.phone}`}
-                            className="flex-1 px-3 py-2 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors text-sm text-center"
-                          >
-                            📞 Call
-                          </a>
-                          <Link
-                            href={`/services/${topCategorySlug}/${subcategorySlug}/${provider.id}`}
-                            className="flex-1 px-3 py-2 bg-boerne-gold text-boerne-navy font-semibold rounded-lg hover:bg-boerne-gold-alt transition-colors text-sm text-center"
-                          >
-                            View Profile
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {providers.map((provider) => (
+                <div key={provider.id} className="relative">
+                  <ProviderCard
+                    provider={provider}
+                    topCategorySlug={topCategorySlug}
+                    subcategorySlug={subcategorySlug}
+                    subcategoryName={subcategory?.name}
+                  />
+                </div>
+              ))}
             </div>
           ) : (
             <div className="text-center py-16">
