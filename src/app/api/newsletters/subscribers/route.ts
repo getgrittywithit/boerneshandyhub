@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { addToAudience, audienceIds } from '@/lib/resend';
+import { addToAudience, audienceIds, sendEmail } from '@/lib/resend';
+import WelcomeEmail from '@/emails/WelcomeEmail';
 import type {
   SubscribeRequest,
   SubscribeResponse,
@@ -63,9 +64,16 @@ export async function POST(request: NextRequest) {
         // Re-add to Resend audience
         await addToResendAudience(normalizedEmail, name, type);
 
+        // Send welcome back email
+        await sendEmail({
+          to: normalizedEmail,
+          subject: "Welcome back to Boerne's Handy Hub!",
+          react: WelcomeEmail({ name }),
+        });
+
         return NextResponse.json<SubscribeResponse>({
           success: true,
-          message: 'Welcome back! Your subscription has been reactivated.',
+          message: 'Welcome back! Check your inbox for a confirmation.',
           subscriber_id: existing.id,
         });
       }
@@ -103,9 +111,16 @@ export async function POST(request: NextRequest) {
     // Add to Resend audience
     await addToResendAudience(normalizedEmail, name, type);
 
+    // Send welcome email
+    await sendEmail({
+      to: normalizedEmail,
+      subject: "Welcome to Boerne's Handy Hub!",
+      react: WelcomeEmail({ name }),
+    });
+
     return NextResponse.json<SubscribeResponse>({
       success: true,
-      message: 'Thanks for subscribing! You\'ll receive our next newsletter.',
+      message: 'Thanks for subscribing! Check your inbox for a welcome email.',
       subscriber_id: newSubscriber.id,
     });
   } catch (error) {
