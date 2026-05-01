@@ -27,11 +27,10 @@ export default function SearchOverlay({
 
   // Handle selecting a result
   const handleSelect = useCallback(
-    (result: SearchDocument) => {
+    (result: SearchDocument, position?: number) => {
       // Track click position
-      const allResults = results?.groups.flatMap((g) => g.results) || [];
-      const position = allResults.findIndex((r) => r.id === result.id);
-      handleResultClick(result, position);
+      const pos = position ?? results?.groups.flatMap((g) => g.results).findIndex((r) => r.id === result.id) ?? 0;
+      handleResultClick(result, pos);
 
       // Navigate and close
       router.push(result.url);
@@ -187,7 +186,7 @@ export default function SearchOverlay({
                   group={group}
                   selectedIndex={selectedIndex}
                   baseIndex={getBaseIndex(groupIndex)}
-                  onResultClick={handleResultClick}
+                  onResultClick={handleSelect}
                 />
               ))}
 
