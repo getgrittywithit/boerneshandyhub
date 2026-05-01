@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTopLevelCategory, getSubcategory, topLevelCategories, type MembershipTier } from '@/data/serviceCategories';
-import serviceProvidersData from '@/data/serviceProviders.json';
+import { createClient } from '@supabase/supabase-js';
 import ProviderPageClient from './ProviderPageClient';
 import { generateLocalBusinessSchema, generateBreadcrumbSchema } from '@/utils/schema';
 import { generateProviderTitle, generateProviderDescription, generateProviderKeywords } from '@/utils/metadata';
+
+// Create a Supabase client for server-side fetching
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 interface ServiceProvider {
   id: string;
@@ -41,17 +46,18 @@ interface PageProps {
 export async function generateStaticParams() {
   const params: { category: string; slug: string; providerId: string }[] = [];
 
-  for (const topCat of topLevelCategories) {
-    for (const sub of topCat.subcategories) {
-      // Find providers matching this subcategory slug
-      const matchingProviders = serviceProvidersData.providers.filter(
-        p => p.category === sub.slug
-      );
-      for (const provider of matchingProviders) {
+  // Fetch all businesses from Supabase
+  const { data: businesses } = await supabase
+    .from('businesses')
+    .select('slug, category, parent_category');
+
+  if (businesses) {
+    for (const business of businesses) {
+      if (business.slug && business.category && business.parent_category) {
         params.push({
-          category: topCat.slug,
-          slug: sub.slug,
-          providerId: provider.id,
+          category: business.parent_category,
+          slug: business.category,
+          providerId: business.slug,
         });
       }
     }
@@ -60,17 +66,50 @@ export async function generateStaticParams() {
   return params;
 }
 
-function getProvider(subcategorySlug: string, providerId: string): ServiceProvider | undefined {
-  return serviceProvidersData.providers.find(
-    (p) => p.id === providerId && p.category === subcategorySlug
-  ) as ServiceProvider | undefined;
+async function getProvider(subcategorySlug: string, providerId: string): Promise<ServiceProvider | undefined> {
+  const { data: business } = await supabase
+    .from('businesses')
+    .select('*')
+    .eq('category', subcategorySlug)
+    .eq('slug', providerId)
+    .single();
+
+  if (!business) return undefined;
+
+  return {
+    id: business.slug || business.id,
+    name: business.name,
+    category: business.category,
+    subcategories: business.subcategory ? [business.subcategory] : [],
+    description: business.description || '',
+    address: business.address || 'Boerne, TX',
+    phone: business.phone || '',
+    email: business.email || '',
+    website: business.website || undefined,
+    rating: business.rating || 0,
+    reviewCount: business.review_count || 0,
+    membershipTier: (business.membership_tier || 'basic') as MembershipTier,
+    claimStatus: (business.claim_status || 'unclaimed') as 'unclaimed' | 'pending' | 'verified',
+    yearsInBusiness: undefined,
+    licensed: business.licensed ?? true,
+    insured: business.insured ?? true,
+    services: business.services || [],
+    serviceArea: Array.isArray(business.service_area) ? business.service_area : ['Boerne'],
+    photos: business.photos || [],
+    bernieRecommendation: undefined,
+    specialOffers: business.special_offers || undefined,
+    keywords: business.keywords || [],
+    coordinates: undefined,
+    createdAt: business.created_at || new Date().toISOString(),
+    updatedAt: business.updated_at || new Date().toISOString(),
+  };
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category, slug, providerId } = await params;
   const topCategory = getTopLevelCategory(category);
   const subcategory = getSubcategory(category, slug);
-  const provider = getProvider(slug, providerId);
+  const provider = await getProvider(slug, providerId);
 
   if (!provider || !topCategory || !subcategory) {
     return {
@@ -121,21 +160,25 @@ export default async function ProviderDetailPage({ params }: PageProps) {
   const { category, slug, providerId } = await params;
   const topCategory = getTopLevelCategory(category);
   const subcategory = getSubcategory(category, slug);
-  const provider = getProvider(slug, providerId);
+  const provider = await getProvider(slug, providerId);
 
   if (!provider || !topCategory || !subcategory) {
     notFound();
   }
 
-  // Get related providers server-side to avoid shipping full JSON to client
-  const relatedProviders = serviceProvidersData.providers
-    .filter(p => p.category === slug && p.id !== providerId)
-    .slice(0, 3)
-    .map(p => ({
-      id: p.id,
-      name: p.name,
-      yearsInBusiness: (p as unknown as ServiceProvider).yearsInBusiness
-    }));
+  // Get related providers from Supabase
+  const { data: relatedBusinesses } = await supabase
+    .from('businesses')
+    .select('slug, name')
+    .eq('category', slug)
+    .neq('slug', providerId)
+    .limit(3);
+
+  const relatedProviders = (relatedBusinesses || []).map(p => ({
+    id: p.slug,
+    name: p.name,
+    yearsInBusiness: undefined
+  }));
 
   const canonicalUrl = `https://boerneshandyhub.com/services/${category}/${slug}/${providerId}`;
 

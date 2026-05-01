@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTopLevelCategory, getSubcategory, topLevelCategories } from '@/data/serviceCategories';
-import serviceProvidersData from '@/data/serviceProviders.json';
+import { createClient } from '@supabase/supabase-js';
 import SlugPageClient from './SlugPageClient';
+
+// Create a Supabase client for server-side fetching
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 interface PageProps {
   params: Promise<{ category: string; slug: string }>;
@@ -33,14 +38,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Not Found' };
   }
 
-  // Count providers that match this subcategory
-  // Providers have category field matching the subcategory slug (e.g., "plumbing")
-  const providerCount = serviceProvidersData.providers.filter(
-    p => p.category === slug
-  ).length;
+  // Count providers that match this subcategory from Supabase
+  const { count: providerCount } = await supabase
+    .from('businesses')
+    .select('*', { count: 'exact', head: true })
+    .eq('category', slug);
 
   const title = `${subcategory.name} in Boerne TX | Find Local ${subcategory.name} Pros`;
-  const description = `Find ${providerCount > 0 ? providerCount + '+' : ''} trusted ${subcategory.name.toLowerCase()} professionals in Boerne, Texas. ${subcategory.description} Licensed, insured, and highly-rated local providers.`;
+  const description = `Find ${providerCount && providerCount > 0 ? providerCount + '+' : ''} trusted ${subcategory.name.toLowerCase()} professionals in Boerne, Texas. ${subcategory.description} Licensed, insured, and highly-rated local providers.`;
 
   return {
     title,
@@ -82,11 +87,42 @@ export default async function SubcategoryPage({ params }: PageProps) {
     notFound();
   }
 
-  // Filter providers server-side to avoid shipping full JSON to client
-  // Cast to match the client component's expected type
-  const filteredProviders = serviceProvidersData.providers.filter(
-    p => p.category === slug
-  ) as unknown as Parameters<typeof SlugPageClient>[0]['initialProviders'];
+  // Fetch providers from Supabase
+  const { data: businesses } = await supabase
+    .from('businesses')
+    .select('*')
+    .eq('category', slug)
+    .order('membership_tier', { ascending: false })
+    .order('rating', { ascending: false });
+
+  // Transform Supabase data to match client component's expected type
+  const filteredProviders = (businesses || []).map(b => ({
+    id: b.slug || b.id,
+    name: b.name,
+    category: b.category,
+    subcategories: b.subcategory ? [b.subcategory] : [],
+    description: b.description || '',
+    address: b.address || 'Boerne, TX',
+    phone: b.phone || '',
+    email: b.email || '',
+    website: b.website || undefined,
+    rating: b.rating || 0,
+    reviewCount: b.review_count || 0,
+    membershipTier: (b.membership_tier || 'basic') as 'basic' | 'verified' | 'premium' | 'elite',
+    claimStatus: (b.claim_status || 'unclaimed') as 'unclaimed' | 'pending' | 'verified',
+    yearsInBusiness: undefined,
+    licensed: b.licensed ?? true,
+    insured: b.insured ?? true,
+    services: b.services || [],
+    serviceArea: Array.isArray(b.service_area) ? b.service_area : ['Boerne'],
+    photos: b.photos || [],
+    bernieRecommendation: undefined,
+    specialOffers: b.special_offers || undefined,
+    keywords: b.keywords || [],
+    coordinates: undefined,
+    createdAt: b.created_at || new Date().toISOString(),
+    updatedAt: b.updated_at || new Date().toISOString(),
+  })) as Parameters<typeof SlugPageClient>[0]['initialProviders'];
 
   // BreadcrumbList JSON-LD Schema
   const breadcrumbSchema = {

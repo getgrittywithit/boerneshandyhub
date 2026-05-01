@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { topLevelCategories } from '@/data/serviceCategories';
 import { getTierBoost } from '@/lib/search/tierBoost';
 import type { SearchSource } from '@/lib/search/types';
+import serviceProvidersData from '@/data/serviceProviders.json';
 
 const EMBEDDING_MODEL = 'text-embedding-3-small';
 const BATCH_SIZE = 50;
@@ -77,35 +78,38 @@ export async function POST(request: NextRequest) {
     const documents: SearchDocumentInsert[] = [];
     const stats = { businesses: 0, categories: 0, realtors: 0, pages: 0, errors: 0 };
 
-    // 1. Index businesses
-    console.log('Indexing businesses...');
-    const { data: businesses, error: businessError } = await supabaseAdmin
-      .from('businesses')
-      .select('id, name, description, category, subcategory, membership_tier, keywords');
+    // 1. Index businesses from JSON file (static data)
+    console.log('Indexing businesses from serviceProviders.json...');
+    const providers = (serviceProvidersData as { providers: Array<{
+      id: string;
+      name: string;
+      description?: string;
+      category: string;
+      parentCategory: string;
+      membershipTier?: string;
+      keywords?: string[];
+      subcategories?: string[];
+    }> }).providers;
 
-    if (businessError) {
-      console.error('Business fetch error:', businessError);
-      stats.errors++;
-    } else if (businesses) {
-      for (const business of businesses) {
-        const categorySlug = business.category?.toLowerCase().replace(/\s+/g, '-') || null;
-        documents.push({
-          source_type: 'business',
-          source_id: business.id,
-          title: business.name,
-          subtitle: business.category || null,
-          description: business.description || null,
-          url: `/services/${categorySlug || 'all'}/${business.subcategory || 'all'}/${business.id}`,
-          keywords: business.keywords || [],
-          tier: business.membership_tier,
-          boost: getTierBoost(business.membership_tier),
-          category_slug: categorySlug,
-          subcategory_slug: business.subcategory || null,
-          embedding: null,
-          is_active: true,
-        });
-        stats.businesses++;
-      }
+    for (const provider of providers) {
+      const categorySlug = provider.parentCategory?.toLowerCase() || null;
+      const subcategorySlug = provider.category?.toLowerCase() || null;
+      documents.push({
+        source_type: 'business',
+        source_id: provider.id,
+        title: provider.name,
+        subtitle: provider.category || null,
+        description: provider.description || null,
+        url: `/services/${categorySlug || 'home'}/${subcategorySlug || 'all'}/${provider.id}`,
+        keywords: provider.keywords || [],
+        tier: provider.membershipTier || 'basic',
+        boost: getTierBoost(provider.membershipTier),
+        category_slug: categorySlug,
+        subcategory_slug: subcategorySlug,
+        embedding: null,
+        is_active: true,
+      });
+      stats.businesses++;
     }
 
     // 2. Index categories from static data
