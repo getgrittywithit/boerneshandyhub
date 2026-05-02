@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useBusinessDashboard } from '../../layout';
 import { ArrowLeft, ArrowRight, Check, Palette, Wrench, Clock, Camera, Layout } from 'lucide-react';
 import type { WebsiteTemplate, ServiceItem, BusinessHours, ServiceArea, Testimonial } from '@/lib/websites/types';
-import { TEMPLATES, HOURS_PRESETS, COLOR_PRESETS } from '@/lib/websites/types';
+import { TEMPLATES, HOURS_PRESETS, COLOR_PRESETS, COMMON_SERVICES } from '@/lib/websites/types';
 
 interface WizardData {
   template: WebsiteTemplate;
@@ -292,7 +292,8 @@ function TemplateStep({
             onClick={() => {
               updateData({
                 template: template.key,
-                services: template.defaultServices.map(name => ({ name })),
+                primary_color: template.defaultColors.primary,
+                accent_color: template.defaultColors.accent,
               });
             }}
             className={`p-4 rounded-lg border-2 text-left transition-all ${
@@ -301,11 +302,21 @@ function TemplateStep({
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
-            <div className="text-2xl mb-2">{template.icon}</div>
+            <div
+              className="w-full h-16 rounded-lg mb-3 flex items-end justify-end p-2"
+              style={{ backgroundColor: template.defaultColors.primary }}
+            >
+              <div
+                className="px-2 py-1 rounded text-xs font-medium"
+                style={{ backgroundColor: template.defaultColors.accent, color: template.defaultColors.primary }}
+              >
+                Preview
+              </div>
+            </div>
             <h3 className="font-semibold text-gray-900">{template.name}</h3>
             <p className="text-sm text-gray-600 mt-1">{template.description}</p>
             <div className="mt-3 flex flex-wrap gap-1">
-              {template.accentFeatures.map((feature, i) => (
+              {template.features.map((feature, i) => (
                 <span
                   key={i}
                   className="px-2 py-0.5 bg-gray-100 rounded text-xs text-gray-600"
@@ -511,13 +522,13 @@ function ServicesStep({
         Select the services you offer. You can add custom services too.
       </p>
 
-      {/* Default Services Grid */}
+      {/* Common Services Grid */}
       <div className="mb-8">
         <label className="block text-sm font-medium text-gray-700 mb-3">
-          Common {template.name} Services
+          Quick Add Common Services
         </label>
         <div className="flex flex-wrap gap-2">
-          {template.defaultServices.map((service) => {
+          {COMMON_SERVICES.map((service) => {
             const isSelected = data.services.some(s => s.name === service);
             return (
               <button

@@ -12,11 +12,11 @@ export type WebsiteStatus =
   | 'archived';
 
 export type WebsiteTemplate =
-  | 'handyman'
-  | 'plumbing'
-  | 'electrical'
-  | 'painting'
-  | 'landscaping';
+  | 'classic'
+  | 'modern'
+  | 'friendly'
+  | 'bold'
+  | 'handyman'; // Legacy, maps to classic
 
 export type PhotoStatus = 'pending' | 'approved' | 'flagged' | 'rejected';
 
@@ -165,130 +165,57 @@ export interface WebsiteReport {
   resolution: string | null;
 }
 
-// Template configuration
+// Template configuration - Design-based, not trade-based
 export interface TemplateConfig {
   key: WebsiteTemplate;
   name: string;
   description: string;
-  icon: string;
-  defaultServices: string[];
-  showLicense: boolean;
-  showEmergency: boolean;
-  accentFeatures: string[]; // Template-specific features to highlight
+  preview: string; // Preview description
+  defaultColors: { primary: string; accent: string };
+  features: string[];
 }
 
 export const TEMPLATES: Record<WebsiteTemplate, TemplateConfig> = {
+  classic: {
+    key: 'classic',
+    name: 'Classic',
+    description: 'Clean, professional, and trustworthy',
+    preview: 'Traditional layout with navy/gold colors. Great for established businesses.',
+    defaultColors: { primary: '#1e3a5f', accent: '#d4a853' },
+    features: ['Professional header', 'Clean sections', 'Traditional feel'],
+  },
+  modern: {
+    key: 'modern',
+    name: 'Modern',
+    description: 'Bold, minimal, and striking',
+    preview: 'Dark theme with full-viewport hero. Perfect for standing out.',
+    defaultColors: { primary: '#0f172a', accent: '#22d3ee' },
+    features: ['Dark aesthetic', 'Bold typography', 'Full-screen hero'],
+  },
+  friendly: {
+    key: 'friendly',
+    name: 'Friendly',
+    description: 'Warm, approachable, and inviting',
+    preview: 'Rounded corners, warm colors. Great for family businesses.',
+    defaultColors: { primary: '#7c2d12', accent: '#fbbf24' },
+    features: ['Warm tones', 'Rounded elements', 'Approachable vibe'],
+  },
+  bold: {
+    key: 'bold',
+    name: 'Bold',
+    description: 'High contrast and attention-grabbing',
+    preview: 'Strong CTAs, high contrast. Built for conversions.',
+    defaultColors: { primary: '#000000', accent: '#ef4444' },
+    features: ['High contrast', 'Strong CTAs', 'Maximum impact'],
+  },
+  // Legacy - maps to classic
   handyman: {
     key: 'handyman',
-    name: 'Handyman & Multi-Trade',
-    description: 'Perfect for general contractors and multi-service providers',
-    icon: '🔧',
-    defaultServices: [
-      'General Repairs',
-      'Drywall',
-      'Painting',
-      'Fence Repair',
-      'Deck Repair',
-      'Door Installation',
-      'Window Repair',
-      'Gutter Cleaning',
-      'Pressure Washing',
-      'Furniture Assembly',
-    ],
-    showLicense: false,
-    showEmergency: false,
-    accentFeatures: ['No job too small', 'Comprehensive services checklist'],
-  },
-  plumbing: {
-    key: 'plumbing',
-    name: 'Plumbing & HVAC',
-    description: 'For plumbers, HVAC techs, and emergency service providers',
-    icon: '🔧',
-    defaultServices: [
-      'Drain Cleaning',
-      'Water Heater Repair',
-      'Water Heater Installation',
-      'Leak Detection',
-      'Pipe Repair',
-      'Sewer Line Service',
-      'Garbage Disposal',
-      'Faucet Repair',
-      'Toilet Repair',
-      'Water Softener',
-      'Gas Line Repair',
-      'HVAC Service',
-      'AC Repair',
-      'Heating Repair',
-    ],
-    showLicense: true,
-    showEmergency: true,
-    accentFeatures: ['24/7 emergency service', 'Licensed & insured'],
-  },
-  electrical: {
-    key: 'electrical',
-    name: 'Electrical',
-    description: 'For licensed electricians and electrical contractors',
-    icon: '⚡',
-    defaultServices: [
-      'Panel Upgrades',
-      'Outlet Installation',
-      'Lighting Installation',
-      'Ceiling Fan Installation',
-      'EV Charger Installation',
-      'Generator Installation',
-      'Circuit Breaker Repair',
-      'Wiring',
-      'Smoke Detector Installation',
-      'Surge Protection',
-      'Commercial Electrical',
-    ],
-    showLicense: true,
-    showEmergency: true,
-    accentFeatures: ['Code compliant', 'Licensed master electrician'],
-  },
-  painting: {
-    key: 'painting',
-    name: 'Painting & Contracting',
-    description: 'For painters, contractors, and renovation specialists',
-    icon: '🎨',
-    defaultServices: [
-      'Interior Painting',
-      'Exterior Painting',
-      'Cabinet Painting',
-      'Deck Staining',
-      'Fence Staining',
-      'Drywall Repair',
-      'Wallpaper Removal',
-      'Color Consultation',
-      'Commercial Painting',
-      'Pressure Washing',
-    ],
-    showLicense: false,
-    showEmergency: false,
-    accentFeatures: ['Before/after gallery', 'Color consultation'],
-  },
-  landscaping: {
-    key: 'landscaping',
-    name: 'Landscaping & Lawn Care',
-    description: 'For lawn care, landscaping, and outdoor service providers',
-    icon: '🌿',
-    defaultServices: [
-      'Lawn Mowing',
-      'Edging & Trimming',
-      'Leaf Removal',
-      'Mulching',
-      'Tree Trimming',
-      'Bush Trimming',
-      'Flower Bed Maintenance',
-      'Landscape Design',
-      'Sod Installation',
-      'Irrigation',
-      'Seasonal Cleanup',
-      'Commercial Maintenance',
-    ],
-    showLicense: false,
-    showEmergency: false,
-    accentFeatures: ['Recurring service plans', 'Seasonal pricing'],
+    name: 'Classic',
+    description: 'Clean, professional, and trustworthy',
+    preview: 'Traditional layout with navy/gold colors.',
+    defaultColors: { primary: '#1e3a5f', accent: '#d4a853' },
+    features: ['Professional header', 'Clean sections', 'Traditional feel'],
   },
 };
 
@@ -358,6 +285,30 @@ export const FIELDS_REQUIRING_REVIEW = [
   'services',
   'testimonials',
   'license_number',
+] as const;
+
+// Common services suggestions (not template-specific)
+export const COMMON_SERVICES = [
+  'General Repairs',
+  'Plumbing',
+  'Electrical',
+  'HVAC',
+  'Painting',
+  'Drywall',
+  'Flooring',
+  'Roofing',
+  'Landscaping',
+  'Lawn Care',
+  'Fence Repair',
+  'Deck Repair',
+  'Pressure Washing',
+  'Gutter Cleaning',
+  'Window Cleaning',
+  'Appliance Repair',
+  'Carpentry',
+  'Tile Work',
+  'Cabinet Installation',
+  'Door Installation',
 ] as const;
 
 // Fields that auto-publish without review

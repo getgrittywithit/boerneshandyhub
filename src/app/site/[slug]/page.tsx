@@ -1,7 +1,11 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { createClient } from '@supabase/supabase-js';
-import HandymanTemplate from '@/templates/handyman';
+import ClassicTemplate from '@/templates/classic';
+// Future templates:
+// import ModernTemplate from '@/templates/modern';
+// import FriendlyTemplate from '@/templates/friendly';
+// import BoldTemplate from '@/templates/bold';
 import type { Website, WebsitePhoto } from '@/lib/websites/types';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -110,16 +114,20 @@ export default async function SitePage({ params }: PageProps) {
   }
 
   // Render the appropriate template
-  // For v1, all templates use the Handyman template
-  // We can add template switching later
+  // For v1, all templates use the Classic template
+  // Future templates: modern, friendly, bold
   switch (website.template) {
-    case 'handyman':
-    case 'plumbing':
-    case 'electrical':
-    case 'painting':
-    case 'landscaping':
+    case 'classic':
+    case 'handyman': // Legacy
+    // Future:
+    // case 'modern':
+    //   return <ModernTemplate website={website} />;
+    // case 'friendly':
+    //   return <FriendlyTemplate website={website} />;
+    // case 'bold':
+    //   return <BoldTemplate website={website} />;
     default:
-      return <HandymanTemplate website={website} />;
+      return <ClassicTemplate website={website} />;
   }
 }
 

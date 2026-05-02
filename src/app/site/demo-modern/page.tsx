@@ -1,16 +1,16 @@
 'use client';
 
-import ClassicTemplate from '@/templates/classic';
+import ModernTemplate from '@/templates/modern';
 import type { Website } from '@/lib/websites/types';
 
-// Mock data for demo - Hill Country Plumbing
+// Mock data for demo - same business, modern template
 const mockWebsite: Website = {
-  id: 'demo-123',
+  id: 'demo-modern',
   business_id: 'biz-123',
-  slug: 'demo',
-  template: 'classic',
-  primary_color: '#1e3a5f',
-  accent_color: '#d4a853',
+  slug: 'demo-modern',
+  template: 'modern',
+  primary_color: '#0f172a', // Slate 900
+  accent_color: '#22d3ee', // Cyan 400
   tagline: 'Your Trusted Boerne Plumber Since 2008',
   about_text: `Hill Country Plumbing has been serving Boerne and the surrounding Hill Country communities for over 15 years. We're a family-owned business that takes pride in honest, reliable service at fair prices.
 
@@ -62,27 +62,19 @@ We treat your home like our own - that means shoe covers, drop cloths, and leavi
       rating: 5,
     },
   ],
-  // Images (null for demo - no actual uploads)
   hero_photo_id: null,
   logo_photo_id: null,
   gallery_photo_ids: [],
-
-  // Review workflow
   submitted_at: null,
   approved_at: new Date().toISOString(),
   approved_by: 'admin',
   rejection_reason: null,
-
-  // Lifecycle
   published_at: new Date().toISOString(),
   expires_at: null,
   archived_at: null,
-
   status: 'live',
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
-
-  // Mock business data
   business: {
     id: 'biz-123',
     name: 'Hill Country Plumbing',
@@ -95,6 +87,6 @@ We treat your home like our own - that means shoe covers, drop cloths, and leavi
   },
 };
 
-export default function DemoSitePage() {
-  return <ClassicTemplate website={mockWebsite} preview={true} />;
+export default function DemoModernPage() {
+  return <ModernTemplate website={mockWebsite} preview={true} />;
 }

@@ -23,7 +23,7 @@ import type {
   ServiceArea,
   Testimonial
 } from '@/lib/websites/types';
-import { TEMPLATES, HOURS_PRESETS, COLOR_PRESETS, FIELDS_REQUIRING_REVIEW, FIELDS_AUTO_PUBLISH } from '@/lib/websites/types';
+import { TEMPLATES, HOURS_PRESETS, COLOR_PRESETS, FIELDS_REQUIRING_REVIEW, FIELDS_AUTO_PUBLISH, COMMON_SERVICES } from '@/lib/websites/types';
 
 type EditSection = 'brand' | 'services' | 'hours' | 'photos';
 
@@ -396,7 +396,6 @@ function ServicesSection({
   updateFormData,
 }: {
   formData: {
-    template: WebsiteTemplate;
     services: ServiceItem[];
     license_number: string;
     insurance_carrier: string;
@@ -404,7 +403,6 @@ function ServicesSection({
   };
   updateFormData: (field: string, value: unknown) => void;
 }) {
-  const template = TEMPLATES[formData.template];
   const [newService, setNewService] = useState('');
 
   const toggleService = (serviceName: string) => {
@@ -436,7 +434,7 @@ function ServicesSection({
           </span>
         </label>
         <div className="flex flex-wrap gap-2 mb-3">
-          {template.defaultServices.map((service) => {
+          {COMMON_SERVICES.map((service) => {
             const isSelected = formData.services.some(s => s.name === service);
             return (
               <button
