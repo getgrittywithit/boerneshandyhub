@@ -4,12 +4,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { pricingTiers, type TierKey } from '@/data/pricingTiers';
 
-// Map legacy database tier names to new tier keys
+// Map legacy database tier names to v1 tier keys
 const tierMapping: Record<string, TierKey> = {
   basic: 'claimed',
+  claimed: 'claimed',
   verified: 'verified',
-  premium: 'verifiedPlus',
-  elite: 'partner',
+  premium: 'verified',           // No V+ in v1, maps to Verified
+  verifiedPlus: 'verified',      // No V+ in v1, maps to Verified
+  elite: 'foundingPartner',
+  partner: 'foundingPartner',
+  foundingPartner: 'foundingPartner',
+  founding_partner: 'foundingPartner',
 };
 
 interface ServiceProvider {
@@ -209,7 +214,7 @@ export default function ProviderCard({
         )}
 
         {/* Bernie Recommendation - Premium feature */}
-        {provider.bernieRecommendation && (tierKey === 'verifiedPlus' || tierKey === 'partner') && (
+        {provider.bernieRecommendation && tierKey === 'foundingPartner' && (
           <div className="bg-boerne-navy/5 border border-boerne-navy/10 p-3 rounded-lg mb-4">
             <p className="text-xs text-boerne-navy font-medium mb-1">⭐ Staff Pick</p>
             <p className="text-sm text-gray-600 italic line-clamp-2">
@@ -286,7 +291,7 @@ function getTierStyles(tierKey: TierKey, isUnclaimed: boolean) {
   }
 
   switch (tierKey) {
-    case 'partner':
+    case 'foundingPartner':
       return {
         container: 'bg-gradient-to-br from-amber-50 via-white to-amber-50 rounded-xl border-2 border-amber-400 overflow-hidden flex flex-col shadow-lg shadow-amber-100',
         animation: 'hover:shadow-xl hover:shadow-amber-200 hover:border-amber-500 transition-all duration-300 hover:-translate-y-1',
@@ -300,24 +305,7 @@ function getTierStyles(tierKey: TierKey, isUnclaimed: boolean) {
         viewButton: 'bg-amber-500 text-white hover:bg-amber-600',
         ribbon: true,
         ribbonStyle: 'absolute top-3 -right-8 bg-amber-500 text-white text-xs font-bold px-8 py-1 rotate-45 shadow-md z-10',
-        ribbonText: 'PARTNER',
-      };
-
-    case 'verifiedPlus':
-      return {
-        container: 'bg-white rounded-xl border-2 border-boerne-gold overflow-hidden flex flex-col shadow-md',
-        animation: 'hover:shadow-lg hover:border-boerne-gold-alt transition-all duration-300 hover:-translate-y-0.5',
-        gradient: 'bg-gradient-to-r from-boerne-gold via-yellow-400 to-boerne-gold',
-        nameColor: 'text-gray-900',
-        badge: 'bg-boerne-gold/20 text-boerne-gold-dark border border-boerne-gold/30',
-        credentialsBox: 'bg-boerne-gold/5 border border-boerne-gold/20',
-        offerBox: 'bg-yellow-50 border border-yellow-200',
-        photoContainer: 'border-b border-boerne-gold/30',
-        callButton: 'bg-boerne-navy text-white hover:bg-boerne-navy/90',
-        viewButton: 'bg-boerne-gold text-boerne-navy hover:bg-boerne-gold-alt',
-        ribbon: true,
-        ribbonStyle: 'absolute top-2 right-2 bg-boerne-gold text-boerne-navy text-xs font-bold px-2 py-0.5 rounded shadow-sm z-10',
-        ribbonText: '★ FEATURED',
+        ribbonText: 'FOUNDING PARTNER',
       };
 
     case 'verified':
@@ -359,10 +347,8 @@ function getTierStyles(tierKey: TierKey, isUnclaimed: boolean) {
 
 function getPhotoLimit(tierKey: TierKey): number {
   switch (tierKey) {
-    case 'partner':
+    case 'foundingPartner':
       return 4; // Show 4 on card (unlimited in profile)
-    case 'verifiedPlus':
-      return 3; // Show 3 on card (up to 15 in profile)
     case 'verified':
       return 2; // Show 2 on card (up to 5 in profile)
     case 'claimed':
@@ -374,9 +360,7 @@ function getPhotoLimit(tierKey: TierKey): number {
 
 function getOfferLimit(tierKey: TierKey): number {
   switch (tierKey) {
-    case 'partner':
-      return 3;
-    case 'verifiedPlus':
+    case 'foundingPartner':
       return 3;
     case 'verified':
       return 1;
@@ -387,10 +371,8 @@ function getOfferLimit(tierKey: TierKey): number {
 
 function getBadgeText(tierKey: TierKey, subcategoryName?: string): string | null {
   switch (tierKey) {
-    case 'partner':
-      return `🏆 ${subcategoryName || ''} Partner`.trim();
-    case 'verifiedPlus':
-      return '✓+ Verified Plus';
+    case 'foundingPartner':
+      return `🏆 ${subcategoryName || ''} Founding Partner`.trim();
     case 'verified':
       return '✓ Verified';
     case 'claimed':

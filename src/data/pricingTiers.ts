@@ -1,21 +1,22 @@
 // =============================================================================
-// PRICING TIERS - Single Source of Truth
+// PRICING TIERS — v1 Launch (Website-as-Anchor Strategy)
 // =============================================================================
-// Canonical tier definitions for BoernesHandyHub.com
-// Both PricingSection.tsx and serviceCategories.ts import from here.
-// DO NOT define tier names, prices, or features elsewhere.
+// Per docs/PRICING_SPEC_V1.md — supersedes original three-tier spec for launch
+// Two public tiers: Claimed (Free) and Verified ($49/mo)
+// Founding Partner is concierge-only, not shown on pricing page
 
-export type TierKey = 'unclaimed' | 'claimed' | 'verified' | 'verifiedPlus' | 'partner';
+export type TierKey = 'unclaimed' | 'claimed' | 'verified' | 'foundingPartner';
 
 export interface PricingTier {
   key: TierKey;
   name: string;
-  displayName: string; // For UI display (e.g., "Verified Plus")
+  displayName: string;
   monthlyPrice: number;
   annualPrice: number; // ~17% discount (2 months free)
-  jobToBeDone: string; // The question this tier answers
+  jobToBeDone: string;
   description: string;
   features: string[];
+  highlightFeature?: string; // Key feature to call out prominently
   categoryLimit: number;
   badge: string | null;
   badgeColor: string;
@@ -24,8 +25,9 @@ export interface PricingTier {
     border: string;
     text: string;
   };
-  sortPriority: number; // Higher = appears first in listings
-  isHighlighted: boolean; // "Most Popular" treatment on pricing page
+  sortPriority: number;
+  isHighlighted: boolean;
+  isPublic: boolean; // Show on public pricing page
   cta: string;
   ctaStyle: 'primary' | 'secondary' | 'muted';
 }
@@ -59,6 +61,7 @@ export const pricingTiers: Record<TierKey, PricingTier> = {
     },
     sortPriority: 0,
     isHighlighted: false,
+    isPublic: false, // Not shown on pricing page
     cta: 'Claim This Listing',
     ctaStyle: 'muted',
   },
@@ -70,15 +73,16 @@ export const pricingTiers: Record<TierKey, PricingTier> = {
     monthlyPrice: 0,
     annualPrice: 0,
     jobToBeDone: "Here's our info",
-    description: 'Claim your listing and add your details',
+    description: 'Claim your listing and take control of your profile',
     features: [
       'Listed in directory',
-      'Basic business profile',
+      'Business profile page',
       '1 photo',
       'Business description',
       'Hours of operation',
       'Website & social links',
-      'Edit access via dashboard',
+      'Dashboard edit access',
+      'Free forever',
     ],
     categoryLimit: 1,
     badge: null,
@@ -90,7 +94,8 @@ export const pricingTiers: Record<TierKey, PricingTier> = {
     },
     sortPriority: 1,
     isHighlighted: false,
-    cta: 'Get Started Free',
+    isPublic: true,
+    cta: 'Claim Your Listing',
     ctaStyle: 'secondary',
   },
 
@@ -98,19 +103,22 @@ export const pricingTiers: Record<TierKey, PricingTier> = {
     key: 'verified',
     name: 'Verified',
     displayName: 'Verified',
-    monthlyPrice: 29,
-    annualPrice: 290, // ~17% discount
-    jobToBeDone: 'Be Listed',
-    description: 'Stand out with verified credentials',
+    monthlyPrice: 49,
+    annualPrice: 490, // ~17% discount
+    jobToBeDone: 'I have a real online presence',
+    description: 'Professional website + verified listing + analytics',
+    highlightFeature: 'Professional Website Included',
     features: [
       'Everything in Free',
       'Boerne Verified badge',
+      'Professional website at your own URL',
+      'Mobile-optimized, conversion-focused design',
       'We verify license & insurance',
       'Up to 5 photos',
       'Listed in up to 2 categories',
-      'Tracked phone number with analytics',
-      'Profile views/clicks dashboard',
-      'Special offers section',
+      'Tracked phone number with call analytics',
+      'Profile views & clicks dashboard',
+      'Up to 3 active special offers',
       'Review request tools',
       'Priority placement above free listings',
     ],
@@ -119,72 +127,33 @@ export const pricingTiers: Record<TierKey, PricingTier> = {
     badgeColor: 'bg-green-100 text-green-700',
     cardStyle: {
       background: 'bg-white',
-      border: 'border-green-200',
+      border: 'border-green-500',
       text: 'text-gray-700',
     },
     sortPriority: 2,
-    isHighlighted: false,
-    cta: 'Get Verified',
-    ctaStyle: 'secondary',
-  },
-
-  verifiedPlus: {
-    key: 'verifiedPlus',
-    name: 'VerifiedPlus',
-    displayName: 'Verified Plus',
-    monthlyPrice: 79,
-    annualPrice: 790, // ~17% discount
-    jobToBeDone: 'Be More Visible',
-    description: 'Get more leads with priority placement',
-    features: [
-      'Everything in Verified',
-      'Verified Plus badge',
-      'Sponsored boost above Verified listings',
-      'Up to 15 photos',
-      'Listed in up to 4 categories',
-      'Auto-share offers to our social channels',
-      'Monthly newsletter inclusion (group)',
-      'Up to 3 active special offers',
-      'Monthly performance email',
-      'Priority email support',
-    ],
-    categoryLimit: 4,
-    badge: '✓+',
-    badgeColor: 'bg-boerne-gold/20 text-boerne-gold-dark',
-    cardStyle: {
-      background: 'bg-white',
-      border: 'border-boerne-gold',
-      text: 'text-gray-700',
-    },
-    sortPriority: 3,
     isHighlighted: true,
-    cta: 'Go Verified Plus',
+    isPublic: true,
+    cta: 'Get Verified',
     ctaStyle: 'primary',
   },
 
-  partner: {
-    key: 'partner',
-    name: 'Partner',
-    displayName: 'Partner',
-    monthlyPrice: 249,
-    annualPrice: 2490, // ~17% discount
-    jobToBeDone: 'Be Marketed',
-    description: 'Maximum visibility — one per category',
+  foundingPartner: {
+    key: 'foundingPartner',
+    name: 'FoundingPartner',
+    displayName: 'Founding Partner',
+    monthlyPrice: 149, // Base price, actual is negotiated
+    annualPrice: 1490,
+    jobToBeDone: 'Sell me more',
+    description: 'Concierge relationship — one per category',
     features: [
-      'Everything in Verified Plus',
-      'Boerne [Category] Partner badge',
-      'One per category — exclusive',
-      'Top of category placement, guaranteed',
-      'Unlimited photos + 1 video',
-      'Listed in up to 5 categories',
-      'Monthly solo social media post',
-      'Monthly solo newsletter feature',
-      'Quarterly blog feature',
-      'Homepage carousel rotation',
-      'Welcome packet inclusion',
+      'Everything in Verified',
+      'Top-of-category placement',
+      'Category exclusivity (1 per category)',
       'Custom branded landing page',
-      'Quarterly performance review call',
-      'Priority phone support',
+      'Premium website template',
+      'Quarterly strategy call',
+      'First access to new features',
+      'Direct priority support',
     ],
     categoryLimit: 5,
     badge: '🏆',
@@ -194,9 +163,10 @@ export const pricingTiers: Record<TierKey, PricingTier> = {
       border: 'border-amber-300',
       text: 'text-gray-700',
     },
-    sortPriority: 4,
+    sortPriority: 3,
     isHighlighted: false,
-    cta: 'Become a Partner',
+    isPublic: false, // Concierge only — not on pricing page
+    cta: 'Contact Us',
     ctaStyle: 'secondary',
   },
 };
@@ -206,7 +176,7 @@ export const pricingTiers: Record<TierKey, PricingTier> = {
 // =============================================================================
 
 /**
- * Get all tiers as an array, sorted by sortPriority (lowest first for pricing page display)
+ * Get all tiers as an array, sorted by sortPriority
  */
 export const getAllTiers = (): PricingTier[] => {
   return Object.values(pricingTiers).sort((a, b) => a.sortPriority - b.sortPriority);
@@ -214,10 +184,10 @@ export const getAllTiers = (): PricingTier[] => {
 
 /**
  * Get tiers that should be displayed on the public pricing page
- * (excludes Unclaimed since that's not a purchasable option)
+ * (v1: only Claimed and Verified)
  */
 export const getDisplayTiers = (): PricingTier[] => {
-  return getAllTiers().filter(tier => tier.key !== 'unclaimed');
+  return getAllTiers().filter(tier => tier.isPublic);
 };
 
 /**
@@ -229,7 +199,6 @@ export const getTier = (key: TierKey): PricingTier => {
 
 /**
  * Get tier by sort priority (for listing sort order)
- * Higher priority = appears first
  */
 export const getTierSortPriority = (key: TierKey): number => {
   return pricingTiers[key]?.sortPriority ?? 0;
@@ -251,7 +220,7 @@ export const isAtCategoryLimit = (tierKey: TierKey, currentCount: number): boole
 };
 
 /**
- * Check if a tier is over category limit (post-downgrade state)
+ * Check if a tier is over category limit
  */
 export const isOverCategoryLimit = (tierKey: TierKey, currentCount: number): boolean => {
   const limit = getCategoryLimit(tierKey);
@@ -263,7 +232,7 @@ export const isOverCategoryLimit = (tierKey: TierKey, currentCount: number): boo
  */
 export const getNextTierUp = (currentTierKey: TierKey): PricingTier | null => {
   const currentPriority = pricingTiers[currentTierKey].sortPriority;
-  const allTiers = getAllTiers();
+  const allTiers = getAllTiers().filter(t => t.isPublic);
   return allTiers.find(tier => tier.sortPriority === currentPriority + 1) ?? null;
 };
 
@@ -292,16 +261,17 @@ export const formatPrice = (amount: number, period: 'month' | 'year' = 'month'):
 };
 
 // =============================================================================
-// PARTNER EXCLUSIVITY
+// FOUNDING PARTNER (concierge tier)
 // =============================================================================
 
 /**
- * Partner tier is limited to one per category.
- * This constant is used for enforcement logic.
+ * Founding Partner is limited to one per category.
  */
-export const PARTNER_PER_CATEGORY_LIMIT = 1;
+export const FOUNDING_PARTNER_PER_CATEGORY_LIMIT = 1;
 
 /**
- * Grace period (in days) after downgrade before categories are auto-removed
+ * Check if tier includes website feature
  */
-export const DOWNGRADE_GRACE_PERIOD_DAYS = 14;
+export const tierIncludesWebsite = (key: TierKey): boolean => {
+  return key === 'verified' || key === 'foundingPartner';
+};

@@ -204,8 +204,8 @@ function UpgradePromptModal({ tierKey, currentCount, onClose }: UpgradePromptMod
               </div>
               <p className="text-sm text-boerne-navy/80 mt-1">
                 {nextTier.displayName} lets you list in up to {nextTier.categoryLimit} categories
-                {nextTier.key === 'verifiedPlus' && ' and gets you sponsored boost in each one'}
-                {nextTier.key === 'partner' && ' with exclusive Partner status'}.
+                {nextTier.key === 'verified' && ' plus a professional website'}
+                {nextTier.key === 'foundingPartner' && ' with exclusive Founding Partner status'}.
               </p>
             </Link>
           )}

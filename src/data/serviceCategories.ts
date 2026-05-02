@@ -407,12 +407,12 @@ export type { TierKey };
 
 // Legacy compatibility: map old tier names to new ones
 // Old: basic, verified, premium, elite
-// New: unclaimed, claimed, verified, verifiedPlus, partner
+// New (v1): unclaimed, claimed, verified, foundingPartner
 const legacyTierMapping: Record<string, TierKey> = {
   basic: 'claimed',
   verified: 'verified',
-  premium: 'verifiedPlus',
-  elite: 'partner',
+  premium: 'verified',        // No V+ in v1, maps to Verified
+  elite: 'foundingPartner',
 };
 
 // Legacy membershipTiers object for backward compatibility
@@ -436,23 +436,25 @@ export const membershipTiers = {
     categoryLimit: pricingTiers.verified.categoryLimit,
     priority: pricingTiers.verified.sortPriority,
   },
+  // premium maps to verified in v1 (no Verified+ tier)
   premium: {
-    name: pricingTiers.verifiedPlus.displayName,
-    price: `$${pricingTiers.verifiedPlus.monthlyPrice}/mo`,
-    badge: pricingTiers.verifiedPlus.badge,
-    color: pricingTiers.verifiedPlus.badgeColor,
-    features: pricingTiers.verifiedPlus.features.slice(0, 5),
-    categoryLimit: pricingTiers.verifiedPlus.categoryLimit,
-    priority: pricingTiers.verifiedPlus.sortPriority,
+    name: pricingTiers.verified.displayName,
+    price: `$${pricingTiers.verified.monthlyPrice}/mo`,
+    badge: pricingTiers.verified.badge,
+    color: pricingTiers.verified.badgeColor,
+    features: pricingTiers.verified.features.slice(0, 5),
+    categoryLimit: pricingTiers.verified.categoryLimit,
+    priority: pricingTiers.verified.sortPriority,
   },
+  // elite maps to foundingPartner in v1
   elite: {
-    name: pricingTiers.partner.displayName,
-    price: `$${pricingTiers.partner.monthlyPrice}/mo`,
-    badge: pricingTiers.partner.badge,
-    color: pricingTiers.partner.badgeColor,
-    features: pricingTiers.partner.features.slice(0, 5),
-    categoryLimit: pricingTiers.partner.categoryLimit,
-    priority: pricingTiers.partner.sortPriority,
+    name: pricingTiers.foundingPartner.displayName,
+    price: 'Contact Us',
+    badge: pricingTiers.foundingPartner.badge,
+    color: pricingTiers.foundingPartner.badgeColor,
+    features: pricingTiers.foundingPartner.features.slice(0, 5),
+    categoryLimit: pricingTiers.foundingPartner.categoryLimit,
+    priority: pricingTiers.foundingPartner.sortPriority,
   },
 };
 
