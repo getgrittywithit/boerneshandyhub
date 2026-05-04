@@ -5,13 +5,25 @@ import { createClient } from '@supabase/supabase-js';
 import { stripe, getPriceToTierMap, TIER_TO_DB_MAP } from '@/lib/stripe';
 
 // Initialize Supabase admin client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = supabaseUrl && supabaseServiceKey
+  ? createClient(supabaseUrl, supabaseServiceKey)
+  : null;
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(request: NextRequest) {
+  if (!stripe || !webhookSecret) {
+    console.error('Stripe not configured');
+    return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 });
+  }
+
+  if (!supabase) {
+    console.error('Database not configured');
+    return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+  }
+
   const body = await request.text();
   const headersList = await headers();
   const signature = headersList.get('stripe-signature');
@@ -80,14 +92,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   // Get the subscription or payment intent
   if (session.mode === 'subscription' && session.subscription) {
-    const subscription = await stripe.subscriptions.retrieve(
+    const subscription = await stripe!.subscriptions.retrieve(
       session.subscription as string
     );
     await updateBusinessSubscription(businessId, subscription, session.customer as string);
   } else if (session.mode === 'payment') {
     // One-time payment (e.g., Founder's Bundle)
     // Get line items to determine tier
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    const lineItems = await stripe!.checkout.sessions.listLineItems(session.id);
     const priceId = lineItems.data[0]?.price?.id;
 
     if (priceId) {
@@ -97,7 +109,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       if (tierInfo) {
         const dbTier = TIER_TO_DB_MAP[tierInfo.tier];
 
-        await supabase
+        await supabase!
           .from('businesses')
           .update({
             membership_tier: dbTier,
@@ -110,7 +122,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           const expiresAt = new Date();
           expiresAt.setMonth(expiresAt.getMonth() + 3);
 
-          await supabase
+          await supabase!
             .from('subscriptions')
             .upsert({
               business_id: businessId,
@@ -150,7 +162,7 @@ async function updateBusinessSubscription(
   const dbTier = TIER_TO_DB_MAP[tierInfo.tier];
 
   // Update business tier and subscription ID
-  await supabase
+  await supabase!
     .from('businesses')
     .update({
       membership_tier: dbTier,
@@ -163,7 +175,7 @@ async function updateBusinessSubscription(
   // Get the first subscription item to access the period
   const subscriptionItem = subscription.items.data[0];
 
-  await supabase
+  await supabase!
     .from('subscriptions')
     .upsert({
       business_id: businessId,
@@ -181,7 +193,7 @@ async function updateBusinessSubscription(
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   // Get business from customer
-  const customer = await stripe.customers.retrieve(subscription.customer as string);
+  const customer = await stripe!.customers.retrieve(subscription.customer as string);
 
   if (customer.deleted) {
     console.error('Customer was deleted');
@@ -192,7 +204,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
   if (!businessId) {
     // Try to find business by stripe_subscription_id
-    const { data: business } = await supabase
+    const { data: business } = await supabase!
       .from('businesses')
       .select('id')
       .eq('stripe_subscription_id', subscription.id)
@@ -211,7 +223,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
 async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
   // Find business by subscription ID
-  const { data: business } = await supabase
+  const { data: business } = await supabase!
     .from('businesses')
     .select('id')
     .eq('stripe_subscription_id', subscription.id)
@@ -223,7 +235,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
   }
 
   // Downgrade to basic tier
-  await supabase
+  await supabase!
     .from('businesses')
     .update({
       membership_tier: 'basic',
@@ -232,7 +244,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
     .eq('id', business.id);
 
   // Update subscription record
-  await supabase
+  await supabase!
     .from('subscriptions')
     .update({
       status: 'canceled',
@@ -249,9 +261,9 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
 
   // Update subscription period if available
   if (subscriptionId) {
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const subscription = await stripe!.subscriptions.retrieve(subscriptionId);
 
-    const { data: business } = await supabase
+    const { data: business } = await supabase!
       .from('businesses')
       .select('id')
       .eq('stripe_subscription_id', subscription.id)
@@ -261,7 +273,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
       // Get the first subscription item to access the period
       const subscriptionItem = subscription.items.data[0];
 
-      await supabase
+      await supabase!
         .from('subscriptions')
         .update({
           status: 'active',
@@ -285,7 +297,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 
   if (subscriptionId) {
     // Update subscription status
-    await supabase
+    await supabase!
       .from('subscriptions')
       .update({
         status: 'past_due',

@@ -1,10 +1,14 @@
 import Stripe from 'stripe';
 
-// Initialize Stripe with the secret key
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-04-22.dahlia',
-  typescript: true,
-});
+// Initialize Stripe with the secret key (only if available)
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+export const stripe = stripeSecretKey
+  ? new Stripe(stripeSecretKey, {
+      apiVersion: '2026-04-22.dahlia',
+      typescript: true,
+    })
+  : null;
 
 // Stripe Price IDs for each tier (set these in your Stripe dashboard)
 // These should be configured in environment variables in production
@@ -58,6 +62,10 @@ export async function createCheckoutSession(params: {
   mode?: 'subscription' | 'payment';
   trialDays?: number;
 }): Promise<Stripe.Checkout.Session> {
+  if (!stripe) {
+    throw new Error('Stripe is not configured');
+  }
+
   const sessionParams: Stripe.Checkout.SessionCreateParams = {
     mode: params.mode || 'subscription',
     success_url: params.successUrl,
@@ -100,6 +108,10 @@ export async function createPortalSession(params: {
   customerId: string;
   returnUrl: string;
 }): Promise<Stripe.BillingPortal.Session> {
+  if (!stripe) {
+    throw new Error('Stripe is not configured');
+  }
+
   return stripe.billingPortal.sessions.create({
     customer: params.customerId,
     return_url: params.returnUrl,
@@ -113,6 +125,10 @@ export async function getOrCreateCustomer(params: {
   businessName: string;
   existingCustomerId?: string;
 }): Promise<Stripe.Customer> {
+  if (!stripe) {
+    throw new Error('Stripe is not configured');
+  }
+
   // If we have an existing customer ID, verify it exists
   if (params.existingCustomerId) {
     try {
@@ -147,10 +163,18 @@ export async function getOrCreateCustomer(params: {
 
 // Helper to cancel a subscription
 export async function cancelSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
+  if (!stripe) {
+    throw new Error('Stripe is not configured');
+  }
+
   return stripe.subscriptions.cancel(subscriptionId);
 }
 
 // Helper to get subscription details
 export async function getSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
+  if (!stripe) {
+    throw new Error('Stripe is not configured');
+  }
+
   return stripe.subscriptions.retrieve(subscriptionId);
 }
