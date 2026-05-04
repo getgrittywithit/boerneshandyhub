@@ -1,10 +1,13 @@
 // Tier boost multipliers for search ranking
 // Higher values = ranked higher in results
+// Per docs/PRICING_SPEC.md
 
 export const TIER_BOOST: Record<string, number> = {
-  // Business tiers (v1)
-  FoundingPartner: 1.50,
-  foundingPartner: 1.50,
+  // Current tiers (v1)
+  FoundingPartner: 1.60,
+  foundingPartner: 1.60,
+  VerifiedPlus: 1.40,
+  verifiedPlus: 1.40,
   Verified: 1.00,
   verified: 1.00,
   Claimed: 0.85,
@@ -12,13 +15,11 @@ export const TIER_BOOST: Record<string, number> = {
   Unclaimed: 0.65,
   unclaimed: 0.65,
 
-  // Legacy tier names (map to v1 values)
-  Partner: 1.50,        // -> FoundingPartner
-  partner: 1.50,
-  VerifiedPlus: 1.00,   // -> Verified (no V+ in v1)
-  verifiedPlus: 1.00,
-  elite: 1.50,
-  premium: 1.00,
+  // Legacy tier names (for backwards compatibility)
+  Partner: 1.60,
+  partner: 1.60,
+  elite: 1.60,
+  premium: 1.40,
   basic: 0.65,
 
   // Default
@@ -51,22 +52,23 @@ export function getTierBoost(tier: string | null | undefined): number {
  * Get tier display info
  */
 export const TIER_DISPLAY: Record<string, { label: string; color: string; badge?: boolean }> = {
-  // v1 tiers
+  // Current tiers (v1)
   FoundingPartner: { label: 'Founding Partner', color: 'bg-boerne-gold text-boerne-navy', badge: true },
   foundingPartner: { label: 'Founding Partner', color: 'bg-boerne-gold text-boerne-navy', badge: true },
-  Verified: { label: 'Verified', color: 'bg-green-600 text-white', badge: true },
-  verified: { label: 'Verified', color: 'bg-green-600 text-white', badge: true },
-  Claimed: { label: 'Claimed', color: 'bg-gray-500 text-white', badge: false },
-  claimed: { label: 'Claimed', color: 'bg-gray-500 text-white', badge: false },
+  VerifiedPlus: { label: 'Verified+', color: 'bg-green-600 text-white', badge: true },
+  verifiedPlus: { label: 'Verified+', color: 'bg-green-600 text-white', badge: true },
+  Verified: { label: 'Verified', color: 'bg-green-100 text-green-700', badge: true },
+  verified: { label: 'Verified', color: 'bg-green-100 text-green-700', badge: true },
+  Claimed: { label: '', color: '', badge: false },
+  claimed: { label: '', color: '', badge: false },
   Unclaimed: { label: '', color: '', badge: false },
   unclaimed: { label: '', color: '', badge: false },
-  // Legacy mappings (v2 tiers -> v1)
+
+  // Legacy mappings
   Partner: { label: 'Founding Partner', color: 'bg-boerne-gold text-boerne-navy', badge: true },
   partner: { label: 'Founding Partner', color: 'bg-boerne-gold text-boerne-navy', badge: true },
-  VerifiedPlus: { label: 'Verified', color: 'bg-green-600 text-white', badge: true },
-  verifiedPlus: { label: 'Verified', color: 'bg-green-600 text-white', badge: true },
   elite: { label: 'Founding Partner', color: 'bg-boerne-gold text-boerne-navy', badge: true },
-  premium: { label: 'Verified', color: 'bg-green-600 text-white', badge: true },
+  premium: { label: 'Verified+', color: 'bg-green-600 text-white', badge: true },
   basic: { label: '', color: '', badge: false },
 };
 
