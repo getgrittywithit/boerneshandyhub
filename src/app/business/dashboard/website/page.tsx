@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useBusinessDashboard } from '../layout';
 import {
   Globe,
@@ -12,7 +13,9 @@ import {
   Edit3,
   QrCode,
   Copy,
-  Check
+  Check,
+  Download,
+  Loader2
 } from 'lucide-react';
 import type { Website } from '@/lib/websites/types';
 
@@ -76,6 +79,9 @@ export default function WebsiteDashboard() {
   const [website, setWebsite] = useState<WebsiteWithStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (business) {
@@ -91,11 +97,59 @@ export default function WebsiteDashboard() {
       if (res.ok) {
         const data = await res.json();
         setWebsite(data);
+
+        // Fetch QR code if website is live
+        if (data && data.status === 'live') {
+          fetchQRCode(data.id);
+        }
       }
     } catch (error) {
       console.error('Error fetching website:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchQRCode = async (websiteId: string) => {
+    if (!business) return;
+
+    setQrLoading(true);
+    try {
+      const res = await fetch(`/api/websites/qrcode?website_id=${websiteId}&business_id=${business.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.qrCode) {
+          setQrCodeUrl(data.qrCode.dataUrl);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching QR code:', error);
+    } finally {
+      setQrLoading(false);
+    }
+  };
+
+  const downloadQRCode = async () => {
+    if (!website || !business) return;
+
+    setDownloading(true);
+    try {
+      const res = await fetch(`/api/websites/qrcode?website_id=${website.id}&business_id=${business.id}&format=download`);
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${website.slug}-qrcode.png`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -254,15 +308,41 @@ export default function WebsiteDashboard() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h3 className="font-semibold text-gray-900 mb-3">QR Code</h3>
             <div className="flex items-center gap-4">
-              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                <QrCode size={48} className="text-gray-400" />
+              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                {qrLoading ? (
+                  <Loader2 size={24} className="text-gray-400 animate-spin" />
+                ) : qrCodeUrl ? (
+                  <Image
+                    src={qrCodeUrl}
+                    alt="Website QR Code"
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <QrCode size={48} className="text-gray-400" />
+                )}
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-2">
                   Print this QR code on business cards, flyers, or your vehicle
                 </p>
-                <button className="text-sm text-boerne-navy hover:underline">
-                  Download QR Code
+                <button
+                  onClick={downloadQRCode}
+                  disabled={downloading || !qrCodeUrl}
+                  className="flex items-center gap-1 text-sm text-boerne-navy hover:underline disabled:opacity-50 disabled:no-underline"
+                >
+                  {downloading ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      Downloading...
+                    </>
+                  ) : (
+                    <>
+                      <Download size={14} />
+                      Download QR Code
+                    </>
+                  )}
                 </button>
               </div>
             </div>

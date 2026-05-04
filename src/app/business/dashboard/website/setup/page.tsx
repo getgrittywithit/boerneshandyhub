@@ -4,8 +4,20 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useBusinessDashboard } from '../../layout';
 import { ArrowLeft, ArrowRight, Check, Palette, Wrench, Clock, Camera, Layout } from 'lucide-react';
-import type { WebsiteTemplate, ServiceItem, BusinessHours, ServiceArea, Testimonial } from '@/lib/websites/types';
+import type { WebsiteTemplate, ServiceItem, BusinessHours, ServiceArea, Testimonial, WebsitePhoto } from '@/lib/websites/types';
 import { TEMPLATES, HOURS_PRESETS, COLOR_PRESETS, COMMON_SERVICES } from '@/lib/websites/types';
+import { getPhotoLimit, type TierKey } from '@/data/pricingTiers';
+import PhotoUpload from '@/components/website/PhotoUpload';
+
+interface UploadedPhoto {
+  id: string;
+  storage_path: string;
+  derivatives: {
+    thumb: string;
+    medium: string;
+    large: string;
+  };
+}
 
 interface WizardData {
   template: WebsiteTemplate;
@@ -21,6 +33,9 @@ interface WizardData {
   emergency_available: boolean;
   service_area: ServiceArea;
   testimonials: Testimonial[];
+  logo_photo: UploadedPhoto | null;
+  hero_photo: UploadedPhoto | null;
+  gallery_photos: UploadedPhoto[];
 }
 
 const initialData: WizardData = {
@@ -37,6 +52,9 @@ const initialData: WizardData = {
   emergency_available: false,
   service_area: { cities: ['Boerne'] },
   testimonials: [],
+  logo_photo: null,
+  hero_photo: null,
+  gallery_photos: [],
 };
 
 const steps = [
@@ -214,7 +232,12 @@ export default function WebsiteSetupWizard() {
             <TemplateStep data={data} updateData={updateData} />
           )}
           {currentStep === 2 && (
-            <BrandStep data={data} updateData={updateData} />
+            <BrandStep
+              data={data}
+              updateData={updateData}
+              businessName={business?.name}
+              businessCategory={business?.category}
+            />
           )}
           {currentStep === 3 && (
             <ServicesStep data={data} updateData={updateData} />
@@ -223,7 +246,13 @@ export default function WebsiteSetupWizard() {
             <HoursStep data={data} updateData={updateData} />
           )}
           {currentStep === 5 && (
-            <PhotosStep data={data} updateData={updateData} businessId={business?.id} />
+            <PhotosStep
+              data={data}
+              updateData={updateData}
+              businessId={business?.id}
+              websiteId={existingWebsite || undefined}
+              tierKey={(business?.membership_tier === 'premium' ? 'verifiedPlus' : business?.membership_tier === 'verified' ? 'verified' : 'claimed') as TierKey}
+            />
           )}
         </div>
 
@@ -336,10 +365,59 @@ function TemplateStep({
 function BrandStep({
   data,
   updateData,
+  businessName,
+  businessCategory,
 }: {
   data: WizardData;
   updateData: (updates: Partial<WizardData>) => void;
+  businessName?: string;
+  businessCategory?: string;
 }) {
+  const [improving, setImproving] = useState(false);
+  const [suggestions, setSuggestions] = useState<{
+    tagline: { improved: string; alternatives: string[] };
+    about_text: { improved: string; keywords: string[] };
+  } | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const handleImprove = async () => {
+    if (!businessName || !businessCategory) return;
+
+    setImproving(true);
+    setSuggestions(null);
+
+    try {
+      const res = await fetch('/api/business/improve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tagline: data.tagline,
+          about_text: data.about_text,
+          business_name: businessName,
+          category: businessCategory,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success && result.suggestions) {
+        setSuggestions(result.suggestions);
+        setShowSuggestions(true);
+      }
+    } catch (error) {
+      console.error('Improve error:', error);
+    } finally {
+      setImproving(false);
+    }
+  };
+
+  const applySuggestion = (type: 'tagline' | 'about_text', value: string) => {
+    updateData({ [type]: value });
+    if (type === 'about_text') {
+      setShowSuggestions(false);
+    }
+  };
+
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-900 mb-2">Your Brand</h2>
@@ -428,9 +506,11 @@ function BrandStep({
 
       {/* Tagline */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Tagline <span className="text-gray-400">(optional)</span>
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            Tagline <span className="text-gray-400">(optional)</span>
+          </label>
+        </div>
         <input
           type="text"
           value={data.tagline}
@@ -440,6 +520,30 @@ function BrandStep({
           maxLength={80}
         />
         <p className="text-xs text-gray-500 mt-1">{data.tagline.length}/80 characters</p>
+
+        {/* Tagline suggestions */}
+        {showSuggestions && suggestions && (
+          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs font-medium text-blue-700 mb-2">AI Suggestions:</p>
+            <div className="space-y-2">
+              <button
+                onClick={() => applySuggestion('tagline', suggestions.tagline.improved)}
+                className="w-full text-left px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm hover:bg-blue-100 transition-colors"
+              >
+                {suggestions.tagline.improved}
+              </button>
+              {suggestions.tagline.alternatives.map((alt, i) => (
+                <button
+                  key={i}
+                  onClick={() => applySuggestion('tagline', alt)}
+                  className="w-full text-left px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm hover:bg-blue-100 transition-colors"
+                >
+                  {alt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* About Text */}
@@ -454,9 +558,55 @@ function BrandStep({
           placeholder="Tell potential customers about your business, experience, and what makes you different..."
           maxLength={500}
         />
-        <p className="text-xs text-gray-500 mt-1">
-          {data.about_text.length}/500 characters (minimum 50 recommended)
-        </p>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-xs text-gray-500">
+            {data.about_text.length}/500 characters (minimum 50 recommended)
+          </p>
+          <button
+            onClick={handleImprove}
+            disabled={improving || !businessName || !businessCategory}
+            className="text-xs text-boerne-navy hover:underline disabled:opacity-50 disabled:no-underline flex items-center gap-1"
+          >
+            {improving ? (
+              <>
+                <span className="animate-spin">⏳</span> Improving...
+              </>
+            ) : (
+              <>✨ Improve with AI</>
+            )}
+          </button>
+        </div>
+
+        {/* About text suggestion */}
+        {showSuggestions && suggestions && (
+          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-medium text-blue-700">AI Improved Version:</p>
+              <button
+                onClick={() => setShowSuggestions(false)}
+                className="text-blue-500 hover:text-blue-700 text-xs"
+              >
+                Dismiss
+              </button>
+            </div>
+            <p className="text-sm text-gray-700 mb-2">{suggestions.about_text.improved}</p>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-wrap gap-1">
+                {suggestions.about_text.keywords.slice(0, 3).map((kw, i) => (
+                  <span key={i} className="px-2 py-0.5 bg-blue-100 rounded text-xs text-blue-700">
+                    {kw}
+                  </span>
+                ))}
+              </div>
+              <button
+                onClick={() => applySuggestion('about_text', suggestions.about_text.improved)}
+                className="px-3 py-1 bg-boerne-navy text-white text-xs rounded-lg hover:bg-boerne-navy/90"
+              >
+                Use This
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Preview */}
@@ -472,7 +622,7 @@ function BrandStep({
           >
             Boerne Verified
           </span>
-          <h3 className="text-xl font-bold text-white mt-2">Your Business Name</h3>
+          <h3 className="text-xl font-bold text-white mt-2">{businessName || 'Your Business Name'}</h3>
           {data.tagline && (
             <p className="text-white/80 mt-1">{data.tagline}</p>
           )}
@@ -811,12 +961,22 @@ function PhotosStep({
   data,
   updateData,
   businessId,
+  websiteId,
+  tierKey,
 }: {
   data: WizardData;
   updateData: (updates: Partial<WizardData>) => void;
   businessId?: string;
+  websiteId?: string;
+  tierKey: TierKey;
 }) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(data.testimonials);
+
+  const photoLimit = getPhotoLimit(tierKey);
+  const currentPhotoCount =
+    (data.logo_photo ? 1 : 0) +
+    (data.hero_photo ? 1 : 0) +
+    data.gallery_photos.length;
 
   const addTestimonial = () => {
     if (testimonials.length < 5) {
@@ -838,6 +998,32 @@ function PhotosStep({
     updateData({ testimonials: updated });
   };
 
+  const handleLogoUpload = (photo: UploadedPhoto) => {
+    updateData({ logo_photo: photo });
+  };
+
+  const handleLogoDelete = () => {
+    updateData({ logo_photo: null });
+  };
+
+  const handleHeroUpload = (photo: UploadedPhoto) => {
+    updateData({ hero_photo: photo });
+  };
+
+  const handleHeroDelete = () => {
+    updateData({ hero_photo: null });
+  };
+
+  const handleGalleryUpload = (photo: UploadedPhoto) => {
+    updateData({ gallery_photos: [...data.gallery_photos, photo] });
+  };
+
+  const handleGalleryDelete = (photoId: string) => {
+    updateData({
+      gallery_photos: data.gallery_photos.filter((p) => p.id !== photoId),
+    });
+  };
+
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-900 mb-2">Final Touches</h2>
@@ -845,17 +1031,65 @@ function PhotosStep({
         Add photos and testimonials to make your site shine. You can add more later!
       </p>
 
-      {/* Photo Upload Placeholder */}
+      {/* Photo Upload Section */}
       <div className="mb-8">
-        <h3 className="font-semibold text-gray-900 mb-3">Photos</h3>
-        <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center">
-          <Camera size={40} className="mx-auto text-gray-400 mb-2" />
-          <p className="text-gray-600 mb-2">Photo upload coming soon</p>
-          <p className="text-sm text-gray-500">
-            You&apos;ll be able to upload your logo, hero image, and project photos
-          </p>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-gray-900">Photos</h3>
+          <span className="text-sm text-gray-500">
+            {currentPhotoCount}/{photoLimit} photos used
+          </span>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
+
+        {businessId && websiteId ? (
+          <div className="space-y-6">
+            {/* Logo Upload */}
+            <PhotoUpload
+              photoType="logo"
+              businessId={businessId}
+              websiteId={websiteId}
+              currentPhoto={data.logo_photo}
+              photoLimit={photoLimit}
+              currentPhotoCount={currentPhotoCount}
+              onUpload={handleLogoUpload}
+              onDelete={handleLogoDelete}
+            />
+
+            {/* Hero Upload */}
+            <PhotoUpload
+              photoType="hero"
+              businessId={businessId}
+              websiteId={websiteId}
+              currentPhoto={data.hero_photo}
+              photoLimit={photoLimit}
+              currentPhotoCount={currentPhotoCount}
+              onUpload={handleHeroUpload}
+              onDelete={handleHeroDelete}
+            />
+
+            {/* Gallery Upload */}
+            <PhotoUpload
+              photoType="gallery"
+              businessId={businessId}
+              websiteId={websiteId}
+              currentPhotos={data.gallery_photos}
+              maxPhotos={Math.max(0, photoLimit - 2)} // Reserve 2 for logo/hero
+              photoLimit={photoLimit}
+              currentPhotoCount={currentPhotoCount}
+              onUpload={handleGalleryUpload}
+              onDelete={handleGalleryDelete}
+            />
+          </div>
+        ) : (
+          <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center">
+            <Camera size={40} className="mx-auto text-gray-400 mb-2" />
+            <p className="text-gray-600 mb-2">Save your progress first</p>
+            <p className="text-sm text-gray-500">
+              Click &quot;Next&quot; on any previous step to create your website draft, then you can upload photos.
+            </p>
+          </div>
+        )}
+
+        <p className="text-xs text-gray-500 mt-3">
           Tip: Photos of your work help build trust with potential customers
         </p>
       </div>
