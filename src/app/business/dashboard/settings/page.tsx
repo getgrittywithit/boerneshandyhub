@@ -1,17 +1,109 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useBusinessDashboard } from '../layout';
 import { supabase } from '@/lib/supabase';
+import { pricingTiers, type TierKey } from '@/data/pricingTiers';
+import { CheckCircle2, ExternalLink, Loader2, Crown, Sparkles, AlertCircle } from 'lucide-react';
+
+// Map DB tier to display tier key
+const DB_TO_TIER_MAP_LOCAL: Record<string, TierKey> = {
+  basic: 'claimed',
+  verified: 'verified',
+  premium: 'verifiedPlus',
+  elite: 'foundingPartner',
+};
 
 export default function SettingsPage() {
   const { business, user } = useBusinessDashboard();
+  const searchParams = useSearchParams();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [upgradingTo, setUpgradingTo] = useState<TierKey | null>(null);
+  const [upgradeError, setUpgradeError] = useState('');
+  const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
+  const [managingSubscription, setManagingSubscription] = useState(false);
+
+  // Check for upgrade success from URL params
+  useEffect(() => {
+    const upgrade = searchParams.get('upgrade');
+    if (upgrade === 'success') {
+      setShowUpgradeSuccess(true);
+      // Clean up URL
+      window.history.replaceState({}, '', '/business/dashboard/settings');
+      // Auto-hide after 5 seconds
+      setTimeout(() => setShowUpgradeSuccess(false), 5000);
+    }
+  }, [searchParams]);
+
+  const handleUpgrade = async (tier: TierKey, billingPeriod: 'monthly' | 'annual' = 'monthly', isFoundersBundle = false) => {
+    if (!business) return;
+
+    setUpgradingTo(tier);
+    setUpgradeError('');
+
+    try {
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          businessId: business.id,
+          tier,
+          billingPeriod,
+          isFoundersBundle,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (error) {
+      setUpgradeError(error instanceof Error ? error.message : 'Failed to start upgrade');
+    } finally {
+      setUpgradingTo(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    if (!business) return;
+
+    setManagingSubscription(true);
+
+    try {
+      const response = await fetch('/api/stripe/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId: business.id }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to open subscription portal');
+      }
+
+      if (data.portalUrl) {
+        window.location.href = data.portalUrl;
+      }
+    } catch (error) {
+      console.error('Portal error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to open portal');
+    } finally {
+      setManagingSubscription(false);
+    }
+  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,34 +158,17 @@ export default function SettingsPage() {
     );
   }
 
-  const tierInfo = {
-    basic: {
-      name: 'Basic',
-      price: 'Free',
-      categoryLimit: '1 category',
-      features: ['Basic listing', 'Receive quotes', 'Business dashboard', '1 category'],
-    },
-    verified: {
-      name: 'Verified',
-      price: '$29/mo',
-      categoryLimit: '2 categories',
-      features: ['Verified badge', 'Priority in search', 'Analytics dashboard', 'Email support', '2 categories'],
-    },
-    premium: {
-      name: 'Premium',
-      price: '$79/mo',
-      categoryLimit: '5 categories',
-      features: ['Premium badge', 'Top placement', 'Featured listings', 'Priority support', 'Review management', '5 categories'],
-    },
-    elite: {
-      name: 'Elite',
-      price: '$199/mo',
-      categoryLimit: 'Unlimited categories',
-      features: ['Elite badge', 'Homepage feature', 'Exclusive promotions', 'Dedicated account manager', 'All Premium features', 'Unlimited categories'],
-    },
-  };
+  // Get current tier from DB value
+  const currentTierKey = DB_TO_TIER_MAP_LOCAL[business.membership_tier] || 'claimed';
+  const currentTier = pricingTiers[currentTierKey];
 
-  const currentTier = tierInfo[business.membership_tier];
+  // Determine which tiers can be upgraded to
+  const upgradeTiers: TierKey[] = [];
+  if (currentTierKey === 'claimed') {
+    upgradeTiers.push('verified', 'verifiedPlus');
+  } else if (currentTierKey === 'verified') {
+    upgradeTiers.push('verifiedPlus');
+  }
 
   return (
     <div className="p-8">
@@ -194,67 +269,200 @@ export default function SettingsPage() {
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Subscription</h2>
 
+          {/* Success Message */}
+          {showUpgradeSuccess && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-green-500" />
+              <div>
+                <p className="font-medium text-green-800">Upgrade successful!</p>
+                <p className="text-sm text-green-700">Your plan has been updated. Welcome to the {currentTier.displayName} tier!</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {upgradeError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500" />
+              <p className="text-red-700">{upgradeError}</p>
+            </div>
+          )}
+
+          {/* Current Plan */}
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold text-gray-900">
-                  {currentTier.name} Plan
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold text-gray-900">
+                    {currentTier.displayName} Plan
+                  </p>
+                  {currentTier.badge && (
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${currentTier.badgeColor}`}>
+                      {currentTier.badge}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-500">
+                  {currentTier.monthlyPrice === 0 ? 'Free' : `$${currentTier.monthlyPrice}/month`}
                 </p>
-                <p className="text-sm text-gray-500">{currentTier.price}</p>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                business.membership_tier === 'basic' ? 'bg-gray-100 text-gray-700' :
-                business.membership_tier === 'verified' ? 'bg-green-100 text-green-700' :
-                business.membership_tier === 'premium' ? 'bg-yellow-100 text-yellow-700' :
-                'bg-purple-100 text-purple-700'
-              }`}>
+              <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
                 Active
               </span>
             </div>
 
             <ul className="mt-4 space-y-2">
-              {currentTier.features.map((feature, index) => (
+              {currentTier.features.slice(0, 6).map((feature, index) => (
                 <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                  <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
                   {feature}
                 </li>
               ))}
             </ul>
+
+            {/* Manage Subscription Button for paid tiers */}
+            {currentTierKey !== 'claimed' && (
+              <button
+                onClick={handleManageSubscription}
+                disabled={managingSubscription}
+                className="mt-4 flex items-center gap-2 text-sm text-boerne-navy hover:underline disabled:opacity-50"
+              >
+                {managingSubscription ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ExternalLink className="w-4 h-4" />
+                )}
+                Manage subscription
+              </button>
+            )}
           </div>
 
-          {business.membership_tier === 'basic' && (
-            <div className="border border-boerne-gold rounded-lg p-4 bg-boerne-gold/5">
-              <h3 className="font-semibold text-boerne-navy mb-2">Upgrade Your Plan</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Get more visibility and features to grow your business.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {(['verified', 'premium', 'elite'] as const).map((tier) => (
-                  <div key={tier} className="border border-gray-200 rounded-lg p-4 bg-white">
-                    <p className="font-semibold text-gray-900">{tierInfo[tier].name}</p>
-                    <p className="text-boerne-gold font-bold">{tierInfo[tier].price}</p>
-                    <ul className="mt-2 text-xs text-gray-500 space-y-1">
-                      {tierInfo[tier].features.slice(0, 3).map((f, i) => (
-                        <li key={i}>• {f}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+          {/* Upgrade Options */}
+          {upgradeTiers.length > 0 && (
+            <div className="border border-boerne-gold rounded-lg p-6 bg-gradient-to-br from-boerne-gold/5 to-white">
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="w-5 h-5 text-boerne-gold" />
+                <h3 className="font-semibold text-boerne-navy">Upgrade Your Plan</h3>
               </div>
-
-              <p className="text-sm text-gray-500 mt-4">
-                Contact us at <a href="mailto:support@boerneshub.com" className="text-boerne-gold hover:underline">support@boerneshub.com</a> to upgrade your plan.
+              <p className="text-sm text-gray-600 mb-6">
+                Get more visibility, features, and grow your business faster.
               </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {upgradeTiers.map((tierKey) => {
+                  const tier = pricingTiers[tierKey];
+                  const isVerifiedPlus = tierKey === 'verifiedPlus';
+
+                  return (
+                    <div
+                      key={tierKey}
+                      className={`border rounded-lg p-5 bg-white relative ${
+                        isVerifiedPlus ? 'border-green-500 ring-2 ring-green-500/20' : 'border-gray-200'
+                      }`}
+                    >
+                      {isVerifiedPlus && (
+                        <div className="absolute -top-3 left-4 bg-green-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          Most Popular
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-semibold text-gray-900">{tier.displayName}</p>
+                        {tier.badge && (
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${tier.badgeColor}`}>
+                            {tier.badge}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mb-3">
+                        <span className="text-2xl font-bold text-boerne-navy">${tier.monthlyPrice}</span>
+                        <span className="text-gray-500">/month</span>
+                      </div>
+
+                      {tier.highlightFeature && (
+                        <p className="text-sm font-medium text-green-600 mb-3">
+                          {tier.highlightFeature}
+                        </p>
+                      )}
+
+                      <ul className="space-y-2 mb-4">
+                        {tier.features.slice(0, 5).map((feature, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="space-y-2">
+                        {/* Monthly subscription */}
+                        <button
+                          onClick={() => handleUpgrade(tierKey, 'monthly')}
+                          disabled={upgradingTo !== null}
+                          className={`w-full py-2.5 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${
+                            isVerifiedPlus
+                              ? 'bg-boerne-navy text-white hover:bg-boerne-navy/90'
+                              : 'bg-boerne-gold text-boerne-navy hover:bg-boerne-gold/90'
+                          }`}
+                        >
+                          {upgradingTo === tierKey ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Processing...
+                            </>
+                          ) : (
+                            <>Upgrade to {tier.displayName}</>
+                          )}
+                        </button>
+
+                        {/* Annual option */}
+                        <button
+                          onClick={() => handleUpgrade(tierKey, 'annual')}
+                          disabled={upgradingTo !== null}
+                          className="w-full py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:underline disabled:opacity-50"
+                        >
+                          Or save ${(tier.monthlyPrice * 12) - tier.annualPrice}/yr with annual billing
+                        </button>
+
+                        {/* Founder's Bundle for Verified+ */}
+                        {isVerifiedPlus && (
+                          <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p className="text-sm font-medium text-amber-800 mb-1">
+                              Founder's Bundle - $199
+                            </p>
+                            <p className="text-xs text-amber-700 mb-2">
+                              First 3 months + professional website setup included
+                            </p>
+                            <button
+                              onClick={() => handleUpgrade('verifiedPlus', 'monthly', true)}
+                              disabled={upgradingTo !== null}
+                              className="w-full py-2 px-3 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 disabled:opacity-50"
+                            >
+                              Get the Bundle
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
-          {business.membership_tier !== 'basic' && (
-            <p className="text-sm text-gray-500">
-              To manage your subscription, contact <a href="mailto:support@boerneshub.com" className="text-boerne-gold hover:underline">support@boerneshub.com</a>
-            </p>
+          {/* Already at highest tier */}
+          {upgradeTiers.length === 0 && currentTierKey !== 'claimed' && (
+            <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <Crown className="w-5 h-5 text-green-600" />
+                <p className="font-medium text-green-800">You're on our best plan!</p>
+              </div>
+              <p className="text-sm text-green-700">
+                Enjoy all the premium features. Need help? Contact us anytime.
+              </p>
+            </div>
           )}
         </div>
 

@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { topLevelCategories, getAllSubcategories } from '@/data/serviceCategories';
-import { pricingTiers } from '@/data/pricingTiers';
+import { pricingTiers, getDisplayTiers, getAnnualSavings, type TierKey, FOUNDERS_BUNDLE } from '@/data/pricingTiers';
 import { locations } from '@/data/locations';
 import RankedCategoryPicker from './RankedCategoryPicker';
+import { CheckCircle2, Crown, Sparkles, Globe, Link as LinkIcon, Image, Zap } from 'lucide-react';
 
 // Registration allows selecting up to 5 categories (for upsell data)
 const MAX_SELECTABLE_CATEGORIES = 5;
@@ -119,7 +120,11 @@ interface FormData {
   bonded: boolean;
   // For unlicensed trades - certifications
   certifications: string[];
-  // Step 5: Account
+  // Step 5: Select Plan
+  selectedTier: TierKey;
+  billingPeriod: 'monthly' | 'annual';
+  useFoundersBundle: boolean;
+  // Step 6: Account
   ownerName: string;
   ownerEmail: string;
   ownerPhone: string;
@@ -149,6 +154,9 @@ const initialFormData: FormData = {
   insured: false,
   bonded: false,
   certifications: [],
+  selectedTier: 'claimed',
+  billingPeriod: 'monthly',
+  useFoundersBundle: false,
   ownerName: '',
   ownerEmail: '',
   ownerPhone: '',
@@ -162,7 +170,8 @@ const steps = [
   { id: 2, name: 'Contact', description: 'How customers can reach you' },
   { id: 3, name: 'Services', description: 'What you offer' },
   { id: 4, name: 'Credentials', description: 'Your qualifications' },
-  { id: 5, name: 'Review', description: 'Submit your listing' },
+  { id: 5, name: 'Select Plan', description: 'Choose your membership' },
+  { id: 6, name: 'Review', description: 'Submit your listing' },
 ];
 
 export default function BusinessRegistrationForm() {
@@ -247,6 +256,10 @@ export default function BusinessRegistrationForm() {
         break;
 
       case 5:
+        // No required fields - plan selection defaults to free tier
+        break;
+
+      case 6:
         if (!formData.ownerName || formData.ownerName.length < 2) {
           newErrors.ownerName = 'Your name is required';
         }
@@ -274,7 +287,7 @@ export default function BusinessRegistrationForm() {
 
   const nextStep = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, 5));
+      setCurrentStep(prev => Math.min(prev + 1, 6));
     }
   };
 
@@ -304,12 +317,13 @@ export default function BusinessRegistrationForm() {
   // Category selection is handled by RankedCategoryPicker component
 
   const handleSubmit = async () => {
-    if (!validateStep(5)) return;
+    if (!validateStep(6)) return;
 
     setSubmitting(true);
     setSubmitError('');
 
     try {
+      // First register the business
       const response = await fetch('/api/business/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -321,7 +335,31 @@ export default function BusinessRegistrationForm() {
         throw new Error(data.error || 'Failed to register business');
       }
 
-      // Redirect to dashboard (auto-logged in via API)
+      const { id: businessId } = await response.json();
+
+      // If a paid tier is selected, redirect to Stripe checkout
+      if (formData.selectedTier !== 'claimed' && businessId) {
+        const checkoutResponse = await fetch('/api/stripe/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            businessId,
+            tier: formData.selectedTier,
+            billingPeriod: formData.billingPeriod,
+            isFoundersBundle: formData.useFoundersBundle,
+          }),
+        });
+
+        const checkoutData = await checkoutResponse.json();
+
+        if (checkoutData.checkoutUrl) {
+          // Redirect to Stripe checkout
+          window.location.href = checkoutData.checkoutUrl;
+          return;
+        }
+      }
+
+      // Free tier - redirect to dashboard
       router.push('/business/dashboard');
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
@@ -916,28 +954,272 @@ export default function BusinessRegistrationForm() {
               </label>
             </div>
 
-            {/* Verification upsell */}
-            <div className="bg-gradient-to-r from-boerne-navy to-boerne-navy/90 rounded-lg p-5 text-white">
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <span>✅</span> Get Verified - $29/mo
-              </h4>
-              <p className="text-sm text-white/90 mb-3">
-                Stand out with verified credential badges that customers trust:
-              </p>
-              <ul className="text-sm text-white/80 space-y-1 mb-3">
-                <li>• <strong className="text-white">Licensed ✓</strong> - We verify against state records</li>
-                <li>• <strong className="text-white">Insured ✓</strong> - Upload your certificate of insurance</li>
-                <li>• <strong className="text-white">Bonded ✓</strong> - Upload your bond certificate</li>
-              </ul>
-              <p className="text-xs text-white/70">
-                You can upgrade anytime from your dashboard after registering.
+                      </div>
+        )}
+
+        {/* Step 5: Select Plan */}
+        {currentStep === 5 && (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Choose Your Plan</h3>
+              <p className="text-gray-600">
+                Start free or unlock premium features to grow faster
               </p>
             </div>
+
+            {/* Billing Toggle */}
+            {formData.selectedTier !== 'claimed' && (
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <button
+                  type="button"
+                  onClick={() => updateField('billingPeriod', 'monthly')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    formData.billingPeriod === 'monthly'
+                      ? 'bg-boerne-navy text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateField('billingPeriod', 'annual')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    formData.billingPeriod === 'annual'
+                      ? 'bg-boerne-navy text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Annual <span className="text-green-500 text-sm">(Save up to 17%)</span>
+                </button>
+              </div>
+            )}
+
+            {/* Plan Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Free Plan */}
+              <div
+                onClick={() => {
+                  updateField('selectedTier', 'claimed');
+                  updateField('useFoundersBundle', false);
+                }}
+                className={`cursor-pointer border-2 rounded-xl p-5 transition-all ${
+                  formData.selectedTier === 'claimed'
+                    ? 'border-boerne-gold bg-boerne-gold/5 ring-2 ring-boerne-gold/20'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-bold text-gray-900">Free</h4>
+                  {formData.selectedTier === 'claimed' && (
+                    <CheckCircle2 className="w-5 h-5 text-boerne-gold" />
+                  )}
+                </div>
+                <p className="text-3xl font-bold text-gray-900 mb-1">$0</p>
+                <p className="text-sm text-gray-500 mb-4">Free forever</p>
+                <ul className="space-y-2">
+                  {pricingTiers.claimed.features.slice(0, 5).map((feature, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                      <CheckCircle2 className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Verified Plan */}
+              <div
+                onClick={() => {
+                  updateField('selectedTier', 'verified');
+                  updateField('useFoundersBundle', false);
+                }}
+                className={`cursor-pointer border-2 rounded-xl p-5 transition-all ${
+                  formData.selectedTier === 'verified'
+                    ? 'border-green-500 bg-green-50 ring-2 ring-green-500/20'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-gray-900">Verified</h4>
+                    <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">✓</span>
+                  </div>
+                  {formData.selectedTier === 'verified' && (
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  )}
+                </div>
+                <p className="text-3xl font-bold text-gray-900 mb-1">
+                  ${formData.billingPeriod === 'annual'
+                    ? Math.round(pricingTiers.verified.annualPrice / 12)
+                    : pricingTiers.verified.monthlyPrice}
+                  <span className="text-sm font-normal text-gray-500">/mo</span>
+                </p>
+                {formData.billingPeriod === 'annual' && (
+                  <p className="text-sm text-green-600 mb-4">
+                    Save ${getAnnualSavings(pricingTiers.verified)}/year
+                  </p>
+                )}
+                {formData.billingPeriod === 'monthly' && <p className="text-sm text-gray-500 mb-4">Billed monthly</p>}
+
+                <div className="flex items-center gap-2 mb-3 text-green-600">
+                  <LinkIcon className="w-4 h-4" />
+                  <span className="text-sm font-medium">Do-Follow SEO Backlink</span>
+                </div>
+
+                <ul className="space-y-2">
+                  {pricingTiers.verified.features.slice(1, 6).map((feature, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Verified+ Plan */}
+              <div
+                onClick={() => {
+                  updateField('selectedTier', 'verifiedPlus');
+                }}
+                className={`cursor-pointer border-2 rounded-xl p-5 transition-all relative ${
+                  formData.selectedTier === 'verifiedPlus'
+                    ? 'border-green-600 bg-green-50 ring-2 ring-green-600/20'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                {/* Popular badge */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  BEST VALUE
+                </div>
+
+                <div className="flex items-center justify-between mb-3 mt-2">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-gray-900">Verified+</h4>
+                    <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">✓+</span>
+                  </div>
+                  {formData.selectedTier === 'verifiedPlus' && (
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  )}
+                </div>
+                <p className="text-3xl font-bold text-gray-900 mb-1">
+                  ${formData.billingPeriod === 'annual'
+                    ? Math.round(pricingTiers.verifiedPlus.annualPrice / 12)
+                    : pricingTiers.verifiedPlus.monthlyPrice}
+                  <span className="text-sm font-normal text-gray-500">/mo</span>
+                </p>
+                {formData.billingPeriod === 'annual' && (
+                  <p className="text-sm text-green-600 mb-4">
+                    Save ${getAnnualSavings(pricingTiers.verifiedPlus)}/year
+                  </p>
+                )}
+                {formData.billingPeriod === 'monthly' && <p className="text-sm text-gray-500 mb-4">Billed monthly</p>}
+
+                <div className="flex items-center gap-2 mb-3 text-green-600">
+                  <Globe className="w-4 h-4" />
+                  <span className="text-sm font-medium">Professional Website Included</span>
+                </div>
+
+                <ul className="space-y-2">
+                  {pricingTiers.verifiedPlus.features.slice(1, 6).map((feature, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Founder's Bundle Option */}
+                {formData.selectedTier === 'verifiedPlus' && (
+                  <div className="mt-4 pt-4 border-t border-green-200">
+                    <label
+                      className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                        formData.useFoundersBundle
+                          ? 'bg-amber-50 border border-amber-300'
+                          : 'bg-gray-50 border border-gray-200'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.useFoundersBundle}
+                        onChange={(e) => updateField('useFoundersBundle', e.target.checked)}
+                        className="w-4 h-4 mt-0.5 text-amber-500 rounded border-gray-300 focus:ring-amber-500"
+                      />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-900">Founder's Bundle</span>
+                          <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+                            ${FOUNDERS_BUNDLE.price}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          First 3 months + website setup included. We build your site for you!
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* What you get summary */}
+            {formData.selectedTier !== 'claimed' && (
+              <div className="bg-gradient-to-r from-boerne-navy to-boerne-navy/90 rounded-lg p-5 text-white">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Crown className="w-5 h-5 text-boerne-gold" />
+                  {formData.selectedTier === 'verified' ? 'With Verified, you get:' : 'With Verified+, you get:'}
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {formData.selectedTier === 'verified' ? (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Verified badge</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">SEO backlink</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Priority placement</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Up to 5 photos</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Professional website</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">QR code kit</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Top placement</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Up to 15 photos</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <p className="text-xs text-white/70 mt-3">
+                  Payment will be processed after you complete registration
+                </p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Step 5: Review & Submit */}
-        {currentStep === 5 && (
+        {/* Step 6: Review & Submit */}
+        {currentStep === 6 && (
           <div className="space-y-6">
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 mb-3">Review Your Information</h3>
@@ -968,6 +1250,24 @@ export default function BusinessRegistrationForm() {
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Service Areas:</dt>
                   <dd className="text-gray-900">{formData.serviceArea.join(', ')}</dd>
+                </div>
+                <div className="flex justify-between pt-2 border-t mt-2">
+                  <dt className="text-gray-500">Selected Plan:</dt>
+                  <dd className="text-gray-900 font-medium flex items-center gap-2">
+                    {pricingTiers[formData.selectedTier].displayName}
+                    {formData.selectedTier !== 'claimed' && (
+                      <span className="text-sm text-gray-500">
+                        (${formData.billingPeriod === 'annual'
+                          ? pricingTiers[formData.selectedTier].annualPrice
+                          : pricingTiers[formData.selectedTier].monthlyPrice * 12}/yr)
+                      </span>
+                    )}
+                    {formData.useFoundersBundle && (
+                      <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+                        Founder's Bundle
+                      </span>
+                    )}
+                  </dd>
                 </div>
               </dl>
             </div>
@@ -1099,7 +1399,7 @@ export default function BusinessRegistrationForm() {
             <div />
           )}
 
-          {currentStep < 5 ? (
+          {currentStep < 6 ? (
             <button
               type="button"
               onClick={nextStep}
@@ -1114,7 +1414,11 @@ export default function BusinessRegistrationForm() {
               disabled={submitting}
               className="px-8 py-3 bg-boerne-navy text-white font-semibold rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? 'Submitting...' : 'Submit Registration'}
+              {submitting ? 'Submitting...' : (
+                formData.selectedTier === 'claimed'
+                  ? 'Submit Registration'
+                  : 'Continue to Payment'
+              )}
             </button>
           )}
         </div>
