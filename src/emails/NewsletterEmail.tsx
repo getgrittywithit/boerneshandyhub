@@ -139,6 +139,35 @@ export default function NewsletterEmail({
             </Section>
           )}
 
+          {/* Blog Posts / Guides */}
+          {sections.blog_posts?.posts && sections.blog_posts.posts.length > 0 && (
+            <Section style={section}>
+              <Heading style={h2}>Latest Guides & Tips</Heading>
+              {sections.blog_posts.callToAction && (
+                <Text style={paragraph}>{sections.blog_posts.callToAction}</Text>
+              )}
+              {sections.blog_posts.posts.map((post, index) => (
+                <Row key={post.id || index} style={blogPostRow}>
+                  <Column style={blogPostIconColumn}>
+                    <Text style={blogPostIcon}>&#128218;</Text>
+                  </Column>
+                  <Column style={blogPostContentColumn}>
+                    <Link href={`https://boerneshandyhub.com/guides/${post.slug}`} style={blogPostLink}>
+                      <Text style={blogPostTitle}>{post.title}</Text>
+                    </Link>
+                    <Text style={blogPostCategory}>{post.categoryLabel}</Text>
+                    {post.excerpt && (
+                      <Text style={blogPostExcerpt}>{post.excerpt}</Text>
+                    )}
+                  </Column>
+                </Row>
+              ))}
+              <Link href="https://boerneshandyhub.com/guides" style={ctaButton}>
+                View All Guides
+              </Link>
+            </Section>
+          )}
+
           <Hr style={hr} />
 
           {/* Footer */}
@@ -343,6 +372,50 @@ const eventDate = {
   color: '#718096',
   fontSize: '14px',
   margin: '2px 0 0 0',
+};
+
+const blogPostRow = {
+  marginBottom: '16px',
+};
+
+const blogPostIconColumn = {
+  width: '48px',
+  verticalAlign: 'top' as const,
+};
+
+const blogPostContentColumn = {
+  verticalAlign: 'top' as const,
+};
+
+const blogPostIcon = {
+  fontSize: '24px',
+  margin: '0',
+};
+
+const blogPostLink = {
+  textDecoration: 'none',
+};
+
+const blogPostTitle = {
+  color: '#1a365d',
+  fontSize: '16px',
+  fontWeight: '600',
+  margin: '0',
+};
+
+const blogPostCategory = {
+  color: '#d4a846',
+  fontSize: '12px',
+  fontWeight: '500',
+  textTransform: 'uppercase' as const,
+  margin: '4px 0',
+};
+
+const blogPostExcerpt = {
+  color: '#718096',
+  fontSize: '14px',
+  margin: '4px 0 0 0',
+  lineHeight: '20px',
 };
 
 const hr = {

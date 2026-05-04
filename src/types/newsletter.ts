@@ -150,6 +150,22 @@ export interface EventsSectionContent {
   events: EventItem[];
 }
 
+export interface BlogPostItem {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  category: string;
+  categoryLabel: string;
+  coverImage: string | null;
+  publishedAt: string | null;
+}
+
+export interface BlogPostsSectionContent {
+  posts: BlogPostItem[];
+  callToAction?: string;
+}
+
 export interface NewsletterSections {
   intro?: IntroSectionContent;
   seasonal?: SeasonalSectionContent;
@@ -157,6 +173,7 @@ export interface NewsletterSections {
   local_tip?: LocalTipSectionContent;
   featured_provider?: FeaturedProviderSectionContent;
   events?: EventsSectionContent;
+  blog_posts?: BlogPostsSectionContent;
 }
 
 export interface SendStats {

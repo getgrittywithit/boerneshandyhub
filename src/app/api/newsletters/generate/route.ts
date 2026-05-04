@@ -5,8 +5,11 @@ import { topLevelCategories } from '@/data/serviceCategories';
 import type {
   NewsletterSections,
   SeasonalServiceItem,
-  GeneratedContent
+  GeneratedContent,
+  BlogPostItem
 } from '@/types/newsletter';
+import { BLOG_CATEGORIES } from '@/types/blog';
+import type { BlogCategory } from '@/types/blog';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -117,6 +120,34 @@ function getServiceStats() {
   return { totalCategories, topLevelCount: topLevelCategories.length };
 }
 
+// Get recent blog posts for newsletter
+async function getRecentBlogPosts(limit: number = 3): Promise<BlogPostItem[]> {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('id, slug, title, excerpt, category, cover_image, published_at')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
+
+  return data.map(post => ({
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    category: post.category,
+    categoryLabel: BLOG_CATEGORIES[post.category as BlogCategory]?.label || post.category,
+    coverImage: post.cover_image,
+    publishedAt: post.published_at,
+  }));
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (!supabase) {
@@ -146,6 +177,12 @@ export async function POST(request: NextRequest) {
     const seasonalServices = getSeasonalServices(season);
     const localTip = getLocalTip(monthNumber);
     const { totalCategories } = getServiceStats();
+    const recentBlogPosts = await getRecentBlogPosts(3);
+
+    // Build blog posts context for AI prompt
+    const blogPostsContext = recentBlogPosts.length > 0
+      ? `\nRecent guides/blog posts to mention:\n${recentBlogPosts.map(p => `- "${p.title}" (${p.categoryLabel}): ${p.excerpt || 'No excerpt'}`).join('\n')}`
+      : '';
 
     // Generate newsletter content using AI
     const prompt = `You are writing a monthly newsletter for "Boerne's Handy Hub", a home services directory for Boerne, Texas (Hill Country area).
@@ -161,12 +198,13 @@ ${seasonalServices.map(s => `- ${s.name}: ${s.description}`).join('\n')}
 
 Local tip for this month:
 - ${localTip.headline}: ${localTip.text}
+${blogPostsContext}
 
 Generate newsletter content with:
 1. A compelling subject line (max 50 chars)
 2. Two alternative subject lines
 3. Preview text (max 100 chars, what shows in email preview)
-4. An intro paragraph (2-3 sentences) welcoming readers and setting up the month's content
+4. An intro paragraph (2-3 sentences) welcoming readers and setting up the month's content. ${recentBlogPosts.length > 0 ? 'If applicable, briefly mention that we have new guides available.' : ''}
 
 Respond in this exact JSON format:
 {
@@ -203,6 +241,10 @@ Keep the tone friendly, helpful, and local. Mention Boerne or Hill Country when 
       seasonal: { items: seasonalServices },
       local_tip: localTip,
       events: { events: [] }, // Can be populated manually or from events API later
+      blog_posts: recentBlogPosts.length > 0 ? {
+        posts: recentBlogPosts,
+        callToAction: 'Read our latest guides for helpful tips and advice.',
+      } : undefined,
     };
 
     const generatedContent: GeneratedContent = {
