@@ -13,7 +13,7 @@ Last updated: 2026-05-03. Status: v1 Launch.
 | 0 | Unclaimed | Free (we add) | Basic NAP data, grayscale card | Full-looking directory |
 | 1 | Claimed | Free (they claim) | Edit profile, logo, hours, social links | Email capture, accurate data |
 | 2 | Verified | $29/mo | Enhanced card, 5 photos, do-follow backlink, priority placement | Recurring revenue |
-| 3 | Verified+ | $67/mo | Everything above + rented website OR authority boost package | High-margin revenue, SEO authority |
+| 3 | Verified+ | $67/mo | Everything above + website + up to 5 categories | High-margin revenue, SEO authority |
 
 Annual pricing available:
 - Verified: $260/year (~$22/mo, save $88)
@@ -131,7 +131,7 @@ Why 3 months minimum:
 - "Boerne Verified" badge (enhanced version)
 - Priority in quote request routing
 - Up to 15 photos
-- Listed in up to 4 categories
+- Listed in up to 5 categories
 - Future: Newsletter inclusion, social features as audience grows
 
 ### Visual treatment
@@ -235,12 +235,17 @@ Partner (future) → VerifiedPlus → Verified → Claimed → Unclaimed
 
 ---
 
-## Future Tiers (v2+)
+## Future / Off-Menu
 
-### Partner ($249/mo) — HOLD
-One per category. Active marketing: solo social posts, newsletter features, welcome packet inclusion.
+### Founding Partner (Custom pricing, off-menu)
+For businesses asking "what else you got?" - handled via private conversation, not public pricing page.
 
-**Launch trigger:** Monthly directory visitors > 5,000 AND newsletter subscribers > 1,000.
+- One per category max
+- Custom pricing ($150-299/mo range)
+- Active marketing when audience exists
+- **Not a public tier** - concierge only
+
+**Don't launch publicly until:** Monthly directory visitors > 5,000 AND newsletter > 1,000 subscribers.
 
 ---
 
