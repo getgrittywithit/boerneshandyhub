@@ -10,12 +10,14 @@ interface AdminContextType {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
+  signOut: () => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextType>({
   user: null,
   isAdmin: false,
   loading: true,
+  signOut: async () => {},
 });
 
 export const useAdmin = () => useContext(AdminContext);
@@ -25,6 +27,7 @@ const navItems = [
   { href: '/admin/providers', icon: '🏢', label: 'Providers' },
   { href: '/admin/categories', icon: '📁', label: 'Categories' },
   { href: '/admin/websites', icon: '🌐', label: 'Websites' },
+  { href: '/admin/blog', icon: '📝', label: 'Blog' },
   { href: '/admin/search', icon: '🔍', label: 'Search' },
   { href: '/admin/newsletters', icon: '📧', label: 'Newsletters' },
   { href: '/admin/quotes', icon: '📩', label: 'Quotes' },
@@ -39,47 +42,132 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
+  // Login form state
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+
   useEffect(() => {
     checkAuth();
+
+    // Listen for auth changes
+    if (supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session?.user) {
+          setUser(session.user);
+          checkAdminRole(session.user.id);
+        } else {
+          setUser(null);
+          setIsAdmin(false);
+        }
+      });
+
+      return () => subscription.unsubscribe();
+    }
   }, []);
 
   const checkAuth = async () => {
-    // Skip auth check entirely if Supabase is not configured
     if (!supabase) {
       setLoading(false);
       return;
     }
 
-    // Add timeout to prevent hanging
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Auth check timeout')), 5000)
-    );
-
     try {
-      const authPromise = supabase.auth.getUser();
-      const { data: { user } } = await Promise.race([authPromise, timeoutPromise]) as Awaited<typeof authPromise>;
+      const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
       if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-
-        setIsAdmin(profile?.role === 'admin');
+        await checkAdminRole(user.id);
       }
     } catch (error) {
       console.error('Auth check error:', error);
-      // On timeout or error, just show the dev login option
     } finally {
       setLoading(false);
     }
   };
 
-  const enableDevAdmin = () => {
-    setIsAdmin(true);
-    setUser({ id: 'dev-admin', email: 'admin@boernehub.com' } as User);
+  const checkAdminRole = async (userId: string) => {
+    if (!supabase) return;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+
+    setIsAdmin(profile?.role === 'admin');
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) {
+      setLoginError('Database not configured');
+      return;
+    }
+
+    setLoginLoading(true);
+    setLoginError('');
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setLoginError(error.message);
+        return;
+      }
+
+      if (data.user) {
+        setUser(data.user);
+        await checkAdminRole(data.user.id);
+      }
+    } catch (error) {
+      setLoginError('An unexpected error occurred');
+      console.error('Login error:', error);
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase || !email) {
+      setLoginError('Please enter your email address');
+      return;
+    }
+
+    setLoginLoading(true);
+    setLoginError('');
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/admin`,
+      });
+
+      if (error) {
+        setLoginError(error.message);
+        return;
+      }
+
+      setResetEmailSent(true);
+    } catch (error) {
+      setLoginError('Failed to send reset email');
+      console.error('Reset password error:', error);
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    if (!supabase) return;
+    await supabase.auth.signOut();
+    setUser(null);
+    setIsAdmin(false);
   };
 
   if (loading) {
@@ -90,31 +178,158 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!user && !isAdmin) {
+  // Not logged in - show login form
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
-          <div className="text-center">
+          <div className="text-center mb-6">
             <div className="text-4xl mb-4">🔐</div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Access</h1>
-            <p className="text-gray-600 mb-6">Sign in to access the admin dashboard.</p>
+            <p className="text-gray-600">Sign in to access the admin dashboard.</p>
+          </div>
 
-            {/* Development bypass */}
-            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-700 mb-3">Development Mode</p>
+          {showForgotPassword ? (
+            // Forgot password form
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              {resetEmailSent ? (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
+                  <p className="text-green-700">Password reset email sent! Check your inbox.</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setResetEmailSent(false);
+                    }}
+                    className="mt-3 text-sm text-green-600 hover:underline"
+                  >
+                    Back to login
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
+                      placeholder="admin@example.com"
+                      required
+                    />
+                  </div>
+
+                  {loginError && (
+                    <p className="text-red-600 text-sm">{loginError}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loginLoading}
+                    className="w-full px-4 py-2 bg-boerne-navy text-white font-medium rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
+                  >
+                    {loginLoading ? 'Sending...' : 'Send Reset Email'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(false)}
+                    className="w-full text-sm text-gray-500 hover:text-boerne-gold"
+                  >
+                    Back to login
+                  </button>
+                </>
+              )}
+            </form>
+          ) : (
+            // Login form
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
+                  placeholder="admin@example.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-boerne-gold focus:border-transparent"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+
+              {loginError && (
+                <p className="text-red-600 text-sm">{loginError}</p>
+              )}
+
               <button
-                onClick={enableDevAdmin}
-                className="w-full px-4 py-2 bg-yellow-600 text-white font-medium rounded-lg hover:bg-yellow-700 transition-colors"
+                type="submit"
+                disabled={loginLoading}
+                className="w-full px-4 py-2 bg-boerne-navy text-white font-medium rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
               >
-                Enable Dev Admin
+                {loginLoading ? 'Signing in...' : 'Sign In'}
               </button>
-            </div>
 
-            <div className="mt-6">
-              <Link href="/" className="text-sm text-gray-500 hover:text-boerne-gold">
-                ← Back to Site
-              </Link>
-            </div>
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="w-full text-sm text-gray-500 hover:text-boerne-gold"
+              >
+                Forgot password?
+              </button>
+            </form>
+          )}
+
+          <div className="mt-6 text-center">
+            <Link href="/" className="text-sm text-gray-500 hover:text-boerne-gold">
+              ← Back to Site
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Logged in but not admin
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+          <div className="text-4xl mb-4">🚫</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+          <p className="text-gray-600 mb-4">
+            You don&apos;t have admin privileges. Signed in as {user.email}.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={signOut}
+              className="w-full px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              Sign Out
+            </button>
+            <Link
+              href="/"
+              className="block text-sm text-gray-500 hover:text-boerne-gold"
+            >
+              ← Back to Site
+            </Link>
           </div>
         </div>
       </div>
@@ -122,7 +337,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <AdminContext.Provider value={{ user, isAdmin, loading }}>
+    <AdminContext.Provider value={{ user, isAdmin, loading, signOut }}>
       <div className="min-h-screen bg-gray-100 flex">
         {/* Sidebar */}
         <aside
@@ -200,15 +415,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
 
             {!sidebarCollapsed && (
-              <Link
-                href="/"
-                className="mt-4 flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Site
-              </Link>
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={signOut}
+                  className="w-full flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Sign Out
+                </button>
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  Back to Site
+                </Link>
+              </div>
             )}
           </div>
         </aside>
