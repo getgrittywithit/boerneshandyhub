@@ -152,12 +152,12 @@ export async function GET(request: NextRequest) {
       combined_score: number;
     }> = [];
 
-    if (hasSearchDocuments && embedding) {
-      // Use hybrid search via RPC function
+    if (hasSearchDocuments) {
+      // Use hybrid search via RPC function (works with or without embedding)
       const { data, error } = await supabaseAdmin
         .rpc('search_documents_hybrid', {
           query_text: sanitizedQuery,
-          query_embedding: embedding,
+          query_embedding: embedding || Array(1536).fill(0), // Use zero vector if no embedding
           scope_category: category || null,
           scope_subcategory: subcategory || null,
           match_limit: limit,
