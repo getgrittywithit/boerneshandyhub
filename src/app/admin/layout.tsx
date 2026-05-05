@@ -147,7 +147,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/admin`,
+        redirectTo: `${window.location.origin}/business/reset-password`,
       });
 
       if (error) {
