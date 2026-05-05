@@ -91,6 +91,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/guides" className="text-white/70 hover:text-white transition-colors text-sm">
+                  Guides & Tips
+                </Link>
+              </li>
+              <li>
                 <Link href="/guides/new-homeowner-checklist" className="text-white/70 hover:text-white transition-colors text-sm">
                   New Homeowner Guide
                 </Link>

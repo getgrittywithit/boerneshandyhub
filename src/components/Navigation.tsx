@@ -65,6 +65,7 @@ export default function Navigation() {
 
   // Secondary nav items (shown in more dropdown on desktop, full on mobile)
   const secondaryNavItems: NavItem[] = [
+    { href: '/guides', label: 'Guides & Tips' },
     { href: '/moving-to-boerne', label: 'Moving to Boerne', new: true },
     { href: '/contribute', label: 'Share a Story' },
     { href: '/realtors', label: 'For Realtors' },
