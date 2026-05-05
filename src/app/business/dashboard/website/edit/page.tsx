@@ -291,7 +291,12 @@ export default function WebsiteEditPage() {
           {/* Section Content */}
           <div className="flex-1 bg-white rounded-lg shadow-sm p-6">
             {activeSection === 'brand' && (
-              <BrandSection formData={formData} updateFormData={updateFormData} />
+              <BrandSection
+                formData={formData}
+                updateFormData={updateFormData}
+                businessName={business?.name}
+                businessCategory={business?.category}
+              />
             )}
             {activeSection === 'services' && (
               <ServicesSection formData={formData} updateFormData={updateFormData} />
@@ -313,10 +318,59 @@ export default function WebsiteEditPage() {
 function BrandSection({
   formData,
   updateFormData,
+  businessName,
+  businessCategory,
 }: {
   formData: { primary_color: string; accent_color: string; tagline: string; about_text: string };
   updateFormData: (field: string, value: unknown) => void;
+  businessName?: string;
+  businessCategory?: string;
 }) {
+  const [improving, setImproving] = useState(false);
+  const [suggestions, setSuggestions] = useState<{
+    tagline: { improved: string; alternatives: string[] };
+    about_text: { improved: string; keywords: string[] };
+  } | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const handleImprove = async () => {
+    if (!businessName || !businessCategory) return;
+
+    setImproving(true);
+    setSuggestions(null);
+
+    try {
+      const res = await fetch('/api/business/improve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tagline: formData.tagline,
+          about_text: formData.about_text,
+          business_name: businessName,
+          category: businessCategory,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success && result.suggestions) {
+        setSuggestions(result.suggestions);
+        setShowSuggestions(true);
+      }
+    } catch (error) {
+      console.error('Improve error:', error);
+    } finally {
+      setImproving(false);
+    }
+  };
+
+  const applySuggestion = (type: 'tagline' | 'about_text', value: string) => {
+    updateFormData(type, value);
+    if (type === 'about_text') {
+      setShowSuggestions(false);
+    }
+  };
+
   return (
     <div>
       <h2 className="text-lg font-bold text-gray-900 mb-4">Brand & Colors</h2>
@@ -367,6 +421,30 @@ function BrandSection({
           maxLength={80}
         />
         <p className="text-xs text-gray-500 mt-1">{formData.tagline.length}/80</p>
+
+        {/* Tagline suggestions */}
+        {showSuggestions && suggestions && (
+          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs font-medium text-blue-700 mb-2">AI Suggestions:</p>
+            <div className="space-y-2">
+              <button
+                onClick={() => applySuggestion('tagline', suggestions.tagline.improved)}
+                className="w-full text-left px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm hover:bg-blue-100 transition-colors"
+              >
+                {suggestions.tagline.improved}
+              </button>
+              {suggestions.tagline.alternatives.map((alt, i) => (
+                <button
+                  key={i}
+                  onClick={() => applySuggestion('tagline', alt)}
+                  className="w-full text-left px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm hover:bg-blue-100 transition-colors"
+                >
+                  {alt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* About */}
@@ -384,7 +462,53 @@ function BrandSection({
           placeholder="Tell potential customers about your business..."
           maxLength={500}
         />
-        <p className="text-xs text-gray-500 mt-1">{formData.about_text.length}/500</p>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-xs text-gray-500">{formData.about_text.length}/500</p>
+          <button
+            onClick={handleImprove}
+            disabled={improving || !businessName || !businessCategory}
+            className="text-xs text-boerne-navy hover:underline disabled:opacity-50 disabled:no-underline flex items-center gap-1"
+          >
+            {improving ? (
+              <>
+                <span className="animate-spin">⏳</span> Improving...
+              </>
+            ) : (
+              <>✨ Improve with AI</>
+            )}
+          </button>
+        </div>
+
+        {/* About text suggestion */}
+        {showSuggestions && suggestions && (
+          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-medium text-blue-700">AI Improved Version:</p>
+              <button
+                onClick={() => setShowSuggestions(false)}
+                className="text-blue-500 hover:text-blue-700 text-xs"
+              >
+                Dismiss
+              </button>
+            </div>
+            <p className="text-sm text-gray-700 mb-2">{suggestions.about_text.improved}</p>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-wrap gap-1">
+                {suggestions.about_text.keywords.slice(0, 3).map((kw, i) => (
+                  <span key={i} className="px-2 py-0.5 bg-blue-100 rounded text-xs text-blue-700">
+                    {kw}
+                  </span>
+                ))}
+              </div>
+              <button
+                onClick={() => applySuggestion('about_text', suggestions.about_text.improved)}
+                className="px-3 py-1 bg-boerne-navy text-white text-xs rounded-lg hover:bg-boerne-navy/90"
+              >
+                Use This
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
