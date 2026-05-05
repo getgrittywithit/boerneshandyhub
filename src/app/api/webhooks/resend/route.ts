@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 
 // Resend webhook event types
 interface ResendWebhookEvent {
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 4: Check Supabase configuration
-    if (!supabase) {
+    if (!supabaseAdmin) {
       logWebhookError('supabase_config', new Error('Supabase client is null'), {
         eventType: event.type,
         emailId,
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     let subscriberId: string | null = null;
     if (recipientEmail) {
       try {
-        const { data: subscriber, error: subscriberError } = await supabase
+        const { data: subscriber, error: subscriberError } = await supabaseAdmin
           .from('subscribers')
           .select('id')
           .eq('email', recipientEmail)
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
 
       console.log('RESEND_WEBHOOK_INSERT:', insertData);
 
-      const { error: insertError } = await supabase
+      const { error: insertError } = await supabaseAdmin
         .from('newsletter_events')
         .insert(insertData);
 
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
     if (recipientEmail) {
       try {
         if (eventType === 'bounced') {
-          const { error: bounceError } = await supabase
+          const { error: bounceError } = await supabaseAdmin
             .from('subscribers')
             .update({ status: 'bounced' })
             .eq('email', recipientEmail);
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (eventType === 'complained') {
-          const { error: complaintError } = await supabase
+          const { error: complaintError } = await supabaseAdmin
             .from('subscribers')
             .update({ status: 'unsubscribed', unsubscribed_at: new Date().toISOString() })
             .eq('email', recipientEmail);
