@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import CommunityFloatingButton from './CommunityFloatingButton';
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -30,6 +31,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
         {children}
       </main>
       <Footer />
+      <CommunityFloatingButton />
     </>
   );
 }
