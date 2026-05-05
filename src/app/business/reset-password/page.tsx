@@ -12,28 +12,75 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [validSession, setValidSession] = useState(false);
-  const [checkingSession, setCheckingSession] = useState(true);
+  const [ready, setReady] = useState(false);
+  const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    checkSession();
-  }, []);
-
-  const checkSession = async () => {
     if (!supabase) {
-      setCheckingSession(false);
+      setInitializing(false);
+      setError('Authentication service unavailable');
       return;
     }
 
-    // Check if we have a valid session from the reset link
-    const { data: { session } } = await supabase.auth.getSession();
+    // Listen for auth state changes - this catches the PASSWORD_RECOVERY event
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth event:', event);
 
-    if (session) {
-      setValidSession(true);
-    }
+        if (event === 'PASSWORD_RECOVERY') {
+          // User clicked the recovery link - show the form
+          setReady(true);
+          setInitializing(false);
+        } else if (event === 'SIGNED_IN' && session) {
+          // Check if this is a recovery session by looking at the URL
+          const hash = window.location.hash;
+          if (hash.includes('type=recovery')) {
+            setReady(true);
+            setInitializing(false);
+          } else {
+            // Regular sign in, check if we have a valid session for password update
+            setReady(true);
+            setInitializing(false);
+          }
+        } else if (event === 'USER_UPDATED') {
+          // Password was successfully updated
+          setSuccess(true);
+          setLoading(false);
+        }
+      }
+    );
 
-    setCheckingSession(false);
-  };
+    // Also check current session on mount
+    const checkExistingSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Check URL hash for recovery token
+      const hash = window.location.hash;
+      const params = new URLSearchParams(hash.substring(1));
+      const type = params.get('type');
+      const accessToken = params.get('access_token');
+
+      if (type === 'recovery' && accessToken) {
+        // We have a recovery token in the URL - Supabase will process it
+        // Wait for the auth state change event
+        return;
+      }
+
+      if (session) {
+        // We have an existing session - allow password update
+        setReady(true);
+      }
+
+      setInitializing(false);
+    };
+
+    // Small delay to let Supabase process the URL hash
+    setTimeout(checkExistingSession, 500);
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +101,7 @@ export default function ResetPasswordPage() {
     try {
       if (!supabase) {
         setError('Authentication service unavailable');
+        setLoading(false);
         return;
       }
 
@@ -62,39 +110,53 @@ export default function ResetPasswordPage() {
       });
 
       if (updateError) {
-        setError(updateError.message);
+        console.error('Password update error:', updateError);
+
+        // Handle specific error cases
+        if (updateError.message.includes('session')) {
+          setError('Your session has expired. Please request a new password reset link.');
+        } else {
+          setError(updateError.message);
+        }
+        setLoading(false);
         return;
       }
 
+      // Success will be handled by the USER_UPDATED event
       setSuccess(true);
+      setLoading(false);
 
-      // Redirect to login after 3 seconds
+      // Sign out and redirect to login
+      await supabase.auth.signOut();
+
       setTimeout(() => {
         router.push('/business/login');
       }, 3000);
     } catch (err) {
       console.error('Password reset error:', err);
-      setError('An unexpected error occurred');
-    } finally {
+      setError('An unexpected error occurred. Please try again.');
       setLoading(false);
     }
   };
 
-  if (checkingSession) {
+  // Loading state
+  if (initializing) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-boerne-navy"></div>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-boerne-navy mb-4"></div>
+        <p className="text-gray-600">Verifying your reset link...</p>
       </div>
     );
   }
 
-  if (!validSession) {
+  // Invalid/expired link
+  if (!ready && !success) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Link href="/" className="flex justify-center">
             <span className="text-3xl font-bold text-boerne-navy">
-              Boerne's Handy Hub
+              Boerne&apos;s Handy Hub
             </span>
           </Link>
         </div>
@@ -122,13 +184,14 @@ export default function ResetPasswordPage() {
     );
   }
 
+  // Success state
   if (success) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Link href="/" className="flex justify-center">
             <span className="text-3xl font-bold text-boerne-navy">
-              Boerne's Handy Hub
+              Boerne&apos;s Handy Hub
             </span>
           </Link>
         </div>
@@ -140,7 +203,7 @@ export default function ResetPasswordPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Password Updated</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Password Updated!</h2>
             <p className="text-gray-600 mb-6">
               Your password has been successfully reset. Redirecting to login...
             </p>
@@ -156,12 +219,13 @@ export default function ResetPasswordPage() {
     );
   }
 
+  // Password form
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Link href="/" className="flex justify-center">
           <span className="text-3xl font-bold text-boerne-navy">
-            Boerne's Handy Hub
+            Boerne&apos;s Handy Hub
           </span>
         </Link>
         <h2 className="mt-6 text-center text-2xl font-bold text-gray-900">
@@ -177,6 +241,14 @@ export default function ResetPasswordPage() {
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-sm text-red-700">{error}</p>
+              {error.includes('expired') && (
+                <Link
+                  href="/business/forgot-password"
+                  className="block mt-2 text-sm text-boerne-gold hover:underline"
+                >
+                  Request a new reset link
+                </Link>
+              )}
             </div>
           )}
 
