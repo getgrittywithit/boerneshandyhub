@@ -209,6 +209,17 @@ export default function MovingToBoernePage() {
               <p className="text-sm text-gray-500 mt-1">Deer, snakes, scorpions</p>
             </Link>
           </div>
+
+          <div className="text-center mt-8">
+            <Link
+              href="/guides/hub/moving"
+              className="inline-flex items-center gap-2 text-boerne-gold hover:text-boerne-gold-alt font-semibold"
+            >
+              <span>📦</span>
+              Browse All Moving & Relocation Guides
+              <span>&rarr;</span>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -222,22 +233,23 @@ export default function MovingToBoernePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Group utilities by type */}
-            {['Electricity', 'Internet/Phone/TV', 'Water/Sewer', 'Natural Gas', 'Trash/Recycling'].map((type) => {
+            {[
+              { type: 'Electricity', label: 'Electricity', icon: '⚡' },
+              { type: 'Internet', label: 'Internet & TV', icon: '📡' },
+              { type: 'Water', label: 'Water & Sewer', icon: '💧' },
+              { type: 'Natural Gas', label: 'Natural Gas', icon: '🔥' },
+              { type: 'Trash', label: 'Trash & Recycling', icon: '🗑️' },
+            ].map(({ type, label, icon }) => {
               const providers = utilityProviders.filter(u =>
-                u.type === type || u.type.includes(type.split('/')[0])
+                u.type === type || u.type.includes(type)
               );
               if (providers.length === 0) return null;
 
               return (
                 <div key={type} className="bg-gray-50 rounded-xl p-6">
                   <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span className="text-xl">
-                      {type.includes('Electric') ? '&#9889;' :
-                       type.includes('Internet') ? '&#128225;' :
-                       type.includes('Water') ? '&#128167;' :
-                       type.includes('Gas') ? '&#128293;' : '&#128465;'}
-                    </span>
-                    {type.split('/')[0]}
+                    <span className="text-xl">{icon}</span>
+                    {label}
                   </h3>
                   <div className="space-y-4">
                     {providers.slice(0, 2).map((provider) => (

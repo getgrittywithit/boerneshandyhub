@@ -65,35 +65,35 @@ export const utilityProviders: UtilityProvider[] = [
   // Internet & Communications
   {
     name: 'GVTC',
-    type: 'Internet/Phone/TV',
+    type: 'Internet',
     phone: '(800) 367-4882',
     website: 'https://www.gvtc.com',
-    notes: 'Local fiber internet provider. Fastest speeds available in the area. Popular choice for home offices.',
+    notes: 'Local fiber internet provider. Fastest speeds available in the area. Popular choice for home offices. Also offers phone and TV services.',
     serviceArea: 'Boerne and surrounding Hill Country communities'
   },
   {
     name: 'Spectrum',
-    type: 'Internet/TV',
+    type: 'Internet',
     phone: '(833) 267-6094',
     website: 'https://www.spectrum.com',
-    notes: 'Cable internet available in some Boerne neighborhoods',
+    notes: 'Cable internet and TV available in some Boerne neighborhoods.',
     serviceArea: 'Select areas within Boerne city limits'
   },
   // Water
   {
     name: 'City of Boerne Utilities',
-    type: 'Water/Sewer',
+    type: 'Water',
     phone: '(830) 249-9511',
     website: 'https://www.ci.boerne.tx.us/151/Utilities',
-    notes: 'Municipal water for homes within Boerne city limits. Visit City Hall to set up service.',
+    notes: 'Municipal water and sewer for homes within city limits. Visit City Hall to set up service.',
     serviceArea: 'Boerne city limits'
   },
   {
     name: 'Cow Creek Groundwater Conservation District',
-    type: 'Water (Well Permits)',
+    type: 'Water',
     phone: '(830) 816-2700',
     website: 'https://www.ccgcd.org',
-    notes: 'If your property has a private well, contact for permit information',
+    notes: 'For private well permits and groundwater information. Contact if your property has a well.',
     serviceArea: 'Kendall County'
   },
   // Gas
@@ -108,10 +108,10 @@ export const utilityProviders: UtilityProvider[] = [
   // Trash & Recycling
   {
     name: 'City of Boerne Solid Waste',
-    type: 'Trash/Recycling',
+    type: 'Trash',
     phone: '(830) 249-9511',
     website: 'https://www.ci.boerne.tx.us/148/Trash-Recycling',
-    notes: 'Curbside pickup included for city residents. Recycling available.',
+    notes: 'Curbside trash and recycling pickup included for city residents.',
     serviceArea: 'Boerne city limits'
   },
   {
@@ -119,7 +119,7 @@ export const utilityProviders: UtilityProvider[] = [
     type: 'Trash',
     phone: '(830) 249-8681',
     website: 'https://www.republicservices.com',
-    notes: 'Private trash service for areas outside city limits',
+    notes: 'Private trash service for areas outside city limits.',
     serviceArea: 'Unincorporated Kendall County'
   }
 ];
