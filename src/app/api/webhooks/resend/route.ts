@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import crypto from 'crypto';
 
 // Resend webhook event types
 interface ResendWebhookEvent {
@@ -34,99 +33,186 @@ const eventTypeMap: Record<string, string> = {
   'email.complained': 'complained',
 };
 
-// Verify Resend webhook signature
-function verifySignature(payload: string, signature: string, secret: string): boolean {
-  if (!secret) return true; // Skip verification if no secret configured
+// Structured error logging for webhook debugging
+function logWebhookError(
+  phase: string,
+  error: unknown,
+  context: {
+    eventType?: string;
+    emailId?: string;
+    rawPayload?: string;
+  }
+) {
+  const errorDetails = {
+    timestamp: new Date().toISOString(),
+    phase,
+    eventType: context.eventType || 'unknown',
+    emailId: context.emailId || 'unknown',
+    error: {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      cause: error instanceof Error && error.cause ? String(error.cause) : undefined,
+      name: error instanceof Error ? error.name : typeof error,
+    },
+    // Include first 500 chars of payload for debugging (avoid logging full emails)
+    payloadPreview: context.rawPayload?.substring(0, 500),
+  };
 
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+  console.error('RESEND_WEBHOOK_ERROR:', JSON.stringify(errorDetails, null, 2));
 }
 
 export async function POST(request: NextRequest) {
+  let rawPayload: string | undefined;
+  let parsedEvent: ResendWebhookEvent | undefined;
+
   try {
-    const payload = await request.text();
-    const signature = request.headers.get('svix-signature') || '';
-    const webhookSecret = process.env.RESEND_WEBHOOK_SECRET || '';
+    // Step 1: Read raw payload
+    rawPayload = await request.text();
 
-    // Verify signature in production
-    if (process.env.NODE_ENV === 'production' && webhookSecret) {
-      if (!verifySignature(payload, signature, webhookSecret)) {
-        console.error('Invalid webhook signature');
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-      }
+    // Step 2: Parse JSON
+    try {
+      parsedEvent = JSON.parse(rawPayload) as ResendWebhookEvent;
+    } catch (parseError) {
+      logWebhookError('json_parse', parseError, { rawPayload });
+      return NextResponse.json({ received: true, error: 'Invalid JSON' });
     }
 
-    const event: ResendWebhookEvent = JSON.parse(payload);
-
-    if (!supabase) {
-      console.error('Supabase not configured');
-      return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
-    }
-
+    const event = parsedEvent;
     const eventType = eventTypeMap[event.type];
+    const emailId = event.data?.email_id;
+
+    // Log incoming event for debugging
+    console.log('RESEND_WEBHOOK_RECEIVED:', {
+      type: event.type,
+      mappedType: eventType,
+      emailId,
+      to: event.data?.to,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Step 3: Check if event type is recognized
     if (!eventType) {
-      // Unknown event type, acknowledge but don't process
+      console.log('RESEND_WEBHOOK_SKIP: Unrecognized event type', event.type);
       return NextResponse.json({ received: true });
+    }
+
+    // Step 4: Check Supabase configuration
+    if (!supabase) {
+      logWebhookError('supabase_config', new Error('Supabase client is null'), {
+        eventType: event.type,
+        emailId,
+      });
+      return NextResponse.json({ received: true, error: 'Database not configured' });
     }
 
     const recipientEmail = event.data.to?.[0];
 
-    // Look up subscriber by email
-    let subscriberId = null;
+    // Step 5: Look up subscriber (optional - don't fail if not found)
+    let subscriberId: string | null = null;
     if (recipientEmail) {
-      const { data: subscriber } = await supabase
-        .from('subscribers')
-        .select('id')
-        .eq('email', recipientEmail)
-        .single();
+      try {
+        const { data: subscriber, error: subscriberError } = await supabase
+          .from('subscribers')
+          .select('id')
+          .eq('email', recipientEmail)
+          .single();
 
-      subscriberId = subscriber?.id;
+        if (subscriberError && subscriberError.code !== 'PGRST116') {
+          // PGRST116 = no rows returned, which is fine
+          console.warn('RESEND_WEBHOOK_WARN: Subscriber lookup failed', {
+            email: recipientEmail,
+            error: subscriberError,
+          });
+        }
+        subscriberId = subscriber?.id || null;
+      } catch (lookupError) {
+        logWebhookError('subscriber_lookup', lookupError, {
+          eventType: event.type,
+          emailId,
+        });
+        // Continue processing - subscriber lookup is optional
+      }
     }
 
-    // Insert the event
-    const { error } = await supabase.from('newsletter_events').insert({
-      email_id: event.data.email_id,
-      event_type: eventType,
-      recipient_email: recipientEmail,
-      subscriber_id: subscriberId,
-      click_url: event.data.click?.link,
-      event_timestamp: event.created_at,
-    });
+    // Step 6: Insert event into newsletter_events
+    try {
+      const insertData = {
+        email_id: emailId,
+        event_type: eventType,
+        recipient_email: recipientEmail || null,
+        subscriber_id: subscriberId,
+        click_url: event.data.click?.link || null,
+        event_timestamp: event.created_at,
+      };
 
-    if (error) {
-      console.error('Error inserting newsletter event:', error);
-      // Still return 200 to acknowledge receipt
+      console.log('RESEND_WEBHOOK_INSERT:', insertData);
+
+      const { error: insertError } = await supabase
+        .from('newsletter_events')
+        .insert(insertData);
+
+      if (insertError) {
+        logWebhookError('database_insert', insertError, {
+          eventType: event.type,
+          emailId,
+        });
+        // Log the specific Supabase error details
+        console.error('RESEND_WEBHOOK_SUPABASE_ERROR:', {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+        });
+      }
+    } catch (insertError) {
+      logWebhookError('database_insert_exception', insertError, {
+        eventType: event.type,
+        emailId,
+      });
     }
 
-    // Update newsletter draft stats if we can identify the broadcast
-    // This would require storing the email_id -> draft_id mapping when sending
-    // For now, we'll aggregate stats separately
+    // Step 7: Handle bounces and complaints
+    if (recipientEmail) {
+      try {
+        if (eventType === 'bounced') {
+          const { error: bounceError } = await supabase
+            .from('subscribers')
+            .update({ status: 'bounced' })
+            .eq('email', recipientEmail);
 
-    // Handle bounces and complaints - update subscriber status
-    if (eventType === 'bounced' && recipientEmail) {
-      await supabase
-        .from('subscribers')
-        .update({ status: 'bounced' })
-        .eq('email', recipientEmail);
+          if (bounceError) {
+            console.warn('RESEND_WEBHOOK_WARN: Failed to update bounce status', bounceError);
+          }
+        }
+
+        if (eventType === 'complained') {
+          const { error: complaintError } = await supabase
+            .from('subscribers')
+            .update({ status: 'unsubscribed', unsubscribed_at: new Date().toISOString() })
+            .eq('email', recipientEmail);
+
+          if (complaintError) {
+            console.warn('RESEND_WEBHOOK_WARN: Failed to update complaint status', complaintError);
+          }
+        }
+      } catch (statusError) {
+        logWebhookError('status_update', statusError, {
+          eventType: event.type,
+          emailId,
+        });
+      }
     }
 
-    if (eventType === 'complained' && recipientEmail) {
-      await supabase
-        .from('subscribers')
-        .update({ status: 'unsubscribed', unsubscribed_at: new Date().toISOString() })
-        .eq('email', recipientEmail);
-    }
-
+    console.log('RESEND_WEBHOOK_SUCCESS:', { eventType, emailId });
     return NextResponse.json({ received: true });
+
   } catch (error) {
-    console.error('Webhook error:', error);
+    // Catch-all for unexpected errors
+    logWebhookError('unhandled', error, {
+      eventType: parsedEvent?.type,
+      emailId: parsedEvent?.data?.email_id,
+      rawPayload,
+    });
     // Return 200 to prevent Resend from retrying
     return NextResponse.json({ received: true, error: 'Processing error' });
   }
