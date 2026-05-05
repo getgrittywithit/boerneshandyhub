@@ -71,7 +71,8 @@ export default function Navigation() {
     { href: '/weather', label: 'Weather' },
     { href: '/dining', label: 'Dining' },
     { href: '/events', label: 'Events' },
-    { href: '/about', label: 'About' },
+    { href: '/about', label: 'About Boerne' },
+    { href: '/about-us', label: 'About the Hub' },
   ];
 
   return (

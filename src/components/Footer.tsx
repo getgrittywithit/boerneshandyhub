@@ -134,7 +134,12 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/about" className="text-white/70 hover:text-white transition-colors text-sm">
-                  About Us
+                  About Boerne
+                </Link>
+              </li>
+              <li>
+                <Link href="/about-us" className="text-white/70 hover:text-white transition-colors text-sm">
+                  About the Hub
                 </Link>
               </li>
             </ul>
