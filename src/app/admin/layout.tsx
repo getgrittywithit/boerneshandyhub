@@ -28,6 +28,7 @@ const navItems = [
   { href: '/admin/categories', icon: '📁', label: 'Categories' },
   { href: '/admin/websites', icon: '🌐', label: 'Websites' },
   { href: '/admin/blog', icon: '📝', label: 'Blog' },
+  { href: '/admin/community', icon: '📸', label: 'Community' },
   { href: '/admin/search', icon: '🔍', label: 'Search' },
   { href: '/admin/newsletters', icon: '📧', label: 'Newsletters' },
   { href: '/admin/quotes', icon: '📩', label: 'Quotes' },

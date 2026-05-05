@@ -113,6 +113,11 @@ export default function Footer() {
             <h4 className="font-semibold text-boerne-gold mb-4">Community</h4>
             <ul className="space-y-2">
               <li>
+                <Link href="/contribute" className="text-white/70 hover:text-white transition-colors text-sm">
+                  Share a Story or Photo
+                </Link>
+              </li>
+              <li>
                 <Link href="/dining" className="text-white/70 hover:text-white transition-colors text-sm">
                   Dining
                 </Link>
