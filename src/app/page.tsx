@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
 import FloatingChat from "@/components/FloatingChat";
 import SubscribeForm from "@/components/SubscribeForm";
+import { SearchOverlay } from "@/components/search";
+import { useSearchShortcut } from "@/lib/search/useSearch";
 import { topLevelCategories, getSeasonalSubcategories, serviceCategories } from '@/data/serviceCategories';
 import serviceProvidersData from '@/data/serviceProviders.json';
 
@@ -30,8 +31,13 @@ interface ServiceProvider {
 }
 
 export default function Home() {
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const openSearch = useCallback(() => setIsSearchOpen(true), []);
+  const closeSearch = useCallback(() => setIsSearchOpen(false), []);
+
+  // Listen for Cmd/Ctrl+K
+  useSearchShortcut(openSearch);
 
   // Get featured (elite) providers
   const featuredProviders = (serviceProvidersData.providers as ServiceProvider[])
@@ -40,15 +46,6 @@ export default function Home() {
 
   // Get seasonal highlights
   const seasonalServices = getSeasonalSubcategories();
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/services?q=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      router.push('/services');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -66,23 +63,35 @@ export default function Home() {
             </p>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="mt-10 max-w-2xl mx-auto">
-              <div className="relative flex">
-                <input
-                  type="text"
-                  placeholder="What service do you need? (e.g., plumber, mechanic, landscaping...)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 px-6 py-4 rounded-l-xl text-lg bg-white text-gray-900 placeholder-gray-500 border-2 border-white focus:outline-none focus:ring-2 focus:ring-boerne-gold shadow-lg"
-                />
-                <button
-                  type="submit"
-                  className="px-8 py-4 bg-boerne-gold text-boerne-navy font-semibold rounded-r-xl hover:bg-boerne-gold-alt transition-colors"
+            <div className="mt-10 max-w-2xl mx-auto">
+              <button
+                onClick={openSearch}
+                className="w-full flex items-center gap-4 px-6 py-4 bg-white rounded-xl text-left shadow-lg hover:shadow-xl transition-shadow group"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-400 group-hover:text-boerne-gold transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  Search
-                </button>
-              </div>
-            </form>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <span className="flex-1 text-lg text-gray-500">
+                  Search for plumbers, electricians, landscapers...
+                </span>
+                <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-sm text-gray-400">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </button>
+            </div>
+
+            {/* Search Overlay */}
+            {isSearchOpen && <SearchOverlay onClose={closeSearch} />}
 
             <p className="mt-4 text-white/50 text-sm">
               Or browse by category below
